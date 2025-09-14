@@ -1,0 +1,21 @@
+#version number
+version: '3.9'
+
+#project name
+name: 'StudentManagementSystem'
+
+services:
+  api:
+    platform: linux/arm64
+    build:
+      #context: . means “send everything from the root of your project (where docker-compose.yml is) into the Docker build.”
+      context: .
+      dockerfile: backend/Dockerfile
+
+
+    ports:
+      - "8080:8080" # localhost
+    environment:
+      PORT: 8080 # Drogon framework will read this port
+
+    restart: unless-stopped
