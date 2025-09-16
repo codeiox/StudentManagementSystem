@@ -43,3 +43,9 @@
 # ignore all .DS_store files
 .DS_Store
 **.DS_Store
+
+
+# build output
+cmake-build-debug/
+build/
+.idea/

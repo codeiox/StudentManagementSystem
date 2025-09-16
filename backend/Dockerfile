@@ -23,9 +23,9 @@ WORKDIR /backend
 # Copy the compiled binary from the builder into this runtime container
 COPY --from=builder /src/build/StudentManagementSystem /backend/server
 
-# Copy static frontend files from the "pages" folder into the container
-# They will be served from /app/pages
-COPY ./pages /pages
+# Copy static frontend files from the "docs" folder into the container
+# They will be served from /app/docs
+COPY ./docs /docs
 
 # Set environment variable for port
 ENV PORT=8080

@@ -11,13 +11,14 @@ find_package(Drogon REQUIRED)
 
 # Source files
 file(GLOB_RECURSE SOURCES
+        main.cpp
         src/*.cpp
 )
 
 # Executable
 add_executable(${PROJECT_NAME}
-        main.cpp
         ${SOURCES}
+
 )
 
 # Link libraries
