@@ -11,7 +11,7 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: studentmanagementsystem
-      MYSQL_ROOT_PASSWORD: "Spring2025%!"
+      MYSQL_ROOT_PASSWORD: "Spring2025%!" # hardcoded for demo purposes only
     command: ["--default-authentication-plugin=mysql_native_password"]
     volumes:
       - sms_dbdata:/var/lib/mysql
