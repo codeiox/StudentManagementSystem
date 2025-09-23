@@ -5,17 +5,38 @@ version: '3.9'
 name: 'StudentManagementSystem'
 
 services:
+  db:
+    image: mysql:8.0
+    platform: linux/arm64/v8          # Apple Silicon
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: studentmanagementsystem
+      MYSQL_ROOT_PASSWORD: "Spring2025%!"
+    command: ["--default-authentication-plugin=mysql_native_password"]
+    volumes:
+      - sms_dbdata:/var/lib/mysql
+      - ./backend/db/init:/docker-entrypoint-initdb.d:ro  # auto-run .sql files
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p\"$${MYSQL_ROOT_PASSWORD}\" --silent || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    ports:
+    - "3307:3306"    # optional: expose to host for local tools (Workbench, etc.)
+
   api:
     platform: linux/arm64
     build:
-      #context: . means “send everything from the root of your project (where docker-compose.yml is) into the Docker build.”
-      context: .
+      context: .        # root of your project
       dockerfile: backend/Dockerfile
-
-
     ports:
-      - "8080:8080" # localhost
+      - "8080:8080"     # localhost
     environment:
-      PORT: 8080 # Drogon framework will read this port
-
+      PORT: 8080        # Drogon framework will read this port
     restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  sms_dbdata:

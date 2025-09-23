@@ -1,13 +1,11 @@
-#include <iostream>
 #include <drogon/drogon.h>
 
+#include <iostream>
+
+using namespace drogon;
 
 int main(int argc, const char* argv[]) {
-    using namespace drogon;
-
-
-
-
+    drogon::app().loadConfigFile("/config/mysqlconfig.json").run();
 
     const char* envPort = std::getenv("PORT");
     uint16_t port = envPort ? std::stoi(envPort) : 8080;
