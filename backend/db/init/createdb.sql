@@ -1,5 +1,5 @@
 -- Database name student-data
-CREATE Database IF NOT EXISTS studentManagementSystem;
+CREATE Database IF NOT EXISTS studentmanagementsystem;
 
 
 USE studentmanagementsystem;

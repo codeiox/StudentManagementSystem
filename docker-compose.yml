@@ -2,7 +2,7 @@
 version: '3.9'
 
 #project name
-name: 'StudentManagementSystem'
+name: 'studentmanagementsystem'
 
 services:
   db:
@@ -22,7 +22,7 @@ services:
       timeout: 3s
       retries: 20
     ports:
-    - "3307:3306"    # optional: expose to host for local tools (Workbench, etc.)
+    - "3307:3306"    # expose to host for local tools (Workbench, etc.)
 
   api:
     platform: linux/arm64
