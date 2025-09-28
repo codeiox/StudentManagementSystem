@@ -11,8 +11,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY ./backend .
 
 # Build
+# Kept --parallel $(nproc) for efficient builds across OSes
 RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
-    && cmake --build build -j
+    && cmake --build build --parallel $(nproc)
 
 # -------- RUNTIME STAGE --------
 FROM drogonframework/drogon:latest
@@ -25,8 +26,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Copy binary & config
 COPY --from=builder /src/build/StudentManagementSystem /backend/server
-COPY ./backend/config/mysqlconfig.json /backend/config/mysqlconfig.json
+
+# Copy static files
+COPY ./docs /docs
+
+# Ensure executable permissions
+#RUN chmod +x /backend/server
 
 ENV PORT=8080
-EXPOSE 8080
+
+EXPOSE ${PORT}
+
 CMD ["/backend/server", "-c", "/backend/config/mysqlconfig.json"]

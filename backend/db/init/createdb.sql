@@ -1,4 +1,4 @@
--- Database name student-data
+-- Database name studentmanagementsystem
 CREATE Database IF NOT EXISTS studentmanagementsystem;
 
 
@@ -11,3 +11,4 @@ CREATE TABLE IF NOT EXISTS TemporaryTable (
     email VARCHAR(100)
 
 );
+

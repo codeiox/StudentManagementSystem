@@ -1,6 +1,3 @@
-#version number
-version: '3.9'
-
 #project name
 name: 'studentmanagementsystem'
 
@@ -10,12 +7,12 @@ services:
     platform: linux/arm64/v8          # Apple Silicon
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: studentmanagementsystem
-      MYSQL_ROOT_PASSWORD: "Spring2025%!" # hardcoded for demo purposes only
+      MYSQL_DATABASE: ${MYSQL_DATABASE} # Reference the .env variable
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD} # set in .env file
     command: ["--default-authentication-plugin=mysql_native_password"]
     volumes:
       - sms_dbdata:/var/lib/mysql
-      - ./backend/db/init:/docker-entrypoint-initdb.d:ro  # auto-run .sql files
+      - ./backend/db/init:/docker-entrypoint-initdb.d:ro # auto-run .sql files
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p\"$${MYSQL_ROOT_PASSWORD}\" --silent || exit 1"]
       interval: 5s
@@ -23,6 +20,8 @@ services:
       retries: 20
     ports:
     - "3307:3306"    # expose to host for local tools (Workbench, etc.)
+    networks:
+      - app-network
 
   api:
     platform: linux/arm64
@@ -37,6 +36,16 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    volumes:
+      - ./backend/config/mysqlconfig.json:/backend/config/mysqlconfig.json:ro
+      - ./docs:/docs:ro
+    networks:
+      - app-network
 
 volumes:
   sms_dbdata:
+
+networks:
+  app-network:
+    driver: bridge  
+
