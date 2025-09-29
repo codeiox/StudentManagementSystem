@@ -62,5 +62,4 @@ backend/config/mysqlconfig.json
 
 
 #ignore .vscode settings
-/.vscode/
 .vscode/
