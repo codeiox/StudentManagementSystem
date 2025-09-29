@@ -56,3 +56,10 @@ backend/.env
 
 # Ignore database files json
 backend/config/mysqlconfig.json
+
+# Ignore .env file
+.env
+
+
+#ignore .vscode settings
+.vscode/

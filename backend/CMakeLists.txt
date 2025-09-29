@@ -12,7 +12,6 @@ find_package(Drogon REQUIRED)
 # Source files
 file(GLOB_RECURSE SOURCES
         main.cpp
-        src/*.cpp
 )
 
 # Executable

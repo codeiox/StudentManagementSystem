@@ -1,0 +1,13 @@
+USE studentmanagementsystem;
+
+CREATE TABLE IF NOT EXISTS Students (
+    id INT AUTO_INCREMENT PRIMARY KEY, 
+    name VARCHAR(100) NOT NULL, 
+    phone VARCHAR(20) NOT NULL, 
+    email VARCHAR(100) NOT NULL UNIQUE,
+    dateofbirth DATE NOT NULL,
+    address TEXT NOT NULL,
+    sex VARCHAR(10) NOT NULL,
+    studentId VARCHAR(50) NOT NULL UNIQUE, 
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
