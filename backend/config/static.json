@@ -1,0 +1,6 @@
+{
+  "static": true,
+    "root": "./docs",
+    "index": ["index.html"]
+  }
+

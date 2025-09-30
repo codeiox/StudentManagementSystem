@@ -10,6 +10,7 @@ int main(int argc, const char* argv[]) {
 
     drogon::app()
         .loadConfigFile("/backend/config/mysqlconfig.json")
+        .loadConfigFile("/backend/config/static.json")
         .setDocumentRoot("/docs")
         .addListener("0.0.0.0", port);
 
