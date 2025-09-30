@@ -1,7 +1,31 @@
-{
-    "host": "db",
-    "port": 3306,
-    "dbname": "studentmanagementsystem",
-    "user": "root",
-    "passwd": "yourpasswordhere"
+ {
+  "listeners": [
+    {
+      "address": "0.0.0.0",
+      "port": 8080
+    }
+  ],
+  "db_clients": [
+    {
+      "name": "default",
+      "rdbms": "mysql",
+      "host": "db",
+      "port": 3306,
+      "dbname": "studentmanagementsystem",
+      "user": "root",
+      "password": "yourpasswordhere",
+      "charset": "utf8mb4",
+      "connection_number": 4
+    }
+  ],
+  "static": {
+    "enable": true,
+    "root": "./docs",
+    "index": "index.html",
+    "mime": {
+      "js": "application/javascript",
+      "css": "text/css",
+      "html": "text/html"
+    }
+  }
 }

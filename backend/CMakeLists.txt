@@ -12,6 +12,9 @@ find_package(Drogon REQUIRED)
 # Source files
 file(GLOB_RECURSE SOURCES
         main.cpp
+        src/*.cpp
+        controllers/*.cpp
+
 )
 
 # Executable
@@ -29,5 +32,5 @@ target_link_libraries(${PROJECT_NAME}
 # Use C++20 features
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
 
-
-
+# Include directories
+target_include_directories(${PROJECT_NAME} PRIVATE .)
