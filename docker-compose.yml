@@ -38,6 +38,7 @@ services:
         condition: service_healthy
     volumes:
       - ./backend/config/mysqlconfig.json:/backend/config/mysqlconfig.json:ro
+      - ./backend/config/static.json:/backend/config/static.json:ro
       - ./docs:/docs:ro
     networks:
       - app-network

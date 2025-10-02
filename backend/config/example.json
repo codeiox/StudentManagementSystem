@@ -17,15 +17,5 @@
       "charset": "utf8mb4",
       "connection_number": 4
     }
-  ],
-  "static": {
-    "enable": true,
-    "root": "./docs",
-    "index": "index.html",
-    "mime": {
-      "js": "application/javascript",
-      "css": "text/css",
-      "html": "text/html"
-    }
-  }
+  ]
 }

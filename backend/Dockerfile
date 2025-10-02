@@ -27,14 +27,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copy binary & config
 COPY --from=builder /src/build/StudentManagementSystem /backend/server
 
-# Copy static files
+# Copy config + static files
+COPY ./backend/config /backend/config
 COPY ./docs /docs
 
 # Ensure executable permissions
 #RUN chmod +x /backend/server
 
 ENV PORT=8080
-
 EXPOSE ${PORT}
 
-CMD ["/backend/server", "-c", "/backend/config/mysqlconfig.json"]
+CMD ["/backend/server"]
