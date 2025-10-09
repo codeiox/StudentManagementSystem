@@ -1,5 +1,4 @@
 #include <drogon/drogon.h>
-
 #include <iostream>
 
 using namespace drogon;
@@ -13,6 +12,7 @@ int main(int argc, const char* argv[]) {
         .loadConfigFile("/backend/config/static.json")
         .setDocumentRoot("/docs")
         .addListener("0.0.0.0", port);
+
 
     std::cout << "http://localhost:8080/index.html" << std::endl;
 

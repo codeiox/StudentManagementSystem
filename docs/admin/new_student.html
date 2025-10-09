@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>New Student Registration</title>
+<link rel="stylesheet" href="../assets/login.css">
+</head>
+<body>
+<div class="main">
+    <h1>Register New Student</h1>
+    <form id="studentForm">
+        <label>First Name: <input type="text" name="firstName" required></label><br>
+        <label>Last Name: <input type="text" name="lastName" required></label><br>
+        <label>Date of Birth: <input type="date" name="dateofbirth" required></label><br>
+        <label>Email: <input type="email" name="email" required></label><br>
+        <label>Phone: <input type="text" name="phone" required></label><br>
+        <label>Address: <textarea name="address" required></textarea></label><br>
+        <label>Sex: 
+            <select name="sex" required>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+            </select>
+        </label><br>
+        <label>Student ID: <input type="text" name="studentId" required></label><br>
+        <button type="submit">Create Student</button>
+    </form>
+
+    <p id="status"></p>
+</div>
+
+<script>
+document.getElementById('studentForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    
+    // Combine firstName and lastName into single name field to match your database
+    const data = {
+        name: form.firstName.value + ' ' + form.lastName.value,
+        phone: form.phone.value,
+        email: form.email.value,
+        dateofbirth: form.dateofbirth.value,
+        address: form.address.value,
+        sex: form.sex.value,
+        studentId: form.studentId.value
+    };
+
+    try {
+        const res = await fetch('/api/admin/students', { 
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+        
+        if(res.ok){
+            document.getElementById('status').innerText = "Student created successfully!";
+            document.getElementById('status').style.color = "green";
+            form.reset();
+        } else {
+            const text = await res.text();
+            document.getElementById('status').innerText = "Error: " + text;
+            document.getElementById('status').style.color = "red";
+        }
+    } catch(err) {
+        document.getElementById('status').innerText = "Error: " + err.message;
+        document.getElementById('status').style.color = "red";
+    }
+});
+</script>
+</body>
+</html>
