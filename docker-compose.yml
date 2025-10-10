@@ -4,7 +4,7 @@ name: 'studentmanagementsystem'
 services:
   db:
     image: mysql:8.0
-    platform: linux/arm64/v8          # Apple Silicon
+    #platform: linux/arm64/v8          # Apple Silicon
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE} # Reference the .env variable

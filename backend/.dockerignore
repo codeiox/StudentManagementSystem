@@ -1,0 +1,19 @@
+# build outputs
+build
+*/build
+**/build
+cmake-build-*
+CMakeCache.txt
+CMakeFiles
+*.o
+*.obj
+*.a
+*.lib
+
+# vcs & misc
+.git
+.gitignore
+.DS_Store
+
+# node/other
+node_modules
