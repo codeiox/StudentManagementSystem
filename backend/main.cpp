@@ -14,6 +14,7 @@ int main(int argc, const char* argv[]) {
         .setDocumentRoot("/docs")
         .addListener("0.0.0.0", port);
 
+
     std::cout << "http://localhost:8080/index.html" << std::endl;
 
     drogon::app().run();

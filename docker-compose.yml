@@ -24,7 +24,7 @@ services:
       - app-network
 
   api:
-    platform: linux/arm64
+    platform: linux/arm64  
     build:
       context: .        # root of your project
       dockerfile: backend/Dockerfile
@@ -42,6 +42,7 @@ services:
       - ./docs:/docs:ro
     networks:
       - app-network
+
 
 volumes:
   sms_dbdata:

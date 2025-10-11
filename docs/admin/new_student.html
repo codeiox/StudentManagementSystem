@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>New Student Registration</title>
+<link rel="stylesheet" href="../assets/login.css">
+</head>
+<body>
+<div class="main">
+    <h1>Register New Student</h1>
+
+    <!-- Student registration form -->
+    <form id="studentForm">
+        <label>First Name: <input type="text" name="firstName" required></label><br>
+        <label>Last Name: <input type="text" name="lastName" required></label><br>
+        <label>Date of Birth: <input type="date" name="dateofbirth" required></label><br>
+        <label>Email: <input type="email" name="email" required></label><br>
+        <label>Phone: <input type="text" name="phone" required></label><br>
+        <label>Address: <textarea name="address" required></textarea></label><br>
+        <label>Sex: 
+            <select name="sex" required>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+            </select>
+        </label><br>
+        <label>Student ID: <input type="text" name="studentId" required></label><br>
+        <button type="submit">Create Student</button>
+    </form>
+
+    <!-- Back button -->
+    <button onclick="window.location.href='/admin/dashboard.html'">Back to Dashboard</button>
+
+
+    <!-- Status and action buttons, initially hidden -->
+    <p id="status"></p>
+    <div id="actions" style="display:none;">
+        <button id="backBtn">Back to Dashboard</button>
+        <button id="registerBtn">Register Another Student</button>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById('studentForm');
+    const actions = document.getElementById('actions');
+    const status = document.getElementById('status');
+    const backBtn = document.getElementById('backBtn');
+    const registerBtn = document.getElementById('registerBtn');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const data = {
+            name: form.firstName.value + ' ' + form.lastName.value,
+            phone: form.phone.value,
+            email: form.email.value,
+            dateofbirth: form.dateofbirth.value,
+            address: form.address.value,
+            sex: form.sex.value,
+            studentId: form.studentId.value
+        };
+
+        try {
+            const res = await fetch('/api/admin/students', { 
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+
+            if(res.ok){
+                status.innerText = "Student created successfully!";
+                status.style.color = "green";
+
+                // Hide form, show action buttons
+                form.style.display = "none";
+                actions.style.display = "block";
+
+                backBtn.onclick = () => window.location.href = '/admin/dashboard.html';
+                registerBtn.onclick = () => window.location.reload();
+            } else {
+                const text = await res.text();
+                status.innerText = "Error: " + text;
+                status.style.color = "red";
+            }
+        } catch(err) {
+            status.innerText = "Error: " + err.message;
+            status.style.color = "red";
+        }
+    });
+});
+</script>
+</body>
+</html>
