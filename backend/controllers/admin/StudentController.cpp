@@ -17,11 +17,12 @@ void StudentController::createStudent(const HttpRequestPtr &req,
         return;
     }
 
-    // Validate required fields
-    if (!json->isMember("name") || !json->isMember("email") || 
+    // ✅ Validate required fields
+    if (!json->isMember("name") || !json->isMember("email") ||
         !json->isMember("studentId") || !json->isMember("phone") ||
         !json->isMember("dateofbirth") || !json->isMember("address") ||
-        !json->isMember("sex"))
+        !json->isMember("sex") || !json->isMember("username") ||
+        !json->isMember("password"))
     {
         auto resp = HttpResponse::newHttpResponse();
         resp->setStatusCode(k400BadRequest);
@@ -32,9 +33,9 @@ void StudentController::createStudent(const HttpRequestPtr &req,
 
     auto client = app().getDbClient("default");
 
-    // Fixed: Proper Drogon execSqlAsync syntax with parameters after callbacks
+    // ✅ Updated SQL insert with username and password
     client->execSqlAsync(
-        "INSERT INTO Students (name, phone, email, dateofbirth, address, sex, studentId) VALUES (?,?,?,?,?,?,?)",
+        "INSERT INTO Students (name, phone, email, dateofbirth, address, sex, studentId, username, password) VALUES (?,?,?,?,?,?,?,?,?)",
         [callback](const drogon::orm::Result &)
         {
             auto resp = HttpResponse::newHttpResponse();
@@ -55,6 +56,8 @@ void StudentController::createStudent(const HttpRequestPtr &req,
         (*json)["dateofbirth"].asString(),
         (*json)["address"].asString(),
         (*json)["sex"].asString(),
-        (*json)["studentId"].asString()
+        (*json)["studentId"].asString(),
+        (*json)["username"].asString(),
+        (*json)["password"].asString()
     );
 }
