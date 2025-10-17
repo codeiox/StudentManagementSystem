@@ -49,6 +49,7 @@
 cmake-build-debug/
 build/
 .idea/
+.vscode/
 
 # .env file
 backend/.env
@@ -60,6 +61,5 @@ backend/config/mysqlconfig.json
 # Ignore .env file
 .env
 
-
-#ignore .vscode settings
-.vscode/
+#ignore root dir /CMakeLists.txt; its setup for testing only
+CMakeLists.txt

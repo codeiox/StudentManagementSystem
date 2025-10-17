@@ -10,3 +10,12 @@ CREATE TABLE IF NOT EXISTS Users (
     password VARCHAR(100) NOT NULL,
     role ENUM('admin', 'student') NOT NULL
 );
+-- ✅ Demo admin account (plaintext for now — hash later)
+INSERT INTO Users (username, password, role)
+VALUES ('admin01', 'Admin123!', 'admin')
+ON DUPLICATE KEY UPDATE password='Admin123!', role='admin';
+
+-- ✅ Add a demo student account for testing
+INSERT INTO Users (username, password, role)
+VALUES ('student01', 'Student123!', 'student')
+ON DUPLICATE KEY UPDATE password='Student123!', role='student';
