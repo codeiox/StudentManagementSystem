@@ -20,6 +20,7 @@ std::string Hasher::hash(const std::string& password) const {
     if (password.empty()) {
         throw std::invalid_argument("Password cannot be empty");
     }
+    //TODO: Remove std::cerr log to avoid security issue
     std::cerr << "Hashing with opslimit=" << cfg_.opslimit << ", memlimit=" << cfg_.memlimit_bytes
               << " bytes\n";
     std::string encoded(crypto_pwhash_STRBYTES, '\0');

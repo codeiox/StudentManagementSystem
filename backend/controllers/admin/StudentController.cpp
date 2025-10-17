@@ -42,12 +42,11 @@ void StudentController::createStudent(const HttpRequestPtr& req,
     std::string address = json->get("address", "").asString();
     std::string sex = json->get("sex", "").asString();
     std::string username = json->get("username", "").asString();
-    std::string password = json->get("password", "").asString();
+    //std::string password = json->get("password", "").asString();
 
     // Basic validation for empty fields
     if (firstName.empty() || lastName.empty() || email.empty() || studentId.empty() ||
-        phone.empty() || dateOfBirth.empty() || address.empty() || sex.empty() ||
-        password.empty()) {
+        phone.empty() || dateOfBirth.empty() || address.empty() || sex.empty() || (json->get("password", "").asString()).empty()) {
         auto resp = HttpResponse::newHttpResponse();
         resp->setStatusCode(k400BadRequest);
         resp->setBody("Fields cannot be empty");
@@ -56,8 +55,9 @@ void StudentController::createStudent(const HttpRequestPtr& req,
     }
     try {
         // Hash password here as soon as received from client-side
-        Hasher hasher(HashConfig{1, crypto_pwhash_MEMLIMIT_MIN});
-        std::string hashedPassword = hasher.hash(password);
+        //Hasher hasher(HashConfig{1, crypto_pwhash_MEMLIMIT_MIN});
+        Hasher hasher(HashConfig{4, 1ull * 1024 * 1024 * 1024});
+        std::string hashedPassword = hasher.hash(json->get("password", "").asString());
         if (hashedPassword.empty()) {
             throw std::runtime_error("Password hashing failed");
         }
