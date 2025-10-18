@@ -1,0 +1,55 @@
+/* ===============================
+   Table layout and formatting
+   =============================== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+thead th {
+  text-align: center;
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+th,
+td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+  white-space: nowrap;
+}
+
+/* First column: center-align and fixed width */
+td:first-child,
+th:first-child {
+  text-align: center;
+  width: 60px;
+}
+
+/* ===============================
+   Confirm button styling
+   =============================== */
+
+/* Container aligns button to bottom-right of table */
+.confirm-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+/* Button appearance and hover effect */
+.confirm-button {
+  padding: 10px 20px;
+  background-color: #28a745; /* success green */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.confirm-button:hover {
+  background-color: #218838;
+}

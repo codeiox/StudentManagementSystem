@@ -9,6 +9,7 @@
 #include <stdexcept>
 #include <string>
 
+
 struct HashConfig {
     unsigned long long opslimit = 4;                     // Minimal time cost
     size_t memlimit_bytes = 1ull * 1024 * 1024 * 1024;  // 8 KB, absolute minimum
