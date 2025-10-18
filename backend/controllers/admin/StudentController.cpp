@@ -85,7 +85,7 @@ void StudentController::getAllStudents(const HttpRequestPtr &req,
                 student["phone"] = row["phone"].as<std::string>();
                 student["email"] = row["email"].as<std::string>();
                 student["address"] = row["address"].as<std::string>();
-                student["enrollmentStatus"] = row["enrollmentStatus"].as<std::string>(); // May be null
+                //student["enrollmentStatus"] = row["enrollmentStatus"].as<std::string>(); // May be null
                 jsonResponse.append(student);
             }
 
