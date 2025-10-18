@@ -1,60 +1,77 @@
 #include "StudentController.h"
-#include <drogon/orm/DbClient.h>
-#include <json/json.h>
 
 using namespace drogon;
 
-void StudentController::createStudent(const HttpRequestPtr &req,
-                                      std::function<void(const HttpResponsePtr &)> &&callback)
-{
+void StudentController::createStudent(const HttpRequestPtr& req,
+                                      std::function<void(const HttpResponsePtr&)>&& callback) {
     auto json = req->getJsonObject();
-    if (!json)
-    {
+    if (!json) {
         auto resp = HttpResponse::newHttpResponse();
         resp->setStatusCode(k400BadRequest);
         resp->setBody("Invalid JSON");
         callback(resp);
         return;
     }
+    // for debugging
+    LOG_INFO << "Received JSON: " << json->toStyledString();
 
     // Validate required fields
-    if (!json->isMember("name") || !json->isMember("email") || 
+    // !important- TODO: Needs improvement! Doesn't handle the multi data model
+    if (!json->isMember("firstName") || !json->isMember("lastName") || !json->isMember("email") ||
         !json->isMember("studentId") || !json->isMember("phone") ||
-        !json->isMember("dateofbirth") || !json->isMember("address") ||
-        !json->isMember("sex"))
-    {
+        !json->isMember("dateofbirth") || !json->isMember("address") || !json->isMember("sex")) {
         auto resp = HttpResponse::newHttpResponse();
         resp->setStatusCode(k400BadRequest);
         resp->setBody("Missing required fields");
         callback(resp);
         return;
     }
+    // Otherwise response with 200 OK
+    auto resp = HttpResponse::newHttpResponse();
+    resp->setStatusCode(k200OK);
+    resp->setBody("Request received successfully");
+    callback(resp);
 
-    auto client = app().getDbClient("default");
+    // Extract and validate fields
+    std::string firstName = json->get("firstName", "").asString();
+    std::string lastName = json->get("lastName", "").asString();
+    std::string email = json->get("email", "").asString();
+    std::string studentId = json->get("studentId", "").asString();
+    std::string phone = json->get("phone", "").asString();
+    std::string dateOfBirth = json->get("dateofbirth", "").asString();
+    std::string address = json->get("address", "").asString();
+    std::string sex = json->get("sex", "").asString();
+    std::string username = json->get("username", "").asString();
+    //std::string password = json->get("password", "").asString();
 
-    // Fixed: Proper Drogon execSqlAsync syntax with parameters after callbacks
-    client->execSqlAsync(
-        "INSERT INTO Students (name, phone, email, dateofbirth, address, sex, studentId) VALUES (?,?,?,?,?,?,?)",
-        [callback](const drogon::orm::Result &)
-        {
-            auto resp = HttpResponse::newHttpResponse();
-            resp->setStatusCode(k200OK);
-            resp->setBody("Student created successfully");
-            callback(resp);
-        },
-        [callback](const drogon::orm::DrogonDbException &e)
-        {
-            auto resp = HttpResponse::newHttpResponse();
-            resp->setStatusCode(k500InternalServerError);
-            resp->setBody("Database error: " + std::string(e.base().what()));
-            callback(resp);
-        },
-        (*json)["name"].asString(),
-        (*json)["phone"].asString(),
-        (*json)["email"].asString(),
-        (*json)["dateofbirth"].asString(),
-        (*json)["address"].asString(),
-        (*json)["sex"].asString(),
-        (*json)["studentId"].asString()
-    );
+    // Basic validation for empty fields
+    if (firstName.empty() || lastName.empty() || email.empty() || studentId.empty() ||
+        phone.empty() || dateOfBirth.empty() || address.empty() || sex.empty() || (json->get("password", "").asString()).empty()) {
+        auto resp = HttpResponse::newHttpResponse();
+        resp->setStatusCode(k400BadRequest);
+        resp->setBody("Fields cannot be empty");
+        callback(resp);
+        return;
+    }
+    try {
+        // Hash password here as soon as received from client-side
+        //Hasher hasher(HashConfig{1, crypto_pwhash_MEMLIMIT_MIN});
+        Hasher hasher(HashConfig{4, 1ull * 1024 * 1024 * 1024});
+        std::string hashedPassword = hasher.hash(json->get("password", "").asString());
+        if (hashedPassword.empty()) {
+            throw std::runtime_error("Password hashing failed");
+        }
+
+        //  Call the StoreCredential class to construct object and store in DB
+        StoreCredential storeCredential(firstName, lastName, dateOfBirth, email, phone, address,
+                                        sex, studentId, username, hashedPassword);
+
+        storeCredential.storeToDB();  // call storeToDB method to store info to database
+
+    } catch (const std::exception& e) {
+        auto resp = HttpResponse::newHttpResponse();
+        resp->setStatusCode(k500InternalServerError);
+        resp->setBody("Error: " + std::string(e.what()));
+        callback(resp);
+    }
 }
