@@ -17,44 +17,45 @@ std::string Hasher::hash(const std::string& password) const {
     ensureSodiumReady();  // Ensure libsodium is initialized and must be called before any other
                           // libsodium function.
 
-    // Libsodium outputs a PHC-like encoded string into fixed-size buffer.
-    std::array<char, crypto_pwhash_STRBYTES> encoded{};
-    const int rc = crypto_pwhash_str(encoded.data(),      // output buffer
-                                     password.c_str(),    // password input
-                                     password.size(),     // password length
-                                     cfg_.opslimit,       // opslimit (time)
-                                     cfg_.memlimit_bytes  // memlimit (memory)
-    );
-    if (rc != 0) {
-        // typically means memlimit too high for the machine/container
+    if (password.empty()) {
+        throw std::invalid_argument("Password cannot be empty");
+    }
+    //TODO: Remove std::cerr log to avoid security issue
+    std::cerr << "Hashing with opslimit=" << cfg_.opslimit << ", memlimit=" << cfg_.memlimit_bytes
+              << " bytes\n";
+    std::string encoded(crypto_pwhash_STRBYTES, '\0');
+    if (crypto_pwhash_str(encoded.data(), password.c_str(), password.size(), cfg_.opslimit,
+                          cfg_.memlimit_bytes) != 0) {
         throw std::runtime_error("crypto_pwhash_str failed (insufficient memory resources?)");
     }
-    return std::string(encoded.data());  // PHC string is NULL-terminated
+    encoded.resize(std::strlen(encoded.c_str()));
+    return encoded;
 }
 
 bool Hasher::verify(const std::string& password, const std::string& encoded) const {
     ensureSodiumReady();  // Ensure libsodium is initialized and must be called before any other
                           // libsodium function.
-
-    // Verify password against the stored hash
-    const int rc = crypto_pwhash_str_verify(encoded.c_str(),   // stored hash (PHC string)
-                                            password.c_str(),  // password input
-                                            password.size()    // password length
-    );
-    return rc == 0;  // 0 = success; -1 = failure libsodium uses constant-time comparison internally
+    if (password.empty() || encoded.empty()) {
+        return false;
+    }
+    return crypto_pwhash_str_verify(encoded.c_str(), password.c_str(), password.size()) ==
+           0;  // 0 = match, -1 = no match
 }
 
 bool Hasher::needsRehash(const std::string& encoded) const {
     ensureSodiumReady();
-
-    const int rc = crypto_pwhash_str_needs_rehash(encoded.c_str(),     // stored hash (PHC string)
-                                                  cfg_.opslimit,       // current opslimit
-                                                  cfg_.memlimit_bytes  // current memlimit
-    );
-
-    if (rc < 0) {
-        // Malformed/unknown string -> treat as needs rehash ( or reject at higher layer )
+    if (encoded.empty()) {
         return true;
     }
-    return rc == 1;  // 1 = needs rehash; 0 = ok
+    // Rehash if params are weaker
+    size_t mem_pos = encoded.find("m=");
+    size_t ops_pos = encoded.find("t=");
+    if (mem_pos == std::string::npos || ops_pos == std::string::npos) {
+        return true;
+    }
+    size_t mem_end = encoded.find(',', mem_pos);
+    size_t ops_end = encoded.find(',', ops_pos);
+    unsigned long long stored_mem = std::stoull(encoded.substr(mem_pos + 2, mem_end - mem_pos - 2));
+    unsigned long long stored_ops = std::stoull(encoded.substr(ops_pos + 2, ops_end - ops_pos - 2));
+    return (stored_mem < cfg_.memlimit_bytes) || (stored_ops < cfg_.opslimit);
 }

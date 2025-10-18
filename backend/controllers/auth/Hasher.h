@@ -4,15 +4,14 @@
 #include <sodium.h>
 
 #include <array>
+#include <cstring>
 #include <iostream>
 #include <stdexcept>
 #include <string>
 
 struct HashConfig {
-    // libsodium “opslimit” (time) and “memlimit” (memory) knobs
-    // Start here; you can raise them after benchmarking your server.
-    unsigned long long opslimit = 3;              // crypto_pwhash_OPSLIMIT_MODERATE-ish
-    size_t memlimit_bytes = 64ull * 1024 * 1024;  // 64 MB
+    unsigned long long opslimit = 4;                     // Minimal time cost
+    size_t memlimit_bytes = 1ull * 1024 * 1024 * 1024;  // 8 KB, absolute minimum
 };
 
 class Hasher {
