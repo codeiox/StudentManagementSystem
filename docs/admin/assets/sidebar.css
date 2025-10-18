@@ -1,12 +1,10 @@
-/* Base layout setup */
 body {
   margin: 0;
-  display: flex; /* Enables sidebar + main layout */
+  display: flex;
   height: 100vh;
   font-family: "Segoe UI", sans-serif;
 }
 
-/* Sidebar styling */
 .sidebar {
   width: 220px;
   background-color: #1e1e2f;
@@ -14,20 +12,18 @@ body {
   display: flex;
   flex-direction: column;
   padding: 20px;
-  height: 100vh;       /* Fill full vertical space */
-  position: fixed;     /* Stay fixed on the left */
+  height: 100vh; /* ✅ makes sidebar fill full height */
+  position: fixed; /* ✅ keeps sidebar fixed in place */
   top: 0;
   left: 0;
 }
 
-/* Sidebar title */
 .sidebar h2 {
   font-size: 1.5rem;
   margin-bottom: 30px;
   text-align: center;
 }
 
-/* Sidebar links */
 .sidebar a {
   color: #cfd1d7;
   text-decoration: none;
@@ -37,17 +33,15 @@ body {
   transition: background 0.2s ease;
 }
 
-/* Hover and active link styles */
 .sidebar a:hover,
 .sidebar a.active {
   background-color: #34344a;
   color: #fff;
 }
 
-/* Main content area */
 .main {
-  flex-grow: 1;              /* Take remaining space */
+  flex-grow: 1;
   background-color: #f8f9fa;
   padding: 40px;
-  margin-left: 220px;        /* Offset for fixed sidebar */
+  margin-left: 220px; /* ✅ prevents overlap */
 }
