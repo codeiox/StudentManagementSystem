@@ -13,7 +13,7 @@
 StoreCredential::StoreCredential(const std::string& firstname, const std::string& lastname,
                                  const std::string& DOB, const std::string& email,
                                  const std::string& phone_no, const std::string& address,
-                                 const std::string& sex, const std::string& studentID,
+                                 const std::string& gender, const std::string& studentID,
                                  const std::string& username, const std::string& hashed_pass)
     : firstname(firstname),
       lastname(lastname),
@@ -21,7 +21,7 @@ StoreCredential::StoreCredential(const std::string& firstname, const std::string
       email(email),
       phone(phone_no),
       address(address),
-      sex(sex),
+      gender(gender),
       studentID(studentID),
       username(username),
       hashed_password(hashed_pass) {}
@@ -32,7 +32,7 @@ const std::string& StoreCredential::getDOB() const { return DOB; }
 const std::string& StoreCredential::getEmail() const { return email; }
 const std::string& StoreCredential::getPhone() const { return phone; }
 const std::string& StoreCredential::getAddress() const { return address; }
-const std::string& StoreCredential::getSex() const { return sex; }
+const std::string& StoreCredential::getGender() const { return gender; }
 
 const std::string& StoreCredential::getStudentID() const { return studentID; }
 
@@ -46,10 +46,10 @@ void StoreCredential::storeToDB() const {
     try {
         //TODO: add timestamp
         auto result = client->execSqlSync(
-            "INSERT INTO Students (first_name, last_name, dob, email, phone, address, sex, "
+            "INSERT INTO Students (first_name, last_name, dob, email, phone, address, gender, "
             "student_id, username, password_hash) "
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            firstname, lastname, DOB, email, phone, address, sex, studentID, username,
+            firstname, lastname, DOB, email, phone, address, gender, studentID, username,
             hashed_password);
     } catch (const drogon::orm::DrogonDbException& e) {
         throw std::runtime_error("DB storage failed: " + std::string(e.base().what()));

@@ -8,14 +8,14 @@
 
 class StoreCredential {
    private:
-    std::string firstname, lastname, DOB, email, phone, address, sex, studentID, username,
+    std::string firstname, lastname, DOB, email, phone, address, gender, studentID, username,
         hashed_password;
 
    public:
     // non-default constructor
     StoreCredential(const std::string& firstname, const std::string& lastname,
                     const std::string& DOB, const std::string& email, const std::string& phone_no,
-                    const std::string& address, const std::string& sex,
+                    const std::string& address, const std::string& gender,
                     const std::string& studentID, const std::string& username,
                     const std::string& password);
 
@@ -26,7 +26,7 @@ class StoreCredential {
     const std::string& getEmail() const;
     const std::string& getPhone() const;
     const std::string& getAddress() const;
-    const std::string& getSex() const;
+    const std::string& getGender() const;
     const std::string& getStudentID() const;
     const std::string& getUsername() const;
     const std::string& getHashedPassword() const;
