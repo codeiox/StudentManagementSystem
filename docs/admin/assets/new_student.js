@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
       phone: form.phone.value,
       email: form.email.value,
       address: form.address.value,
-      sex: form.sex.value,
+      gender: form.gender.value,
       studentId: form.studentId.value,
       username: form.username.value,
       password: form.password.value

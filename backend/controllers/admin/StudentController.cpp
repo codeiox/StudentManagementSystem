@@ -45,6 +45,7 @@ void StudentController::createStudent(const HttpRequestPtr &req,
     std::string gender = json->get("gender", "").asString();
     std::string studentId = json->get("studentId", "").asString();
     std::string username = json->get("username", "").asString();
+    std::string enrollmentStatus = "Pending"; // Default status
 
     // Basic validation for empty fields
     if (firstName.empty() || lastName.empty() || email.empty() || studentId.empty() ||
@@ -75,7 +76,7 @@ void StudentController::createStudent(const HttpRequestPtr &req,
 
         //  Call the StoreCredential class to construct object and store in DB
         StoreCredential storeCredential(firstName, lastName, dateOfBirth, email, phone, address,
-                                        gender, studentId, username, hashedPassword);
+                                        gender, studentId, username, hashedPassword, enrollmentStatus);
 
         storeCredential.storeToDB(); // call storeToDB method to store info to database
 
@@ -102,7 +103,7 @@ void StudentController::getAllStudents(const HttpRequestPtr &req,
 
     // Execute SQL query asynchronously to fetch student data
     client->execSqlAsync(
-        "SELECT id, first_name, last_name, dob, email, phone, address, gender, student_id FROM Students",
+        "SELECT id, first_name, last_name, dob, email, phone, address, gender, student_id, enrollment_status FROM Students",
 
         // Success callback: transform DB result into JSON array
         [callback](const drogon::orm::Result &result)
@@ -121,7 +122,7 @@ void StudentController::getAllStudents(const HttpRequestPtr &req,
                 student["address"] = row["address"].as<std::string>();
                 student["gender"] = row["gender"].as<std::string>();
                 student["student_id"] = row["student_id"].as<std::string>();
-                // student["enrollmentStatus"] = row["enrollmentStatus"].as<std::string>(); // May be null
+                student["enrollmentStatus"] = row["enrollment_Status"].as<std::string>(); // May be null
                 jsonResponse.append(student);
             }
 

@@ -17,11 +17,11 @@ fetch("/api/admin/students")
       <td>${student.student_id}</td>
       <td>${student.first_name} ${student.last_name}</td>
       <td>${student.dob}</td>
-      <td>${student.sex}</td>
+      <td>${student.gender}</td>
       <td>${student.phone}</td>
       <td>${student.email}</td>
       <td>${student.address}</td>
-      <td>${student.enrollmentStatus || "Active"}</td>
+      <td>${student.enrollmentStatus}</td>
     </tr>
   `;
       tableBody.innerHTML += row;

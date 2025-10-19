@@ -12,6 +12,6 @@ CREATE TABLE IF NOT EXISTS Students (
     student_id VARCHAR(50) NOT NULL UNIQUE,
     username VARCHAR(255) UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
+    enrollment_status VARCHAR(20) DEFAULT 'Pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-
     );
