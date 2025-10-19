@@ -21,7 +21,7 @@ void StudentController::createStudent(const HttpRequestPtr &req,
     // !important- TODO: Needs improvement! Doesn't handle the multi data model
     if (!json->isMember("firstName") || !json->isMember("lastName") || !json->isMember("email") ||
         !json->isMember("studentId") || !json->isMember("phone") ||
-        !json->isMember("dateofbirth") || !json->isMember("address") || !json->isMember("sex"))
+        !json->isMember("dateofbirth") || !json->isMember("address") || !json->isMember("gender"))
     {
         auto resp = HttpResponse::newHttpResponse();
         resp->setStatusCode(k400BadRequest);
@@ -42,13 +42,13 @@ void StudentController::createStudent(const HttpRequestPtr &req,
     std::string email = json->get("email", "").asString();
     std::string phone = json->get("phone", "").asString();
     std::string address = json->get("address", "").asString();
-    std::string sex = json->get("sex", "").asString();
+    std::string gender = json->get("gender", "").asString();
     std::string studentId = json->get("studentId", "").asString();
     std::string username = json->get("username", "").asString();
 
     // Basic validation for empty fields
     if (firstName.empty() || lastName.empty() || email.empty() || studentId.empty() ||
-        phone.empty() || dateOfBirth.empty() || address.empty() || sex.empty() || (json->get("password", "").asString()).empty())
+        phone.empty() || dateOfBirth.empty() || address.empty() || gender.empty() || (json->get("password", "").asString()).empty())
     {
         auto resp = HttpResponse::newHttpResponse();
         resp->setStatusCode(k400BadRequest);
@@ -58,10 +58,16 @@ void StudentController::createStudent(const HttpRequestPtr &req,
     }
     try
     {
+
+        auto start = std::chrono::steady_clock::now();
         // Hash password here as soon as received from client-side
         Hasher hasher(HashConfig{1, crypto_pwhash_MEMLIMIT_MIN});
         // Hasher hasher(HashConfig{4, 1ull * 1024 * 1024 * 1024});
         std::string hashedPassword = hasher.hash(json->get("password", "").asString());
+        auto end = std::chrono::steady_clock::now();
+        LOG_INFO << "Operation took: " << std::chrono::duration<double>(end - start).count() << " seconds";
+
+
         if (hashedPassword.empty())
         {
             throw std::runtime_error("Password hashing failed");
@@ -69,7 +75,7 @@ void StudentController::createStudent(const HttpRequestPtr &req,
 
         //  Call the StoreCredential class to construct object and store in DB
         StoreCredential storeCredential(firstName, lastName, dateOfBirth, email, phone, address,
-                                        sex, studentId, username, hashedPassword);
+                                        gender, studentId, username, hashedPassword);
 
         storeCredential.storeToDB(); // call storeToDB method to store info to database
 
@@ -96,7 +102,7 @@ void StudentController::getAllStudents(const HttpRequestPtr &req,
 
     // Execute SQL query asynchronously to fetch student data
     client->execSqlAsync(
-        "SELECT id, first_name, last_name, dob, email, phone, address, sex, student_id FROM Students",
+        "SELECT id, first_name, last_name, dob, email, phone, address, gender, student_id FROM Students",
 
         // Success callback: transform DB result into JSON array
         [callback](const drogon::orm::Result &result)
@@ -113,7 +119,7 @@ void StudentController::getAllStudents(const HttpRequestPtr &req,
                 student["email"] = row["email"].as<std::string>();
                 student["phone"] = row["phone"].as<std::string>();
                 student["address"] = row["address"].as<std::string>();
-                student["sex"] = row["sex"].as<std::string>();
+                student["gender"] = row["gender"].as<std::string>();
                 student["student_id"] = row["student_id"].as<std::string>();
                 // student["enrollmentStatus"] = row["enrollmentStatus"].as<std::string>(); // May be null
                 jsonResponse.append(student);

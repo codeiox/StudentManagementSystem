@@ -29,12 +29,5 @@ public:
                        std::function<void(const drogon::HttpResponsePtr &)> &&callback);
 
    // TODO: In the next story - We may need to add another function that checks for data duplicates before inserting data into DB.
-   // Maybe Batch processing method.
-   //
-   /* List of this that can be duplicate:
-    * name
-    * Dob
-    * Phone
-    * address
-    * */
+
 };
