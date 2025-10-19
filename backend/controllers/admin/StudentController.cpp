@@ -59,8 +59,8 @@ void StudentController::createStudent(const HttpRequestPtr &req,
     try
     {
         // Hash password here as soon as received from client-side
-        // Hasher hasher(HashConfig{1, crypto_pwhash_MEMLIMIT_MIN});
-        Hasher hasher(HashConfig{4, 1ull * 1024 * 1024 * 1024});
+        Hasher hasher(HashConfig{1, crypto_pwhash_MEMLIMIT_MIN});
+        // Hasher hasher(HashConfig{4, 1ull * 1024 * 1024 * 1024});
         std::string hashedPassword = hasher.hash(json->get("password", "").asString());
         if (hashedPassword.empty())
         {
