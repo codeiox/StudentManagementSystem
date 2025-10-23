@@ -17,6 +17,8 @@ public:
    ADD_METHOD_TO(StudentController::createStudent, "/api/admin/students", drogon::Post);
    // Route: GET /api/admin/students → calls getAllStudents
    ADD_METHOD_TO(StudentController::getAllStudents, "/api/admin/students", drogon::Get);
+   // Remove Student
+   ADD_METHOD_TO(StudentController::deleteStudent, "/api/admin/students/{1}", drogon::Delete);
 
    METHOD_LIST_END
 
@@ -28,6 +30,14 @@ public:
    void getAllStudents(const drogon::HttpRequestPtr &req,
                        std::function<void(const drogon::HttpResponsePtr &)> &&callback);
 
-   // TODO: In the next story - We may need to add another function that checks for data duplicates before inserting data into DB.
+    // Delete/remove student from the db
+    void deleteStudent(const drogon::HttpRequestPtr &req,
+                       std::function<void(const drogon::HttpResponsePtr &)> &&callback,
+                       std::string studentId);
 
+    // TODO: In the next story - We may need to add another function that checks for data duplicates before inserting data into DB.
 };
+
+   
+
+

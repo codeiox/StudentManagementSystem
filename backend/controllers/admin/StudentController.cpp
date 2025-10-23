@@ -141,3 +141,36 @@ void StudentController::getAllStudents(const HttpRequestPtr &req,
             callback(resp);
         });
 }
+
+void StudentController::deleteStudent(const HttpRequestPtr &req,
+                                      std::function<void(const HttpResponsePtr &)> &&callback,
+                                      std::string studentId)
+{
+    auto client = app().getDbClient("default");
+
+    client->execSqlAsync(
+        "DELETE FROM Students WHERE studentId = ?",
+        [callback, studentId](const drogon::orm::Result &r)
+        {
+            auto resp = HttpResponse::newHttpResponse();
+            if (r.affectedRows() == 0)
+            {
+                resp->setStatusCode(k404NotFound);
+                resp->setBody("No student found with ID: " + studentId);
+            }
+            else
+            {
+                resp->setStatusCode(k200OK);
+                resp->setBody("Student " + studentId + " removed successfully.");
+            }
+            callback(resp);
+        },
+        [callback](const drogon::orm::DrogonDbException &e)
+        {
+            auto resp = HttpResponse::newHttpResponse();
+            resp->setStatusCode(k500InternalServerError);
+            resp->setBody("Database error: " + std::string(e.base().what()));
+            callback(resp);
+        },
+        studentId);
+}
