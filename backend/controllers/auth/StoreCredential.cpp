@@ -14,7 +14,8 @@ StoreCredential::StoreCredential(const std::string& firstname, const std::string
                                  const std::string& DOB, const std::string& email,
                                  const std::string& phone_no, const std::string& address,
                                  const std::string& gender, const std::string& studentID,
-                                 const std::string& username, const std::string& hashed_pass)
+                                 const std::string& username, const std::string& hashed_pass,
+                                 const std::string& enrollmentStatus)
     : firstname(firstname),
       lastname(lastname),
       DOB(DOB),
@@ -24,7 +25,8 @@ StoreCredential::StoreCredential(const std::string& firstname, const std::string
       gender(gender),
       studentID(studentID),
       username(username),
-      hashed_password(hashed_pass) {}
+      hashed_password(hashed_pass),
+      enrollmentStatus(enrollmentStatus) {}
 
 const std::string& StoreCredential::getFirstName() const { return firstname; }
 const std::string& StoreCredential::getLastName() const { return lastname; }
@@ -47,10 +49,10 @@ void StoreCredential::storeToDB() const {
         //TODO: add timestamp
         auto result = client->execSqlSync(
             "INSERT INTO Students (first_name, last_name, dob, email, phone, address, gender, "
-            "student_id, username, password_hash) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "student_id, username, password_hash, enrollment_status) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             firstname, lastname, DOB, email, phone, address, gender, studentID, username,
-            hashed_password);
+            hashed_password, enrollmentStatus);
     } catch (const drogon::orm::DrogonDbException& e) {
         throw std::runtime_error("DB storage failed: " + std::string(e.base().what()));
     }

@@ -9,7 +9,7 @@
 class StoreCredential {
    private:
     std::string firstname, lastname, DOB, email, phone, address, gender, studentID, username,
-        hashed_password;
+        hashed_password, enrollmentStatus;
 
    public:
     // non-default constructor
@@ -17,7 +17,7 @@ class StoreCredential {
                     const std::string& DOB, const std::string& email, const std::string& phone_no,
                     const std::string& address, const std::string& gender,
                     const std::string& studentID, const std::string& username,
-                    const std::string& password);
+                    const std::string& password, const std::string& enrollmentStatus);
 
     // Getter & Setter for unit-testing
     const std::string& getFirstName() const;

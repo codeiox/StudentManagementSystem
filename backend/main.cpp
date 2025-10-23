@@ -4,8 +4,9 @@
 
 using namespace drogon;
 
-int main(int argc, const char* argv[]) {
-    const char* envPort = std::getenv("PORT");
+int main(int argc, const char *argv[])
+{
+    const char *envPort = std::getenv("PORT");
     uint16_t port = envPort ? std::stoi(envPort) : 8080;
 
     drogon::app()

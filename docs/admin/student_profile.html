@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Student Profile</title>
+
+  <!-- Link to CSS styles for profile layout and formatting -->
+  <link rel="stylesheet" href="/admin/assets/student_profile.css" />
+</head>
+
+<body>
+  <!-- Back button to return to the student list page -->
+  <button id="backBtn">← Back to Student List</button>
+
+  <!-- Main container for profile content -->
+  <div class="profile-container">
+    <div class="profile-wrapper">
+      <!-- Page title -->
+      <h1>Student Profile</h1>
+
+      <!-- Section for displaying student details -->
+      <div class="profile-info">
+        <!-- Individual data fields populated by JS -->
+        <p><strong>Student ID:</strong> <span id="studentId"></span></p>
+        <p><strong>Full Name:</strong> <span id="fullName"></span></p>
+        <p><strong>Date of Birth:</strong> <span id="dob"></span></p>
+        <p><strong>Gender:</strong> <span id="gender"></span></p>
+        <p><strong>Email:</strong> <span id="email"></span></p>
+        <p><strong>Phone:</strong> <span id="phone"></span></p>
+        <p><strong>Address:</strong> <span id="address"></span></p>
+
+        <!-- Dropdown to update enrollment status -->
+        <p><strong>Enrollment Status:</strong>
+          <select id="enrollmentStatus">
+            <option value="active">Active</option>
+            <option value="graduated">Graduated</option>
+            <option value="probation">Probation</option>
+            <option value="suspended">Suspended</option>
+            <option value="inactive">Inactive</option>
+          </select>
+
+          <!-- Button to trigger status update -->
+          <button id="updateStatusBtn">Update Status</button>
+
+          <!-- Message area for success/error feedback -->
+          <div id="statusMessage" class="status-message"></div>
+        </p>
+
+        <!-- Display of current enrollment status (capitalized) -->
+        <p><strong>Current Status:</strong> <span id="status"></span></p>
+      </div>
+    </div>
+
+    <!-- Link to JavaScript logic for fetching and updating profile data -->
+    <script src="/admin/assets/student_profile.js"></script>
+</body>
+
+</html>
