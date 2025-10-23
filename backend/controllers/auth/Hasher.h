@@ -9,15 +9,11 @@
 #include <stdexcept>
 #include <string>
 
-//// for development phase
-//struct HashConfig {
-//    unsigned long long opslimit = 1;                     // Minimal time cost
-//    size_t memlimit_bytes = crypto_pwhash_MEMLIMIT_MIN;  // 8 KB, absolute minimum
-//};
+
 // This is the recommended config for better security
 struct HashConfig {
-    unsigned long long opslimit = 4;                     // 4 ops limit
-    size_t memlimit_bytes = 1ull * 1024 * 1024 * 1024;  // 1 GB
+    unsigned long long opslimit = 3;                     // 2 ops limit
+    size_t memlimit_bytes = 64ull * 1024 * 1024;  // 19 MiB
 };
 
 class Hasher {
