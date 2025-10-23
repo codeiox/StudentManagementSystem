@@ -15,7 +15,29 @@
   </div>
 
   <div class="main">
-    <h1>This is where Remove Student will be.</h1>
+    <h1>Remove Student</h1>
+<form id="removeStudentForm">
+  <label for="studentId">Student ID:</label>
+  <input type="text" id="studentId" name="studentId" required>
+  <button type="submit">Remove Student</button>
+</form>
+
+<p id="message"></p>
+
+<script>
+document.getElementById("removeStudentForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const id = document.getElementById("studentId").value;
+
+  const response = await fetch(`/api/admin/students/${id}`, {
+    method: "DELETE"
+  });
+
+  const text = await response.text();
+  document.getElementById("message").textContent = text;
+});
+</script>
+
   </div>
 </body>
 </html>
