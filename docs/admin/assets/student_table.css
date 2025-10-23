@@ -1,18 +1,22 @@
 /* ===============================
    Table layout and formatting
    =============================== */
+
+/* Full-width table with collapsed borders and top margin */
 table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
 }
 
+/* Header cells: centered text with light gray background */
 thead th {
   text-align: center;
   background-color: #f0f0f0;
   color: #333;
 }
 
+/* All table cells: padding, border, left-aligned text, and no wrapping */
 th,
 td {
   padding: 10px;
@@ -21,7 +25,7 @@ td {
   white-space: nowrap;
 }
 
-/* First column: center-align and fixed width */
+/* First column (radio buttons): center-aligned and fixed width */
 td:first-child,
 th:first-child {
   text-align: center;
@@ -39,7 +43,7 @@ th:first-child {
   margin-top: 20px;
 }
 
-/* Button appearance and hover effect */
+/* Confirm button: green background, white text, rounded corners */
 .confirm-button {
   padding: 10px 20px;
   background-color: #28a745; /* success green */
@@ -50,6 +54,7 @@ th:first-child {
   cursor: pointer;
 }
 
+/* Confirm button hover: darker green for feedback */
 .confirm-button:hover {
   background-color: #218838;
 }

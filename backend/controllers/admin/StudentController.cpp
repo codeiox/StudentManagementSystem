@@ -122,7 +122,7 @@ void StudentController::getAllStudents(const HttpRequestPtr &req,
                 student["address"] = row["address"].as<std::string>();
                 student["gender"] = row["gender"].as<std::string>();
                 student["student_id"] = row["student_id"].as<std::string>();
-                student["enrollmentStatus"] = row["enrollment_Status"].as<std::string>(); // May be null
+                student["enrollmentStatus"] = row["enrollment_status"].as<std::string>(); // May be null
                 jsonResponse.append(student);
             }
 
@@ -141,4 +141,112 @@ void StudentController::getAllStudents(const HttpRequestPtr &req,
             resp->setBody("Database error: " + std::string(e.base().what()));
             callback(resp);
         });
+}
+
+// Handles GET request to fetch student details by ID
+void StudentController::getStudentById(const drogon::HttpRequestPtr &req,
+                                       std::function<void(const drogon::HttpResponsePtr &)> &&callback,
+                                       std::string studentId)
+{
+    // Get database client
+    auto client = drogon::app().getDbClient("default");
+
+    // Execute SQL query to fetch student data
+    client->execSqlAsync(
+        "SELECT first_name, last_name, dob, email, phone, address, gender, student_id, enrollment_status FROM Students WHERE student_id = ?",
+        [callback](const drogon::orm::Result &result) {
+            // If no student found, return 404
+            if (result.empty()) {
+                auto resp = drogon::HttpResponse::newHttpResponse();
+                resp->setStatusCode(drogon::k404NotFound);
+                resp->setContentTypeCode(drogon::CT_APPLICATION_JSON);
+                resp->setBody(R"({"error":"Student not found"})");
+                callback(resp);
+                return;
+            }
+
+            // Convert result row to JSON
+            const auto &row = result[0];
+            Json::Value student;
+            student["first_name"] = row["first_name"].as<std::string>();
+            student["last_name"] = row["last_name"].as<std::string>();
+            student["dob"] = row["dob"].as<std::string>();
+            student["email"] = row["email"].as<std::string>();
+            student["phone"] = row["phone"].as<std::string>();
+            student["address"] = row["address"].as<std::string>();
+            student["gender"] = row["gender"].as<std::string>();
+            student["student_id"] = row["student_id"].as<std::string>();
+            student["enrollmentStatus"] = row["enrollment_status"].as<std::string>();
+
+            // Return student JSON with 200 OK
+            auto resp = drogon::HttpResponse::newHttpJsonResponse(student);
+            callback(resp);
+        },
+        // Handle database error
+        [callback](const drogon::orm::DrogonDbException &e) {
+            auto resp = drogon::HttpResponse::newHttpResponse();
+            resp->setStatusCode(drogon::k500InternalServerError);
+            resp->setBody("Database error: " + std::string(e.base().what()));
+            callback(resp);
+        },
+        studentId  // SQL parameter
+    );
+}
+
+// Handles PUT request to update a student's enrollment status
+void StudentController::updateEnrollmentStatus(
+    const drogon::HttpRequestPtr &req,
+    std::function<void(const drogon::HttpResponsePtr &)> &&callback,
+    std::string studentId)
+{
+    // Parse JSON body
+    auto json = req->getJsonObject();
+    if (!json || !json->isMember("enrollmentStatus"))
+    {
+        // Missing field — return 400 Bad Request
+        auto resp = drogon::HttpResponse::newHttpResponse();
+        resp->setStatusCode(drogon::k400BadRequest);
+        resp->setBody("Missing enrollmentStatus field");
+        callback(resp);
+        return;
+    }
+
+    // Extract and validate new status
+    std::string newStatus = json->get("enrollmentStatus", "").asString();
+    std::set<std::string> validStatuses = {"active", "graduated", "probation", "suspended", "inactive"};
+
+    if (validStatuses.find(newStatus) == validStatuses.end())
+    {
+        // Invalid value — return 400 Bad Request
+        auto resp = drogon::HttpResponse::newHttpResponse();
+        resp->setStatusCode(drogon::k400BadRequest);
+        resp->setBody("Invalid status value");
+        callback(resp);
+        return;
+    }
+
+    // Get database client
+    auto client = drogon::app().getDbClient("default");
+
+    // Execute SQL update
+    client->execSqlAsync(
+        "UPDATE Students SET enrollment_status = ? WHERE student_id = ?",
+        [callback, newStatus](const drogon::orm::Result &result)
+        {
+            // Return success response
+            auto resp = drogon::HttpResponse::newHttpResponse();
+            resp->setStatusCode(drogon::k200OK);
+            resp->setBody("Enrollment status updated to: " + newStatus);
+            callback(resp);
+        },
+        // Handle database error
+        [callback](const drogon::orm::DrogonDbException &e)
+        {
+            auto resp = drogon::HttpResponse::newHttpResponse();
+            resp->setStatusCode(drogon::k500InternalServerError);
+            resp->setBody("Database error: " + std::string(e.base().what()));
+            callback(resp);
+        },
+        newStatus, studentId  // SQL parameters
+    );
 }
