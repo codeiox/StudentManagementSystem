@@ -5,7 +5,9 @@
 
 #include <json/json.h>
 #include <sodium.h>
-
+#include <cctype>
+#include <drogon/drogon.h>
+#include <algorithm>
 #include <iostream>
 #include <string>
 
