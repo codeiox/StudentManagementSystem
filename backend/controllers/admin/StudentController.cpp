@@ -78,12 +78,13 @@ void StudentController::createStudent(const HttpRequestPtr &req,
     {
         auto start = std::chrono::steady_clock::now();
         // Hash password
-        LOG_INFO << "Starting password hashing with opslimit=4, memlimit=1GB bytes";
+        LOG_INFO << "Starting password hashing with opslimit=3, memlimit=64 bytes";
         Hasher hasher(HashConfig{3, 64ull * 1024 * 1024});
         std::string hashedPassword;
         try
         {
             hashedPassword = hasher.hash(password);
+            password = ""; // Clear plaintext password from memory
         }
         catch (const std::exception &e)
         {

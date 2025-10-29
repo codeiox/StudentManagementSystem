@@ -77,7 +77,7 @@ void GateController::handleLogin(
                     }
 
                     Json::Value result;
-                    result["redirect"] = "/" + role + "/dashboard.html";
+                    result["redirect"] = "/" + role + "/Dashboard.html";
                     auto resp = HttpResponse::newHttpJsonResponse(result);
 
                     // Correct session handling for newer Drogon versions
