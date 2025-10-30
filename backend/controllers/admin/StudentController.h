@@ -21,8 +21,12 @@ public:
    ADD_METHOD_TO(StudentController::createStudent, "/api/admin/students", drogon::Post);
    // Route: GET /api/admin/students → calls getAllStudents
    ADD_METHOD_TO(StudentController::getAllStudents, "/api/admin/students", drogon::Get);
+   // Route: GET /api/admin/students/{studentId} → calls getStudentById
+   ADD_METHOD_TO(StudentController::getStudentById, "/api/admin/students/{studentId}", drogon::Get);
 
    ADD_METHOD_TO(StudentController::deleteStudent, "/api/admin/students/{studentId}", drogon::Delete);
+   // Route: PUT /api/admin/students/{studentId}/status → calls updateEnrollmentStatus
+   ADD_METHOD_TO(StudentController::updateEnrollmentStatus, "/api/admin/students/{studentId}/status", drogon::Put);
 
    METHOD_LIST_END
 
@@ -43,7 +47,7 @@ public:
                                std::string studentId);
 
    // In StudentController.h
-void deleteStudent(const drogon::HttpRequestPtr &req,
+   void deleteStudent(const drogon::HttpRequestPtr &req,
                    std::function<void(const drogon::HttpResponsePtr &)> &&callback,
                    std::string studentId); // match .cpp
 
