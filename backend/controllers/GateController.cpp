@@ -10,14 +10,14 @@
 
 #include <filesystem>
 #include <regex>
+
 #include "../auth/Hasher.h"
 
 using namespace drogon;
 using namespace drogon::orm;
 
-void GateController::handleLogin(
-        const HttpRequestPtr &req,
-        std::function<void(const HttpResponsePtr &)> &&callback) {
+void GateController::handleLogin(const HttpRequestPtr& req,
+                                 std::function<void(const HttpResponsePtr&)>&& callback) {
     auto json = req->getJsonObject();
     if (!json || !json->isMember("username") || !json->isMember("password")) {
         auto resp = HttpResponse::newHttpJsonResponse(Json::Value("Missing credentials"));
@@ -48,70 +48,69 @@ void GateController::handleLogin(
         std::string sql = "SELECT username, role, hashed_password FROM Users WHERE username = ?";
 
         clientPtr->execSqlAsync(
-                sql,
-                [callback, req](const Result &r) {
-                    if (r.empty()) {
-                        Json::Value result;
-                        result["message"] = "Incorrect username or password";
-                        auto resp = HttpResponse::newHttpJsonResponse(result);
-                        resp->setStatusCode(k401Unauthorized);
-                        callback(resp);
-                    }
-
-                    // Extract data from query result
-                    std::string username = r[0]["username"].as<std::string>();
-                    std::string role = r[0]["role"].as<std::string>();
-                    std::string hashedPassword = r[0]["hashed_password"].as<std::string>();
-
-                    // Verify password
-                    Hasher hasher(HashConfig{3, 64ull * 1024 * 1024});  // Moderate security for login verification
-                    std::string plain_password = req->getJsonObject()->get("password", "").asString();
-
-                    if (!hasher.verify(plain_password, hashedPassword)) {
-                        Json::Value result;
-                        result["message"] = "Incorrect username or password";
-                        auto resp = HttpResponse::newHttpJsonResponse(result);
-                        resp->setStatusCode(drogon::k401Unauthorized);
-                        callback(resp);
-                        return;
-                    }
-
+            sql,
+            [callback, req](const Result& r) {
+                if (r.empty()) {
                     Json::Value result;
-                    result["redirect"] = "/" + role + "/Dashboard.html";
+                    result["message"] = "Incorrect username or password";
                     auto resp = HttpResponse::newHttpJsonResponse(result);
-
-                    // Correct session handling for newer Drogon versions
-                    auto session = req->session();
-                    if (session) {
-                        session->insert("role", role);
-                        session->insert("username", username);
-                    }
-
-                    // Set cookie for role-based access (simpler approach)
-                    drogon::Cookie roleCookie("user_role", role);
-                    roleCookie.setPath("/");
-                    roleCookie.setMaxAge(3600);
-                    resp->addCookie(std::move(roleCookie));
-
-                    drogon::Cookie userCookie("username", username);
-                    userCookie.setPath("/");
-                    userCookie.setMaxAge(3600);
-                    resp->addCookie(std::move(userCookie));
-
+                    resp->setStatusCode(k401Unauthorized);
                     callback(resp);
+                }
 
-                },
-                [callback](const DrogonDbException &e) {
-                    LOG_ERROR << "Database error: " << e.base().what();
+                // Extract data from query result
+                std::string username = r[0]["username"].as<std::string>();
+                std::string role = r[0]["role"].as<std::string>();
+                std::string hashedPassword = r[0]["hashed_password"].as<std::string>();
+
+                // Verify password
+                Hasher hasher(HashConfig{
+                    3, 64ull * 1024 * 1024});  // Moderate security for login verification
+                std::string plain_password = req->getJsonObject()->get("password", "").asString();
+
+                if (!hasher.verify(plain_password, hashedPassword)) {
                     Json::Value result;
-                    result["message"] = "Database error";
+                    result["message"] = "Incorrect username or password";
                     auto resp = HttpResponse::newHttpJsonResponse(result);
-                    resp->setStatusCode(k500InternalServerError);
+                    resp->setStatusCode(drogon::k401Unauthorized);
                     callback(resp);
-                },
-                username, password);
-    }
-    catch (const std::exception &e) {
+                    return;
+                }
+
+                Json::Value result;
+                result["redirect"] = "/" + role + "/dashboard.html";
+                auto resp = HttpResponse::newHttpJsonResponse(result);
+
+                // Correct session handling for newer Drogon versions
+                auto session = req->session();
+                if (session) {
+                    session->insert("role", role);
+                    session->insert("username", username);
+                }
+
+                // Set cookie for role-based access (simpler approach)
+                drogon::Cookie roleCookie("user_role", role);
+                roleCookie.setPath("/");
+                roleCookie.setMaxAge(3600);
+                resp->addCookie(std::move(roleCookie));
+
+                drogon::Cookie userCookie("username", username);
+                userCookie.setPath("/");
+                userCookie.setMaxAge(3600);
+                resp->addCookie(std::move(userCookie));
+
+                callback(resp);
+            },
+            [callback](const DrogonDbException& e) {
+                LOG_ERROR << "Database error: " << e.base().what();
+                Json::Value result;
+                result["message"] = "Database error";
+                auto resp = HttpResponse::newHttpJsonResponse(result);
+                resp->setStatusCode(k500InternalServerError);
+                callback(resp);
+            },
+            username, password);
+    } catch (const std::exception& e) {
         LOG_ERROR << "Exception: " << e.what();
         auto resp = HttpResponse::newHttpJsonResponse(Json::Value("Server error"));
         resp->setStatusCode(k500InternalServerError);
@@ -119,10 +118,9 @@ void GateController::handleLogin(
     }
 }
 
-void GateController::serveProtectedFile(
-        const HttpRequestPtr &req,
-        std::function<void(const HttpResponsePtr &)> &&callback,
-        const std::string &role, const std::string &path) {
+void GateController::serveProtectedFile(const HttpRequestPtr& req,
+                                        std::function<void(const HttpResponsePtr&)>&& callback,
+                                        const std::string& role, const std::string& path) {
     // ✅ Check cookie instead of session for simplicity
     auto cookies = req->getCookies();
     auto roleCookie = req->getCookie("user_role");
