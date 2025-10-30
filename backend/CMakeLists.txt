@@ -22,6 +22,9 @@
          src/*.cpp
          controllers/*.cpp
          controllers/auth/*.cpp
+         controllers/admin/*.cpp
+         controllers/handle-dashboard/*.cpp
+
  )
 
  # Executable

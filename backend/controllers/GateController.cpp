@@ -11,6 +11,8 @@
 #include <filesystem>
 #include <regex>
 
+#include "../auth/Hasher.h"
+
 using namespace drogon;
 using namespace drogon::orm;
 
@@ -43,8 +45,7 @@ void GateController::handleLogin(const HttpRequestPtr& req,
             throw std::runtime_error("Database client not available");
         }
 
-        // ✅ Use the correct execSqlAsync signature
-        std::string sql = "SELECT username, role FROM Users WHERE username = ? AND password = ?";
+        std::string sql = "SELECT username, role, hashed_password FROM Users WHERE username = ?";
 
         clientPtr->execSqlAsync(
             sql,
@@ -55,33 +56,50 @@ void GateController::handleLogin(const HttpRequestPtr& req,
                     auto resp = HttpResponse::newHttpJsonResponse(result);
                     resp->setStatusCode(k401Unauthorized);
                     callback(resp);
-                } else {
-                    std::string username = r[0]["username"].as<std::string>();
-                    std::string role = r[0]["role"].as<std::string>();
-                    Json::Value result;
-                    result["redirect"] = "/" + role + "/dashboard.html";
-                    auto resp = HttpResponse::newHttpJsonResponse(result);
-
-                    // ✅ Correct session handling for newer Drogon versions
-                    auto session = req->session();
-                    if (session) {
-                        session->insert("role", role);
-                        session->insert("username", username);
-                    }
-
-                    // ✅ Set cookie for role-based access (simpler approach)
-                    drogon::Cookie roleCookie("user_role", role);
-                    roleCookie.setPath("/");
-                    roleCookie.setMaxAge(3600);
-                    resp->addCookie(std::move(roleCookie));
-
-                    drogon::Cookie userCookie("username", username);
-                    userCookie.setPath("/");
-                    userCookie.setMaxAge(3600);
-                    resp->addCookie(std::move(userCookie));
-
-                    callback(resp);
                 }
+
+                // Extract data from query result
+                std::string username = r[0]["username"].as<std::string>();
+                std::string role = r[0]["role"].as<std::string>();
+                std::string hashedPassword = r[0]["hashed_password"].as<std::string>();
+
+                // Verify password
+                Hasher hasher(HashConfig{
+                    3, 64ull * 1024 * 1024});  // Moderate security for login verification
+                std::string plain_password = req->getJsonObject()->get("password", "").asString();
+
+                if (!hasher.verify(plain_password, hashedPassword)) {
+                    Json::Value result;
+                    result["message"] = "Incorrect username or password";
+                    auto resp = HttpResponse::newHttpJsonResponse(result);
+                    resp->setStatusCode(drogon::k401Unauthorized);
+                    callback(resp);
+                    return;
+                }
+
+                Json::Value result;
+                result["redirect"] = "/" + role + "/dashboard.html";
+                auto resp = HttpResponse::newHttpJsonResponse(result);
+
+                // Correct session handling for newer Drogon versions
+                auto session = req->session();
+                if (session) {
+                    session->insert("role", role);
+                    session->insert("username", username);
+                }
+
+                // Set cookie for role-based access (simpler approach)
+                drogon::Cookie roleCookie("user_role", role);
+                roleCookie.setPath("/");
+                roleCookie.setMaxAge(3600);
+                resp->addCookie(std::move(roleCookie));
+
+                drogon::Cookie userCookie("username", username);
+                userCookie.setPath("/");
+                userCookie.setMaxAge(3600);
+                resp->addCookie(std::move(userCookie));
+
+                callback(resp);
             },
             [callback](const DrogonDbException& e) {
                 LOG_ERROR << "Database error: " << e.base().what();

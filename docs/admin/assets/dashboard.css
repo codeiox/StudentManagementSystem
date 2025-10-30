@@ -1,0 +1,273 @@
+html, body {
+    padding: 0;
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 250px;
+    background-color: #333;
+    z-index: 1000;
+    color: white;
+    padding: 20px;
+}
+
+.main {
+    display: flex;
+    flex: 1;
+    margin-left: 75px;
+    padding: 15px;
+    width: calc(100% - 250px);
+    height: 100vh;
+    overflow: auto;
+}
+
+.left-column, .right-column {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    max-height: 100vh;
+}
+
+.dashboard-header {
+    background-color: #c3e6cb;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.totals .card {
+    border: none;
+    margin-bottom: 0;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+
+.totals .card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+#total-student {
+    border-top: 4px solid #5c6bc0;
+}
+
+#total-teachers {
+    border-top: 4px solid #26a69a;
+}
+
+#total-courses {
+    border-top: 4px solid #42a5f5;
+}
+
+.totals .card h3 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.totals .card p {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+    color: #2c3e50;
+}
+
+
+
+.chart-placeholder {
+    background-color: #fff;
+    padding: 20px;
+    border: none;
+    text-align: center;
+    margin-bottom: 20px;
+    height: 400px;
+}
+
+.card.chart-card {
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    background: #ffffff;
+
+}
+
+.card.chart-card h3 {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+}
+
+.card {
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+
+
+
+
+
+
+#calendar-section {
+    height: 500px;
+    font-size: 0.8rem;
+}
+
+#calendar-section .fc-daygrid-day-number {
+    color: #000; /* Sets the date numbers to black */
+}
+
+
+#statusChart {
+    max-height: 500px;
+}
+
+
+
+
+/* Notification Panel Styling */
+.notification-panel {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.notification-panel h3 {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-align: center;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+#probation-list {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+#probation-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+#probation-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+#probation-list::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+#probation-list::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.student-card {
+    background: #f8f9fa;
+    border-left: 4px solid #ef5350;
+    padding: 15px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.student-card:hover {
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transform: translateX(5px);
+}
+
+.student-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.student-name {
+    font-weight: 600;
+    font-size: 1rem;
+    color: #2c3e50;
+}
+
+.student-id {
+    font-size: 0.85rem;
+    color: #7f8c8d;
+    font-weight: 500;
+}
+
+.student-details {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.student-detail-row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.detail-label {
+    color: #7f8c8d;
+    font-weight: 500;
+}
+
+.detail-value {
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.gpa-low {
+    color: #ef5350;
+}
+
+.gpa-medium {
+    color: #ffa726;
+}
+
+.status-badge {
+    background: #ef5350;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.no-data-message {
+    text-align: center;
+    color: #7f8c8d;
+    padding: 40px 20px;
+    font-style: italic;
+}
+
+.left-column, .right-column {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    max-height: 100vh;
+}

@@ -1,0 +1,67 @@
+/* ---------------- Base Page Styles ---------------- */
+body {
+  font-family: 'Segoe UI', sans-serif; /* Modern, readable font */
+  background-color: #f4f6f9;           /* Light gray-blue background */
+  margin: 0;                            /* Remove default margin */
+  padding: 0;                           /* Remove default padding */
+}
+
+/* ---------------- Main Profile Card ---------------- */
+.profile-wrapper {
+  background-color: #ffffff;             /* White card for contrast */
+  border-radius: 24px;                   /* Rounded corners */
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08); /* Soft shadow for elevation */
+  padding: 30px;                         /* Inner spacing around content */
+  min-height: 815px;                     /* Ensures card height matches right panel */
+  width: 100%;                            /* Fill parent container width */
+  box-sizing: border-box;                /* Include padding in width calculation */
+}
+
+/* ---------------- Header Section ---------------- */
+.profile-header {
+  display: flex;                          /* Aligns children horizontally */
+  align-items: center;                    /* Vertically center items */
+  justify-content: space-between;         /* Space between title and back button */
+  margin-bottom: 30px;                    /* Space below header */
+}
+
+/* Back button styling */
+#backBtn {
+  background-color: #007bff;              /* Primary blue background */
+  color: white;                           /* White text */
+  border: none;                           /* Remove default border */
+  padding: 10px 18px;                     /* Padding around text */
+  border-radius: 6px;                     /* Rounded corners */
+  font-size: 14px;                        /* Button font size */
+  cursor: pointer;                        /* Pointer cursor on hover */
+  transition: background-color 0.2s ease; /* Smooth hover effect */
+}
+
+#backBtn:hover {
+  background-color: #0056b3;              /* Darker blue on hover */
+}
+
+/* Page title styling */
+.profile-header h1 {
+  margin: 0;                               /* Remove default margin */
+  font-size: 26px;                         /* Larger font for title */
+  color: #333;                             /* Dark gray text */
+}
+
+/* ---------------- Page Layout Container ---------------- */
+.profile-container {
+  display: flex;                            /* Use flex to arrange center + right panel */
+  justify-content: flex-start;              /* Align content to the left */
+  align-items: flex-start;                  /* Align items to the top */
+  background-color: #f4f6f9;               /* Match body background */
+  padding: 40px 30px;                       /* Top/Bottom and Left/Right padding */
+}
+
+/* ---------------- Center Content Wrapper ---------------- */
+.profile-center {
+  flex: 1;                                  /* Take up remaining space next to right panel */
+  max-width: 1200px;                        /* Prevent center from being too wide */
+  margin-right: 370px;                       /* Leave space for fixed right panel */
+  display: flex;                             /* Flex to stack child elements vertically */
+  flex-direction: column;                    /* Stack content vertically */
+}
