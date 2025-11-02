@@ -20,43 +20,76 @@
         <div class="profile-header">
           <h1>Student Profile</h1>
         </div>
+        <!-- Academic Tabs Section -->
         <div class="academic-section">
-          <p>Academic sections coming soon...</p>
+          <div class="tabs">
+            <button class="tab-link active" data-tab="courses">Courses & Major</button>
+            <button class="tab-link" data-tab="grades">Grades</button>
+            <button class="tab-link" data-tab="enrollment">Enrollment</button>
+            <button class="tab-link" data-tab="advising">Advising Notes</button>
+            <button class="tab-link" data-tab="documents">Documents</button>
+          </div>
+
+          <div class="tab-content active" id="courses">
+            <h2>Courses & Major</h2>
+            <div id="coursesContent">No data available</div>
+          </div>
+
+          <div class="tab-content" id="grades">
+            <h2>Grades</h2>
+            <div id="gradesContent">No data available</div>
+          </div>
+
+          <div class="tab-content" id="enrollment">
+            <h2>Enrollment</h2>
+            <div id="enrollmentContent">No data available</div>
+          </div>
+
+          <div class="tab-content" id="advising">
+            <h2>Advising Notes</h2>
+            <div id="advisingContent">No data available</div>
+          </div>
+
+          <div class="tab-content" id="documents">
+            <h2>Documents</h2>
+            <div id="documentsContent">No data available</div>
+          </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Right Panel -->
-    <div class="right-panel">
-      <h2 id="fullName">Full Name</h2>
+  <!-- Right Panel -->
+  <div class="right-panel">
+    <h2 id="fullName">Full Name</h2>
 
-      <!-- Profile image placeholder -->
-      <div class="profile-image">
-        <img src="/admin/assets/default-avatar.png" alt="Student Photo" id="studentPhoto" />
-      </div>
-
-      <div class="profile-info">
-        <p><strong>Student ID:</strong> <span id="studentId"></span></p>
-        <p><strong>DOB:</strong> <span id="dob"></span></p>
-        <p><strong>Gender:</strong> <span id="gender"></span></p>
-        <p><strong>Email:</strong> <span id="email"></span></p>
-        <p><strong>Phone:</strong> <span id="phone"></span></p>
-        <p><strong>Address:</strong> <span id="address"></span></p>
-        <p><strong>Current:</strong> <span id="status"></span></p>
-        <p><strong>Enrollment:</strong>
-          <select id="enrollmentStatus">
-            <option value="active">Active</option>
-            <option value="graduated">Graduated</option>
-            <option value="probation">Probation</option>
-            <option value="suspended">Suspended</option>
-            <option value="inactive">Inactive</option>
-          </select>
-          <button id="updateStatusBtn">Update</button>
-        </p>
-
-        <div id="statusMessage" class="status-message"></div>
-      </div>
+    <!-- Profile image placeholder -->
+    <div class="profile-image">
+      <img src="/admin/assets/default-avatar.png" alt="Student Photo" id="studentPhoto" />
     </div>
+
+    <div class="profile-info">
+      <p><strong>Student ID:</strong> <span id="studentId"></span></p>
+      <p><strong>DOB:</strong> <span id="dob"></span></p>
+      <p><strong>Gender:</strong> <span id="gender"></span></p>
+      <p><strong>Email:</strong> <span id="email"></span></p>
+      <p><strong>Phone:</strong> <span id="phone"></span></p>
+      <p><strong>Address:</strong> <span id="address"></span></p>
+      <p><strong>Current:</strong> <span id="status"></span></p>
+      <p><strong>Enrollment:</strong>
+        <select id="enrollmentStatus">
+          <option value="active">Active</option>
+          <option value="graduated">Graduated</option>
+          <option value="probation">Probation</option>
+          <option value="suspended">Suspended</option>
+          <option value="inactive">Inactive</option>
+        </select>
+        <button id="updateStatusBtn">Update</button>
+      </p>
+
+      <div id="statusMessage" class="status-message"></div>
+    </div>
+  </div>
   </div>
 
   <!-- Link JS -->
