@@ -25,12 +25,13 @@ class Dashboard : public drogon::HttpController<Dashboard> {
     METHOD_LIST_END
 
    private:
-    // TODO: Load all data from the database into vector and display on dashboard based on criteria
+    // Get students that are in probation from database
     void getStudentAtRisk(const drogon::HttpRequestPtr& req,
                           std::function<void(const drogon::HttpResponsePtr&)>&& callback);
-
+    // Get total number of students from database
     void getTotalStudent(const drogon::HttpRequestPtr& req,
                          std::function<void(const drogon::HttpResponsePtr&)>&& callback);
+    // Get student status distribution from database
     void getStudentStatus(const drogon::HttpRequestPtr& req,
                           std::function<void(const drogon::HttpResponsePtr&)>&& callback);
 };

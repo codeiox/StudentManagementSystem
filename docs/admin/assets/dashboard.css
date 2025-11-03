@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
     padding: 0;
     height: 100%;
     margin: 0;
@@ -32,7 +33,8 @@ body {
     overflow: auto;
 }
 
-.left-column, .right-column {
+.left-column,
+.right-column {
     flex: 1;
     padding: 10px;
     overflow-y: auto;
@@ -55,11 +57,11 @@ body {
     border-radius: 8px;
     transition: all 0.3s ease;
     background: #ffffff;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
 .totals .card:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 #total-student {
@@ -90,8 +92,6 @@ body {
     color: #2c3e50;
 }
 
-
-
 .chart-placeholder {
     background-color: #fff;
     padding: 20px;
@@ -103,9 +103,8 @@ body {
 
 .card.chart-card {
     border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
     background: #ffffff;
-
 }
 
 .card.chart-card h3 {
@@ -117,17 +116,11 @@ body {
 
 .card {
     border: 1px solid #ddd;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-
-
-
-
-
-
 #calendar-section {
-    height: 500px;
+    height: auto;
     font-size: 0.8rem;
 }
 
@@ -135,19 +128,15 @@ body {
     color: #000; /* Sets the date numbers to black */
 }
 
-
 #statusChart {
     max-height: 500px;
 }
-
-
-
 
 /* Notification Panel Styling */
 .notification-panel {
     background: #ffffff;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .notification-panel h3 {
@@ -160,7 +149,7 @@ body {
 }
 
 #probation-list {
-    max-height: 400px;
+    max-height: 300px;
     overflow-y: auto;
     padding-right: 5px;
 }
@@ -195,7 +184,7 @@ body {
 
 .student-card:hover {
     background: #ffffff;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     transform: translateX(5px);
 }
 
@@ -265,7 +254,8 @@ body {
     font-style: italic;
 }
 
-.left-column, .right-column {
+.left-column,
+.right-column {
     flex: 1;
     padding: 10px;
     overflow-y: auto;
