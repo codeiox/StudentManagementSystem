@@ -1,32 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <link rel="stylesheet" href="assets/login.css"/>
-</head>
-<body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Login</title>
+        <link rel="stylesheet" href="assets/login.css" />
+    </head>
+    <body>
+        <div class="main">
+            <h1>WELCOME</h1>
 
-<div class="main">
-    <h1>WELCOME</h1>
+            <form id="loginForm">
+                <label for="first">Username:</label>
+                <input
+                    type="text"
+                    id="first"
+                    name="first"
+                    placeholder="Enter your Username"
+                    required
+                />
 
-    <form id="loginForm">
-        <label for="first">Username:</label>
-        <input type="text" id="first" name="first" placeholder="Enter your Username" required>
+                <label for="password">Password:</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    required
+                />
 
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                <div class="wrap">
+                    <button type="submit" id="login">Login</button>
+                </div>
+            </form>
 
-        <div class="wrap">
-            <button type="submit" id="login">Login</button>
+            <a href="#" style="text-decoration: underline">forgot password</a>
         </div>
-    </form>
 
-    <a href="#" style="text-decoration: underline;">forgot password</a>
-</div>
-
-<script src="assets/fetchLogin.js"></script>
-
-</body>
+        <script src="assets/fetchLogin.js"></script>
+    </body>
 </html>

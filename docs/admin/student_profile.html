@@ -1,67 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Student Profile</title>
 
-<head>
-  <meta charset="UTF-8">
-  <title>Student Profile</title>
+        <!-- Link CSS -->
+        <link rel="stylesheet" href="/admin/assets/student_profile.css" />
+        <link rel="stylesheet" href="/admin/assets/SP_RPanel.css" />
+    </head>
 
-  <!-- Link CSS -->
-  <link rel="stylesheet" href="/admin/assets/student_profile.css">
-  <link rel="stylesheet" href="/admin/assets/SP_RPanel.css">
-</head>
+    <body>
+        <section class="back-btn">
+            <button id="backBtn">Back</button>
+        </section>
 
-<body>
-  <button id="backBtn">← Back to Student List</button>
+        <div class="profile-container">
+            <!-- Center Section (future academic tabs) -->
+            <div class="profile-center">
+                <div class="profile-wrapper">
+                    <div class="profile-header">
+                        <h1>Student Profile</h1>
+                    </div>
+                    <div class="academic-section">
+                        <p>Academic sections coming soon...</p>
+                    </div>
+                </div>
+            </div>
 
-  <div class="profile-container">
-    <!-- Center Section (future academic tabs) -->
-    <div class="profile-center">
-      <div class="profile-wrapper">
-        <div class="profile-header">
-          <h1>Student Profile</h1>
+            <!-- Right Panel -->
+            <div class="right-panel">
+                <h2 id="fullName">Full Name</h2>
+
+                <!-- Profile image placeholder -->
+                <div class="profile-image">
+                    <!-- Placeholder profile image for now-->
+                    <img
+                        src="/assets/img/user-profile.jpg"
+                        alt="Student Photo"
+                        id="studentPhoto"
+                    />
+                </div>
+
+                <div class="profile-info">
+                    <p>
+                        <strong>Student ID:</strong>
+                        <span id="studentId"></span>
+                    </p>
+                    <p><strong>DOB:</strong> <span id="dob"></span></p>
+                    <p><strong>Gender:</strong> <span id="gender"></span></p>
+                    <p><strong>Email:</strong> <span id="email"></span></p>
+                    <p><strong>Phone:</strong> <span id="phone"></span></p>
+                    <p><strong>Address:</strong> <span id="address"></span></p>
+                    <p><strong>Current:</strong> <span id="status"></span></p>
+                    <p>
+                        <strong>Enrollment:</strong>
+                        <select id="enrollmentStatus">
+                            <option value="active">Active</option>
+                            <option value="graduated">Graduated</option>
+                            <option value="probation">Probation</option>
+                            <option value="suspended">Suspended</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                        <button id="updateStatusBtn">Update</button>
+                    </p>
+
+                    <div id="statusMessage" class="status-message"></div>
+                </div>
+            </div>
         </div>
-        <div class="academic-section">
-          <p>Academic sections coming soon...</p>
-        </div>
-      </div>
-    </div>
 
-    <!-- Right Panel -->
-    <div class="right-panel">
-      <h2 id="fullName">Full Name</h2>
-
-      <!-- Profile image placeholder -->
-      <div class="profile-image">
-        <img src="/admin/assets/default-avatar.png" alt="Student Photo" id="studentPhoto" />
-      </div>
-
-      <div class="profile-info">
-        <p><strong>Student ID:</strong> <span id="studentId"></span></p>
-        <p><strong>DOB:</strong> <span id="dob"></span></p>
-        <p><strong>Gender:</strong> <span id="gender"></span></p>
-        <p><strong>Email:</strong> <span id="email"></span></p>
-        <p><strong>Phone:</strong> <span id="phone"></span></p>
-        <p><strong>Address:</strong> <span id="address"></span></p>
-        <p><strong>Current:</strong> <span id="status"></span></p>
-        <p><strong>Enrollment:</strong>
-          <select id="enrollmentStatus">
-            <option value="active">Active</option>
-            <option value="graduated">Graduated</option>
-            <option value="probation">Probation</option>
-            <option value="suspended">Suspended</option>
-            <option value="inactive">Inactive</option>
-          </select>
-          <button id="updateStatusBtn">Update</button>
-        </p>
-
-        <div id="statusMessage" class="status-message"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Link JS -->
-  <script src="/admin/assets/student_profile.js"></script>
-  <script src="/admin/assets/SP_RPanel.js"></script>
-</body>
-
+        <!-- Link JS -->
+        <script src="/admin/assets/student_profile.js"></script>
+        <script src="/admin/assets/SP_RPanel.js"></script>
+    </body>
 </html>
