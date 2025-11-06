@@ -1,0 +1,118 @@
+/* ---------------- Advising Notes Styles ---------------- */
+
+/* Form wrapper for adding new notes */
+.note-form {
+    margin-top: 15px;          /* space above form */
+    display: flex;             /* flex layout */
+    flex-direction: column;    /* stack vertically */
+    gap: 10px;                 /* spacing between fields */
+    width: 100%;               /* match note cards */
+    box-sizing: border-box;    /* consistent sizing */
+}
+
+.note-form textarea {
+    width: 100%;               /* full width */
+    height: 100px;             /* fixed height */
+    padding: 8px;              /* inner spacing */
+    border: 1px solid #ccc;    /* light border */
+    border-radius: 6px;        /* rounded corners */
+    resize: vertical;          /* allow vertical resize */
+    font-family: inherit;      /* match page font */
+    box-sizing: border-box;    /* include padding/border in width */
+}
+
+.note-form button {
+    align-self: flex-end;      /* align button to right edge */
+    background-color: #007bff; /* primary blue */
+    color: white;              /* white text */
+    border: none;              /* no border */
+    padding: 8px 14px;         /* inner spacing */
+    border-radius: 5px;        /* rounded corners */
+    cursor: pointer;           /* pointer cursor */
+}
+
+.note-form button:hover {
+    background-color: #0056b3; /* darker blue on hover */
+}
+
+/* Container for notes list */
+.notes-list {
+    margin-top: 15px;          /* space above list */
+    width: 100%;               /* match add-note section */
+    box-sizing: border-box;
+}
+
+/* Individual note card */
+.note-item {
+    width: 100%;               /* match textarea width */
+    box-sizing: border-box;    /* include padding/border in width */
+    background: #f9f9f9;       /* light gray background */
+    border: 1px solid #ddd;    /* light border */
+    padding: 10px;             /* inner spacing */
+    border-radius: 6px;        /* rounded corners */
+    margin-bottom: 10px;       /* space between notes */
+}
+
+/* Date text inside note */
+.note-date {
+    font-size: 0.85em;         /* smaller font */
+    color: #666;               /* gray text */
+}
+
+/* Header row with date + delete button */
+.note-header {
+    display: flex;             /* horizontal layout */
+    justify-content: space-between; /* space between items */
+    align-items: center;       /* vertical center */
+}
+
+/* Delete button */
+.delete-note-btn {
+    background: none;          /* no background */
+    border: none;              /* no border */
+    color: #dc3545;            /* red text */
+    cursor: pointer;           /* pointer cursor */
+    font-size: 16px;           /* larger icon size */
+    transition: transform 0.1s ease, color 0.2s ease; /* hover effects */
+}
+
+.delete-note-btn:hover {
+    transform: scale(1.1);     /* enlarge slightly */
+    color: #a71d2a;            /* darker red */
+}
+
+/* Section for adding a new note */
+.add-note-section {
+  width: 100%;                 /* match notes list */
+  box-sizing: border-box;      /* consistent sizing */
+  margin-top: 20px;            /* space above section */
+  display: flex;               /* flex layout */
+  flex-direction: column;      /* stack vertically */
+  gap: 10px;                   /* spacing between fields */
+}
+
+/* Textarea for new note */
+#advisingNoteInput {
+  width: 100%;                 /* full width */
+  padding: 10px;               /* inner spacing */
+  resize: vertical;            /* allow vertical resize */
+  border: 1px solid #ccc;      /* light border */
+  border-radius: 6px;          /* rounded corners */
+  box-sizing: border-box;      /* consistent sizing */
+}
+
+/* Save button */
+#saveNoteBtn {
+  align-self: flex-end;        /* align right edge */
+  background-color: #007bff;   /* primary blue */
+  color: white;                /* white text */
+  border: none;                /* no border */
+  border-radius: 6px;          /* rounded corners */
+  padding: 8px 16px;           /* inner spacing */
+  cursor: pointer;             /* pointer cursor */
+  transition: background 0.2s; /* smooth hover */
+}
+
+#saveNoteBtn:hover {
+  background-color: #0056b3;   /* darker blue on hover */
+}

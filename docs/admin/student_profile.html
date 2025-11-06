@@ -8,20 +8,26 @@
   <!-- Link CSS -->
   <link rel="stylesheet" href="/admin/assets/student_profile.css">
   <link rel="stylesheet" href="/admin/assets/SP_RPanel.css">
+  <link rel="stylesheet" href="/admin/assets/advising_tab.css">
+  <link rel="stylesheet" href="/admin/assets/courses_tab.css">
+  <link rel="stylesheet" href="/admin/assets/grade_tab.css">
 </head>
 
 <body>
   <button id="backBtn">← Back to Student List</button>
 
+   <!-- Main profile container -->
   <div class="profile-container">
-    <!-- Center Section (future academic tabs) -->
     <div class="profile-center">
       <div class="profile-wrapper">
+        <!-- Page header -->
         <div class="profile-header">
           <h1>Student Profile</h1>
         </div>
-        <!-- Academic Tabs Section -->
+
+        <!-- Academic tabs -->
         <div class="academic-section">
+          <!-- Tab buttons -->
           <div class="tabs">
             <button class="tab-link active" data-tab="courses">Courses & Major</button>
             <button class="tab-link" data-tab="grades">Grades</button>
@@ -30,29 +36,26 @@
             <button class="tab-link" data-tab="documents">Documents</button>
           </div>
 
+          <!-- Tab content placeholders (JS fills these) -->
           <div class="tab-content active" id="courses">
-            <h2>Courses & Major</h2>
-            <div id="coursesContent">No data available</div>
+            <div id="coursesContent"></div>
           </div>
-
           <div class="tab-content" id="grades">
-            <h2>Grades</h2>
-            <div id="gradesContent">No data available</div>
+            <div id="gradesContent"></div>
           </div>
-
           <div class="tab-content" id="enrollment">
-            <h2>Enrollment</h2>
-            <div id="enrollmentContent">No data available</div>
+            <div id="enrollmentContent"></div>
           </div>
-
           <div class="tab-content" id="advising">
             <h2>Advising Notes</h2>
-            <div id="advisingContent">No data available</div>
+            <div id="advisingNotesList" class="notes-list"></div>
+            <div class="add-note-section">
+              <textarea id="advisingNoteInput" placeholder="Write a new note..." rows="4"></textarea>
+              <button id="saveNoteBtn">Save</button>
+            </div>
           </div>
-
           <div class="tab-content" id="documents">
-            <h2>Documents</h2>
-            <div id="documentsContent">No data available</div>
+            <div id="documentsContent"></div>
           </div>
         </div>
       </div>
