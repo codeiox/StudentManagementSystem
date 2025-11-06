@@ -84,68 +84,7 @@ void StudentController::createStudent(const HttpRequestPtr &req,
     std::string password = json->get("password", "").asString();
     LOG_INFO << "Extracted all fields from JSON\n";
 
-        // ---------------- Additional Validation Checks ----------------
-
-// 1. Email validation (simple regex)
-std::regex emailRegex(R"((\w+)(\.?\w+)*@(\w+)(\.\w+)+)");
-if (!std::regex_match(email, emailRegex)) {
-    auto resp = HttpResponse::newHttpResponse();
-    resp->setStatusCode(k400BadRequest);
-    resp->setBody("Invalid email format");
-    callback(resp);
-    return;
-}
-
-// 2. Date of Birth validation (age between 15 and 65)
-try {
-    std::tm tm = {};
-    std::istringstream ss(dateOfBirth);
-    ss >> std::get_time(&tm, "%Y-%m-%d");
-    if (ss.fail()) {
-        auto resp = HttpResponse::newHttpResponse();
-        resp->setStatusCode(k400BadRequest);
-        resp->setBody("Invalid date format. Use YYYY-MM-DD.");
-        callback(resp);
-        return;
-    }
-
-    auto birthTime = std::chrono::system_clock::from_time_t(std::mktime(&tm));
-    auto now = std::chrono::system_clock::now();
-    auto age = std::chrono::duration_cast<std::chrono::hours>(now - birthTime).count() / (24 * 365);
-    
-    if (age < 15 || age > 65) {
-        auto resp = HttpResponse::newHttpResponse();
-        resp->setStatusCode(k400BadRequest);
-        resp->setBody("Age must be between 15 and 65 years");
-        callback(resp);
-        return;
-    }
-}
-catch (...) {
-    auto resp = HttpResponse::newHttpResponse();
-    resp->setStatusCode(k400BadRequest);
-    resp->setBody("Error processing date of birth");
-    callback(resp);
-    return;
-}
-
-// 3. Phone number validation and auto-formatting (###-###-####)
-std::string digits;
-for (char c : phone)
-    if (std::isdigit(c)) digits += c;
-
-if (digits.size() != 10) {
-    auto resp = HttpResponse::newHttpResponse();
-    resp->setStatusCode(k400BadRequest);
-    resp->setBody("Invalid Phone number");
-    callback(resp);
-    return;
-}
-
-// Format as ###-###-####
-phone = digits.substr(0,3) + "-" + digits.substr(3,3) + "-" + digits.substr(6,4);
-
-
+      
 
     // converts role to lower case using std::transform and lambda function
     std::transform(role.begin(), role.end(), role.begin(),

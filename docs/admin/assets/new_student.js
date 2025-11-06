@@ -21,9 +21,10 @@ document.addEventListener("DOMContentLoaded", () => {
     stateSelect.appendChild(option);
   });
 
-  // --- Form submit example ---
+  // --- Form submit ---
   const form = document.getElementById('studentForm');
   const status = document.getElementById("status");
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -34,6 +35,38 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    // --- Email validation ---
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(form.email.value.trim())) {
+      status.textContent = "❌ Please enter a valid email address.";
+      status.style.color = "red";
+      return;
+    }
+
+    // --- Phone validation ---
+    const phoneValue = form.phone.value.replace(/\D/g, "");
+    if (phoneValue.length !== 10) {
+      status.textContent = "❌ Please enter a valid 10-digit phone number.";
+      status.style.color = "red";
+      return;
+    }
+    form.phone.value = `${phoneValue.slice(0,3)}-${phoneValue.slice(3,6)}-${phoneValue.slice(6)}`;
+
+    // --- DOB validation (Age 15–65) ---
+    const dob = new Date(form.dateofbirth.value);
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const monthDiff = today.getMonth() - dob.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+      age--;
+    }
+    if (age < 15 || age > 65) {
+      status.textContent = "❌ Age must be between 15 and 65 years.";
+      status.style.color = "red";
+      return;
+    }
+
+    // --- Build data object ---
     const data = {
       firstName: form.firstName.value,
       lastName: form.lastName.value,
