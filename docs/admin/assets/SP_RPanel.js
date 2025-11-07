@@ -1,34 +1,47 @@
-// Extract studentId from URL query string (e.g., ?id=S1001)
+// Get studentId from URL (e.g., ?id=S1001)
 const params = new URLSearchParams(window.location.search);
 const studentId = params.get("id");
 
-// If no ID is found, show an alert and stop
+// If no ID, stop here
 if (!studentId) {
   alert("No student ID found in URL!");
 } else {
-  // Fetch student data from backend using studentId
+  // Fetch student data from backend
   fetch(`/api/admin/students/${studentId}`)
     .then(res => {
       if (!res.ok) throw new Error("Failed to fetch student data");
       return res.json();
     })
     .then(student => {
-      // Fill in student profile fields with data from backend
+      // Fill profile fields
       document.getElementById("studentId").textContent = student.student_id;
       document.getElementById("fullName").textContent = `${student.first_name} ${student.last_name}`;
+
       // Format DOB as MM-DD-YYYY
       const dob = new Date(student.dob);
       const formattedDob = `${String(dob.getMonth() + 1).padStart(2, '0')}-${String(dob.getDate()).padStart(2, '0')}-${dob.getFullYear()}`;
       document.getElementById("dob").textContent = formattedDob;
+
       document.getElementById("gender").textContent = student.gender;
+
+      // Set profile photo based on gender
+      const photo = document.getElementById("studentPhoto");
+      if (student.gender) {
+        const gender = student.gender.toLowerCase();
+        if (gender === "female") photo.src = "/admin/assets/female-avatar.png";
+        else if (gender === "male") photo.src = "/admin/assets/male-avatar.png";
+        else photo.src = "/admin/assets/other-avatar.png";
+      } else {
+        photo.src = "/admin/assets/default-avatar.png";
+      }
+
+      // Contact info
       document.getElementById("email").textContent = student.email;
       document.getElementById("phone").textContent = student.phone;
       document.getElementById("address").textContent = student.address;
 
-      // Set dropdown to current enrollment status (stored as lowercase)
+      // Enrollment status dropdown + display
       document.getElementById("enrollmentStatus").value = student.enrollmentStatus;
-
-      // Display capitalized version of status for readability
       document.getElementById("status").textContent = capitalize(student.enrollmentStatus);
     })
     .catch(err => {
@@ -36,11 +49,10 @@ if (!studentId) {
       alert("Error loading student profile.");
     });
 
-  // Handle status update when "Update Status" button is clicked
+  // Update status when button clicked
   document.getElementById("updateStatusBtn").addEventListener("click", () => {
     const newStatus = document.getElementById("enrollmentStatus").value;
 
-    // Send updated status to backend
     fetch(`/api/admin/students/${studentId}/status`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -48,7 +60,6 @@ if (!studentId) {
     })
       .then(res => {
         if (res.ok) {
-          // Show success message and update display
           showMessage("Enrollment status updated successfully!", "success");
           document.getElementById("status").textContent = capitalize(newStatus);
         } else {
@@ -61,19 +72,19 @@ if (!studentId) {
       });
   });
 
-  // Handle back button to return to student list
+  // Back button → student list
   document.getElementById("backBtn").addEventListener("click", () => {
     window.location.href = "/admin/list_of_students.html";
   });
 }
 
-// Utility: Capitalize first letter of a string (e.g., "active" → "Active")
+// Utility: capitalize first letter
 function capitalize(str) {
   if (!str) return "";
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-// Utility: Show a temporary success or error message on the page
+// Utility: show temporary success/error message
 function showMessage(message, type = "success") {
   const statusMessage = document.getElementById("statusMessage");
   if (!statusMessage) return;
@@ -82,7 +93,7 @@ function showMessage(message, type = "success") {
   statusMessage.className = `status-message ${type}`;
   statusMessage.style.display = "block";
 
-  // Hide message after 4 seconds
+  // Hide after 4 seconds
   setTimeout(() => {
     statusMessage.style.display = "none";
   }, 4000);

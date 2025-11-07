@@ -95,7 +95,7 @@ select {
 .profile-image img {
   width: 120px;                      /* Fixed width */
   height: 120px;                     /* Fixed height */
-  border-radius: 10px;               /* Rounded square corners */
+  border-radius: 50%;               /* Rounded corners */
   object-fit: cover;                 /* Keep image proportions and crop if needed */
   border: 3px solid #007bff;         /* Blue border accent */
   background-color: #e6f0ff;         /* Fallback pastel background */
@@ -103,5 +103,6 @@ select {
 
 /* ---------------- Info Section Spacing ---------------- */
 .profile-info {
-  margin-top: 10px;                  /* Space above info content */
+  padding-top: 2rem;
+  padding-left: 1.5rem;
 }

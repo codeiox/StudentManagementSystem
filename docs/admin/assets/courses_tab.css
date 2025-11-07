@@ -1,0 +1,19 @@
+/* ---------------- Course & Grade Lists ---------------- */
+.course-list, .grade-table {
+  background-color: #fafafa;     /* Light background for contrast */
+  border: 1px solid #ddd;        /* Subtle border */
+  border-radius: 8px;            /* Rounded corners */
+  padding: 12px 16px;            /* Inner spacing */
+  margin-top: 10px;              /* Space above */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05); /* Soft shadow */
+}
+
+/* Style for course list items */
+.course-list li {
+  margin: 6px 0;                 /* Vertical spacing */
+  padding: 6px 10px;             /* Inner padding */
+  border-bottom: 1px solid #eee; /* Divider between items */
+}
+.course-list li:last-child {
+  border-bottom: none;           /* Remove divider on last item */
+}
