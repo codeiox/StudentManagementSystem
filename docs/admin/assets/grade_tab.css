@@ -1,0 +1,11 @@
+/* Style for grade tables */
+.grade-table th {
+  background-color: #f0f2f5;     /* Light header background */
+  font-weight: 600;
+}
+.grade-table td {
+  background-color: #fff;        /* White cells */
+}
+.grade-table tr:nth-child(even) td {
+  background-color: #f9f9f9;     /* Zebra striping */
+}

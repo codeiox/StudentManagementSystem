@@ -1,23 +1,61 @@
 #include "StudentController.h"
 
+#include <drogon/utils/Utilities.h>
+
 using namespace drogon;
 
 void StudentController::createStudent(const HttpRequestPtr& req,
                                       std::function<void(const HttpResponsePtr&)>&& callback) {
+    // So you can send in array of students through postman
     auto json = req->getJsonObject();
     if (!json) {
-        LOG_ERROR << "Failed to parse JSON from request body\n";
         auto resp = HttpResponse::newHttpResponse();
         resp->setStatusCode(k400BadRequest);
         resp->setBody("Invalid JSON");
         callback(resp);
         return;
     }
-    // for debugging
+
+    // --- Handle multiple students if the JSON is an array ---
+    if (json->isArray()) {
+        for (const auto& studentJson : *json) {
+            // Extract fields from each student
+            std::string firstName = studentJson.get("firstName", "").asString();
+            std::string lastName = studentJson.get("lastName", "").asString();
+            std::string dateOfBirth = studentJson.get("dateofbirth", "").asString();
+            std::string email = studentJson.get("email", "").asString();
+            std::string phone = studentJson.get("phone", "").asString();
+            std::string address = studentJson.get("address", "").asString();
+            std::string gender = studentJson.get("gender", "").asString();
+            std::string studentId = studentJson.get("studentId", "").asString();
+            std::string username = studentJson.get("username", "").asString();
+            std::string role = studentJson.get("role", "").asString();
+            std::string password = studentJson.get("password", "").asString();
+
+            // Hash password (same as your existing logic)
+            Hasher hasher(HashConfig{3, 64ull * 1024 * 1024});
+            std::string hashedPassword = hasher.hash(password);
+            password = "";
+
+            // Store in database
+            StoreCredential storeCredential(firstName, lastName, dateOfBirth, email, phone, address,
+                                            gender, studentId, username, hashedPassword, role);
+            storeCredential.storeToDB(req, [](const HttpResponsePtr&) {});
+        }
+
+        // Respond with a summary
+        auto resp = HttpResponse::newHttpResponse();
+        resp->setStatusCode(k200OK);
+        resp->setBody("Multiple students created successfully");
+        callback(resp);
+        return;
+    }
+
+    // --- Single student logic continues exactly as before ---
+    // Do NOT redeclare json
     LOG_INFO << "Received JSON: " << json->toStyledString();
 
     // Validate required fields
-    // !important- TODO: Needs improvement! Doesn't handle the multi data model
     if (!json->isMember("firstName") || !json->isMember("lastName") || !json->isMember("email") ||
         !json->isMember("phone") || !json->isMember("dateofbirth") || !json->isMember("address") ||
         !json->isMember("gender") || !json->isMember("password")) {
@@ -28,7 +66,8 @@ void StudentController::createStudent(const HttpRequestPtr& req,
         callback(resp);
         return;
     }
-    // Extract and validate fields
+
+    // Extract fields
     std::string firstName = json->get("firstName", "").asString();
     std::string lastName = json->get("lastName", "").asString();
     std::string dateOfBirth = json->get("dateofbirth", "").asString();
@@ -165,6 +204,60 @@ void StudentController::getAllStudents(const HttpRequestPtr& req,
             resp->setBody("Database error: " + std::string(e.base().what()));
             callback(resp);
         });
+}
+
+void StudentController::deleteStudent(const HttpRequestPtr& req,
+                                      std::function<void(const HttpResponsePtr&)>&& callback,
+                                      std::string studentInput) {
+    auto client = app().getDbClient("default");
+
+    // URL-decode the input in case it comes from a URL
+    std::string input = drogon::utils::urlDecode(studentInput);
+    std::string query;
+    std::vector<std::string> args;
+
+    std::string firstName, lastName;
+
+    // Detect if input is a full name (contains a space)
+    size_t spacePos = input.find(' ');
+    if (spacePos != std::string::npos) {
+        firstName = input.substr(0, spacePos);
+        lastName = input.substr(spacePos + 1);
+
+        query = "DELETE FROM Users WHERE first_name = ? AND last_name = ? AND role = 'student'";
+        args = {firstName, lastName};
+    } else {
+        query = "DELETE FROM Users WHERE student_id = ?";
+        args = {input};
+    }
+
+    client->execSqlAsync(
+        query,
+        [callback, input, firstName, lastName](const drogon::orm::Result& r) {
+            auto resp = HttpResponse::newHttpResponse();
+            if (r.affectedRows() == 0) {
+                resp->setStatusCode(k404NotFound);
+                if (!firstName.empty())
+                    resp->setBody("No student found with name: " + firstName + " " + lastName);
+                else
+                    resp->setBody("No student found with ID: " + input);
+            } else {
+                resp->setStatusCode(k200OK);
+                if (!firstName.empty())
+                    resp->setBody("Student " + firstName + " " + lastName +
+                                  " removed successfully.");
+                else
+                    resp->setBody("Student with ID " + input + " removed successfully.");
+            }
+            callback(resp);
+        },
+        [callback](const drogon::orm::DrogonDbException& e) {
+            auto resp = HttpResponse::newHttpResponse();
+            resp->setStatusCode(k500InternalServerError);
+            resp->setBody("Database error: " + std::string(e.base().what()));
+            callback(resp);
+        },
+        args[0], args.size() > 1 ? args[1] : "");
 }
 
 // Handles GET request to fetch student details by ID

@@ -100,7 +100,7 @@ select {
 .profile-image img {
     width: 120px; /* Fixed width */
     height: 120px; /* Fixed height */
-    border-radius: 50%; /* Rounded square corners */
+    border-radius: 50%; /* Rounded corners */
     object-fit: cover; /* Keep image proportions and crop if needed */
     border: 3px solid #007bff; /* Blue border accent */
     background-color: #e6f0ff; /* Fallback pastel background */
@@ -108,21 +108,6 @@ select {
 
 /* ---------------- Info Section Spacing ---------------- */
 .profile-info {
-    margin-top: 10px; /* Space above info content */
-}
-
-/* button style */
-.back-btn button {
-    margin: 10px;
-    background-color: #34344a;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 8px 12px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.back-btn button:hover {
-    background-color: #23232a;
+    padding-top: 2rem;
+    padding-left: 1.5rem;
 }

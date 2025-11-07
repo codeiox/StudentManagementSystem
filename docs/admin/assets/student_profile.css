@@ -1,28 +1,28 @@
 /* ---------------- Base Page Styles ---------------- */
 body {
-  font-family: 'Segoe UI', sans-serif; /* Modern, readable font */
-  background-color: #f4f6f9;           /* Light gray-blue background */
-  margin: 0;                            /* Remove default margin */
-  padding: 0;                           /* Remove default padding */
+  font-family: 'Segoe UI', sans-serif; /* Use Segoe UI for modern readability */
+  background-color: #f4f6f9;           /* Light gray-blue background for page */
+  margin: 0;                           /* Remove default browser margin */
+  padding: 0;                          /* Remove default browser padding */
 }
 
 /* ---------------- Main Profile Card ---------------- */
 .profile-wrapper {
-  background-color: #ffffff;             /* White card for contrast */
-  border-radius: 24px;                   /* Rounded corners */
-  box-shadow: 0 6px 20px rgba(0,0,0,0.08); /* Soft shadow for elevation */
+  background-color: #ffffff;             /* White card for contrast against background */
+  border-radius: 24px;                   /* Rounded corners for softer look */
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08); /* Subtle shadow for elevation */
   padding: 30px;                         /* Inner spacing around content */
-  min-height: 815px;                     /* Ensures card height matches right panel */
-  width: 100%;                            /* Fill parent container width */
+  min-height: 815px;                     /* Ensure card matches right panel height */
+  width: 100%;                           /* Fill available width */
   box-sizing: border-box;                /* Include padding in width calculation */
 }
 
 /* ---------------- Header Section ---------------- */
 .profile-header {
-  display: flex;                          /* Aligns children horizontally */
+  display: flex;                          /* Arrange children horizontally */
   align-items: center;                    /* Vertically center items */
   justify-content: space-between;         /* Space between title and back button */
-  margin-bottom: 30px;                    /* Space below header */
+  margin-bottom: 30px;                    /* Gap below header */
 }
 
 /* Back button styling */
@@ -36,7 +36,6 @@ body {
   cursor: pointer;                        /* Pointer cursor on hover */
   transition: background-color 0.2s ease; /* Smooth hover effect */
 }
-
 #backBtn:hover {
   background-color: #0056b3;              /* Darker blue on hover */
 }
@@ -50,18 +49,96 @@ body {
 
 /* ---------------- Page Layout Container ---------------- */
 .profile-container {
-  display: flex;                            /* Use flex to arrange center + right panel */
-  justify-content: flex-start;              /* Align content to the left */
-  align-items: flex-start;                  /* Align items to the top */
-  background-color: #f4f6f9;               /* Match body background */
-  padding: 40px 30px;                       /* Top/Bottom and Left/Right padding */
+  display: flex;                           /* Use flex to arrange center + right panel */
+  justify-content: flex-start;             /* Align content to the left */
+  align-items: flex-start;                 /* Align items to the top */
+  background-color: #f4f6f9;              /* Match body background */
+  padding: 40px 30px;                      /* Page padding */
 }
 
 /* ---------------- Center Content Wrapper ---------------- */
 .profile-center {
-  flex: 1;                                  /* Take up remaining space next to right panel */
-  max-width: 1200px;                        /* Prevent center from being too wide */
-  margin-right: 370px;                       /* Leave space for fixed right panel */
-  display: flex;                             /* Flex to stack child elements vertically */
-  flex-direction: column;                    /* Stack content vertically */
+  flex: 1;                                 /* Take up remaining space */
+  max-width: 1200px;                       /* Prevent center from being too wide */
+  margin-right: 370px;                     /* Leave space for right panel */
+  display: flex;                           /* Stack children vertically */
+  flex-direction: column;                  /* Vertical stacking */
+}
+
+/* ---------------- Tabs ---------------- */
+.tabs {
+  display: flex;                           /* Arrange tab buttons horizontally */
+  border-bottom: 2px solid #eee;           /* Divider line below tabs */
+  margin-bottom: 20px;                     /* Gap below tabs */
+  gap: 8px;                                /* Space between tab buttons */
+  position: relative;                      /* Ensure tabs sit above other elements */
+  z-index: 5;                              /* Keep tabs clickable */
+}
+
+.tab-link {
+  border: none;                            /* Remove default button border */
+  border-radius: 8px 8px 0 0;              /* Rounded top corners */
+  padding: 10px 18px;                      /* Inner spacing */
+  cursor: pointer;                         /* Pointer cursor */
+  font-size: 15px;                         /* Font size */
+  color: #fff;                             /* White text */
+  transition: all 0.2s ease;               /* Smooth hover/active transitions */
+  pointer-events: auto;                    /* Ensure clickable */
+}
+
+/* Individual tab colors */
+.tab-link[data-tab="courses"] { background-color: #6f42c1; } /* Purple */
+.tab-link[data-tab="grades"] { background-color: #007bff; }  /* Blue */
+.tab-link[data-tab="enrollment"] { background-color: #28a745; } /* Green */
+.tab-link[data-tab="advising"] { background-color: #fd7e14; } /* Orange */
+.tab-link[data-tab="documents"] { background-color: #17a2b8; } /* Teal */
+
+/* Hover effect */
+.tab-link:hover { filter: brightness(1.1); } /* Slightly brighten on hover */
+
+/* Active tab styling */
+.tab-link.active {
+  background-color: #fff;                  /* White background for active tab */
+  color: #007bff;                          /* Blue text */
+  font-weight: 600;                        /* Bold text */
+  border: 1px solid #ddd;                  /* Light border */
+  border-bottom: 2px solid #fff;           /* Seamless with content box */
+  box-shadow: none;                        /* Remove shadow */
+  transform: none;                         /* No vertical shift */
+}
+
+/* ---------------- Tab Content ---------------- */
+.tab-content { display: none; }            /* Hide all by default */
+.tab-content.active { display: block; }    /* Show only active tab */
+
+/* ---------------- Academic Section ---------------- */
+.academic-section ul {
+  list-style: none;                        /* Remove bullet points */
+  padding-left: 10px;                      /* Indent list slightly */
+}
+
+.academic-section table {
+  width: 100%;                             /* Full width table */
+  border-collapse: collapse;               /* Merge borders */
+  margin-top: 8px;                         /* Gap above table */
+}
+
+.academic-section th,
+.academic-section td {
+  border: 1px solid #ddd;                  /* Light gray border */
+  padding: 8px;                            /* Cell padding */
+}
+
+.academic-section th {
+  background-color: #f4f4f4;               /* Light gray header background */
+  text-align: left;                        /* Left-align header text */
+}
+
+/* ---------------- Section Headings ---------------- */
+.academic-section h3 {
+  margin-top: 20px;              /* Space above each heading */
+  font-size: 18px;               /* Slightly larger font */
+  color: #444;                   /* Dark gray for readability */
+  border-bottom: 2px solid #eee; /* Divider line */
+  padding-bottom: 6px;           /* Space below text */
 }
