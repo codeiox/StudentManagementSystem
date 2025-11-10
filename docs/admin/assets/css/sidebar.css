@@ -52,22 +52,23 @@ body {
     margin-left: 220px; /* Offset for fixed sidebar */
 }
 
-/*Log out  styling*/
-.logout-btn {
+.profile-img {
     margin-top: auto;
-    color: #34344a;
+    margin-left: 20px;
 }
 
-.logout-btn a {
+.profile-img img {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #1b7be3;
+    border-radius: 50%;
+}
+
+.profile-img img:hover {
+    cursor: pointer;
+    border: 3px solid rgb(7, 7, 147);
+}
+
+.profile-img a:hover {
     background: none;
-    border: none;
-    background-color: #34344a;
-    border-radius: 10%;
-    color: white;
-    padding: 5px;
-    margin: 5px;
-}
-
-.logout-btn a:hover {
-    background-color: rgb(194, 73, 73);
 }

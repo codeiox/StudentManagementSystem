@@ -1,135 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <title>Student Profile</title>
 
-        <!-- Link CSS -->
-        <link rel="stylesheet" href="/admin/assets/student_profile.css" />
-        <link rel="stylesheet" href="/admin/assets/SP_RPanel.css" />
-    </head>
-  <!-- Link CSS -->
-  <link rel="stylesheet" href="/admin/assets/student_profile.css">
-  <link rel="stylesheet" href="/admin/assets/SP_RPanel.css">
-  <link rel="stylesheet" href="/admin/assets/advising_tab.css">
-  <link rel="stylesheet" href="/admin/assets/courses_tab.css">
-  <link rel="stylesheet" href="/admin/assets/grade_tab.css">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Profile</title>
+
+    <!-- Link CSS -->
+    <link rel="stylesheet" href="/admin/assets/css/student_profile.css">
+    <link rel="stylesheet" href="/admin/assets/css/SP_RPanel.css">
+    <link rel="stylesheet" href="/admin/assets/css/advising_tab.css">
+    <link rel="stylesheet" href="/admin/assets/css/courses_tab.css">
+    <link rel="stylesheet" href="/admin/assets/css/grade_tab.css">
 </head>
 
-    <body>
-        <section class="back-btn">
-            <button id="backBtn">Back</button>
-        </section>
-   <!-- Main profile container -->
-  <div class="profile-container">
+<body>
+<section class="back-btn">
+    <button id="backBtn">Back</button>
+</section>
+
+<!-- Main profile container -->
+<div class="profile-container">
     <div class="profile-center">
-      <div class="profile-wrapper">
-        <!-- Page header -->
-        <div class="profile-header">
-          <h1>Student Profile</h1>
-        </div>
-
-        <!-- Academic tabs -->
-        <div class="academic-section">
-          <!-- Tab buttons -->
-          <div class="tabs">
-            <button class="tab-link active" data-tab="courses">Courses & Major</button>
-            <button class="tab-link" data-tab="grades">Grades</button>
-            <button class="tab-link" data-tab="enrollment">Enrollment</button>
-            <button class="tab-link" data-tab="advising">Advising Notes</button>
-            <button class="tab-link" data-tab="documents">Documents</button>
-          </div>
-
-          <!-- Tab content placeholders (JS fills these) -->
-          <div class="tab-content active" id="courses">
-            <div id="coursesContent"></div>
-          </div>
-          <div class="tab-content" id="grades">
-            <div id="gradesContent"></div>
-          </div>
-          <div class="tab-content" id="enrollment">
-            <div id="enrollmentContent"></div>
-          </div>
-          <div class="tab-content" id="advising">
-            <h2>Advising Notes</h2>
-            <div id="advisingNotesList" class="notes-list"></div>
-            <div class="add-note-section">
-              <textarea id="advisingNoteInput" placeholder="Write a new note..." rows="4"></textarea>
-              <button id="saveNoteBtn">Save</button>
+        <div class="profile-wrapper">
+            <!-- Page header -->
+            <div class="profile-header">
+                <h1>Student Profile</h1>
             </div>
-          </div>
-          <div class="tab-content" id="documents">
-            <div id="documentsContent"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 
-            <!-- Right Panel -->
-            <div class="right-panel">
-                <h2 id="fullName">Full Name</h2>
-  <!-- Right Panel -->
-  <div class="right-panel">
+            <!-- Academic tabs -->
+            <div class="academic-section">
+                <!-- Tab buttons -->
+                <div class="tabs">
+                    <button class="tab-link active" data-tab="courses">Courses & Major</button>
+                    <button class="tab-link" data-tab="grades">Grades</button>
+                    <button class="tab-link" data-tab="enrollment">Enrollment</button>
+                    <button class="tab-link" data-tab="advising">Advising Notes</button>
+                    <button class="tab-link" data-tab="documents">Documents</button>
+                </div>
+
+                <!-- Tab content placeholders (JS fills these) -->
+                <div class="tab-content active" id="courses">
+                    <div id="coursesContent"></div>
+                </div>
+                <div class="tab-content" id="grades">
+                    <div id="gradesContent"></div>
+                </div>
+                <div class="tab-content" id="enrollment">
+                    <div id="enrollmentContent"></div>
+                </div>
+                <div class="tab-content" id="advising">
+                    <h2>Advising Notes</h2>
+                    <div id="advisingNotesList" class="notes-list"></div>
+                    <div class="add-note-section">
+                        <textarea id="advisingNoteInput" placeholder="Write a new note..." rows="4"></textarea>
+                        <button id="saveNoteBtn">Save</button>
+                    </div>
+                </div>
+                <div class="tab-content" id="documents">
+                    <div id="documentsContent"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Right Panel -->
+<div class="right-panel">
     <h2 id="fullName">Full Name</h2>
 
     <!-- Profile image placeholder -->
     <div class="profile-image">
-      <img src="/admin/assets/default-avatar.png" alt="Student Photo" id="studentPhoto" />
+        <img src="/admin/assets/img/default-avatar.png" alt="Student Photo" id="studentPhoto" />
     </div>
 
-                <div class="profile-info">
-                    <p>
-                        <strong>Student ID:</strong>
-                        <span id="studentId"></span>
-                    </p>
-                    <p><strong>DOB:</strong> <span id="dob"></span></p>
-                    <p><strong>Gender:</strong> <span id="gender"></span></p>
-                    <p><strong>Email:</strong> <span id="email"></span></p>
-                    <p><strong>Phone:</strong> <span id="phone"></span></p>
-                    <p><strong>Address:</strong> <span id="address"></span></p>
-                    <p><strong>Current:</strong> <span id="status"></span></p>
-                    <p>
-                        <strong>Enrollment:</strong>
-                        <select id="enrollmentStatus">
-                            <option value="active">Active</option>
-                            <option value="graduated">Graduated</option>
-                            <option value="probation">Probation</option>
-                            <option value="suspended">Suspended</option>
-                            <option value="inactive">Inactive</option>
-                        </select>
-                        <button id="updateStatusBtn">Update</button>
-                    </p>
     <div class="profile-info">
-      <p><strong>Student ID:</strong> <span id="studentId"></span></p>
-      <p><strong>DOB:</strong> <span id="dob"></span></p>
-      <p><strong>Gender:</strong> <span id="gender"></span></p>
-      <p><strong>Email:</strong> <span id="email"></span></p>
-      <p><strong>Phone:</strong> <span id="phone"></span></p>
-      <p><strong>Address:</strong> <span id="address"></span></p>
-      <p><strong>Current:</strong> <span id="status"></span></p>
-      <p><strong>Enrollment:</strong>
-        <select id="enrollmentStatus">
-          <option value="active">Active</option>
-          <option value="graduated">Graduated</option>
-          <option value="probation">Probation</option>
-          <option value="suspended">Suspended</option>
-          <option value="inactive">Inactive</option>
-        </select>
-        <button id="updateStatusBtn">Update</button>
-      </p>
+        <p><strong>Student ID:</strong> <span id="studentId"></span></p>
+        <p><strong>DOB:</strong> <span id="dob"></span></p>
+        <p><strong>Gender:</strong> <span id="gender"></span></p>
+        <p><strong>Email:</strong> <span id="email"></span></p>
+        <p><strong>Phone:</strong> <span id="phone"></span></p>
+        <p><strong>Address:</strong> <span id="address"></span></p>
+        <p><strong>Current:</strong> <span id="status"></span></p>
+        <p><strong>Enrollment:</strong>
+            <select id="enrollmentStatus">
+                <option value="active">Active</option>
+                <option value="graduated">Graduated</option>
+                <option value="probation">Probation</option>
+                <option value="suspended">Suspended</option>
+                <option value="inactive">Inactive</option>
+            </select>
+            <button id="updateStatusBtn">Update</button>
+        </p>
 
-                    <div id="statusMessage" class="status-message"></div>
-                </div>
-            </div>
-        </div>
-      <div id="statusMessage" class="status-message"></div>
+        <div id="statusMessage" class="status-message"></div>
     </div>
-  </div>
-  </div>
+</div>
 
-        <!-- Link JS -->
-        <script src="/admin/assets/student_profile.js"></script>
-        <script src="/admin/assets/SP_RPanel.js"></script>
-    </body>
+<!-- Link JS -->
+<script src="/admin/assets/js/student_profile.js"></script>
+<script src="/admin/assets/js/SP_RPanel.js"></script>
+</body>
+
 </html>

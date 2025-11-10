@@ -28,11 +28,11 @@ if (!studentId) {
       const photo = document.getElementById("studentPhoto");
       if (student.gender) {
         const gender = student.gender.toLowerCase();
-        if (gender === "female") photo.src = "/admin/assets/female-avatar.png";
-        else if (gender === "male") photo.src = "/admin/assets/male-avatar.png";
-        else photo.src = "/admin/assets/other-avatar.png";
+        if (gender === "female") photo.src = "/admin/assets/img/female-avatar.png";
+        else if (gender === "male") photo.src = "/admin/assets/img/male-avatar.png";
+        else photo.src = "/admin/assets/img/other-avatar.png";
       } else {
-        photo.src = "/admin/assets/default-avatar.png";
+        photo.src = "/admin/assets/img/default-avatar.png";
       }
 
       // Contact info

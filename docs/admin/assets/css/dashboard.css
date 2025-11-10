@@ -26,8 +26,8 @@ body {
 .main {
     display: flex;
     flex: 1;
-    margin-left: 75px;
-    padding: 15px;
+    margin-left: 220px;
+    padding: 0;
     width: calc(100% - 250px);
     height: 100vh;
     overflow: auto;
@@ -36,19 +36,13 @@ body {
 .left-column,
 .right-column {
     flex: 1;
-    padding: 10px;
+    padding: 15px 0px 0px 0px;
     overflow-y: auto;
     max-height: 100vh;
 }
 
-.dashboard-header {
-    background-color: #c3e6cb;
-    border-radius: 8px;
-    padding: 10px;
-    margin-bottom: 20px;
-    font-size: 24px;
-    font-weight: bold;
-    text-align: center;
+.right-column {
+    margin-top: 65px;
 }
 
 .totals .card {
@@ -260,4 +254,77 @@ body {
     padding: 10px;
     overflow-y: auto;
     max-height: 100vh;
+}
+
+.dashboard-header {
+    background-color: #53ca6d;
+    border-radius: 8px;
+    padding: 5px;
+    margin-bottom: 20px;
+    text-align: center;
+    box-shadow: 10px 5px 5px rgba(136, 240, 167, 0.846);
+}
+
+.dashboard-header h1 {
+    margin: 0;
+    color: black;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+/* Recent activities */
+.recent-activities {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.recent-activities h3 {
+    margin: 0 0 15px 0;
+    color: #333;
+}
+
+.activity-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 12px;
+    margin-bottom: 10px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.activity-item:hover {
+    background: #e9ecef;
+}
+
+.activity-icon {
+    font-size: 24px;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-description {
+    margin: 0 0 4px 0;
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+}
+
+.activity-time {
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.loading,
+.no-activities {
+    text-align: center;
+    color: #6c757d;
+    padding: 20px;
+    font-style: italic;
 }

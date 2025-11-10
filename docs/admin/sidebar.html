@@ -2,7 +2,10 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Sidebar</title>
+
+        <link rel="stylesheet" href="assets/css/admin_profile.css" />
     </head>
     <body>
         <!-- Sidebar navigation for admin pages -->
@@ -22,10 +25,16 @@
             <!-- Link to remove students -->
             <a href="/admin/remove_student.html">Remove Student</a>
 
-            <!-- NOTE: Add any other tabs or <a> tags before this line-->
-            <section class="logout-btn">
-                <a href="../index.html">Log out</a>
+            <section class="profile-img">
+                <a href="admin_profile.html">
+                    <img
+                        src="https://api.dicebear.com/9.x/adventurer/svg?seed=Luis"
+                        alt="profile picture"
+                    />
+                </a>
             </section>
         </div>
+
+        <script src="../admin/assets/js/admin_profile.js"></script>
     </body>
 </html>

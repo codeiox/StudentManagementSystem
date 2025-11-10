@@ -11,10 +11,10 @@
         />
 
         <!-- Sidebar styles -->
-        <link rel="stylesheet" href="assets/sidebar.css" />
+        <link rel="stylesheet" href="assets/css/sidebar.css" />
 
         <!-- Table and confirm button styles -->
-        <link rel="stylesheet" href="assets/student_table.css" />
+        <link rel="stylesheet" href="assets/css/student_table.css" />
     </head>
 
     <body>
@@ -25,24 +25,26 @@
         <div class="main">
             <h1>Registered Students</h1>
             <!-- Student table -->
-            <table>
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>Student ID</th>
-                        <th>Full Name</th>
-                        <th>DOB</th>
-                        <th>Gender</th>
-                        <th>Phone</th>
-                        <th>Email</th>
-                        <th>Address</th>
-                        <th>Enrollment Status</th>
-                    </tr>
-                </thead>
-                <tbody id="studentTableBody">
-                    <!-- Rows will be injected by student-table.js -->
-                </tbody>
-            </table>
+            <section class="table-list">
+                <table>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Student ID</th>
+                            <th>Full Name</th>
+                            <th>DOB</th>
+                            <th>Gender</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Address</th>
+                            <th>Enrollment Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentTableBody">
+                        <!-- Rows will be injected by student-table.js -->
+                    </tbody>
+                </table>
+            </section>
 
             <!-- Confirm button below the table -->
             <div class="confirm-container">
@@ -51,9 +53,9 @@
         </div>
 
         <!-- Load sidebar HTML and highlight active link -->
-        <script src="assets/sidebar.js"></script>
+        <script src="assets/js/sidebar.js"></script>
 
         <!-- Load and render student data -->
-        <script src="assets/student_table.js"></script>
+        <script src="assets/js/student_table.js"></script>
     </body>
 </html>
