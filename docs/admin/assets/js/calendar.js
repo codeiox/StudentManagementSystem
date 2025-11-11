@@ -52,8 +52,8 @@ document.addEventListener('DOMContentLoaded', function() {
         ],
         height: 'auto',
         nowIndicator: true, // Show current time indicator
-        slotMinTime: '08:00:00',
-        slotMaxTime: '18:00:00',
+        slotMinTime: '00:00:00',
+        slotMaxTime: '24:00:00',
         timeZone: 'local',
         allDaySlot: true
     });

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Admin Profile</title>
+
+        <link rel="stylesheet" href="assets/css/admin_profile.css" />
+        <link rel="stylesheet" href="assets/css/sidebar.css" />
+    </head>
+    <body>
+        <!-- Sidebar Container -->
+        <div id="sidebar-container"></div>
+        <main>
+            <div class="profile-container">
+                <div class="profile-card">
+                    <h1>Profile</h1>
+
+                    <div class="success-message" id="successMessage">
+                        Profile updated successfully!
+                    </div>
+
+                    <div class="avatar-section">
+                        <div class="avatar-wrapper">
+                            <img
+                                id="profileImage"
+                                src="https://api.dicebear.com/9.x/adventurer/svg?seed=Luis"
+                                alt="Profile picture"
+                            />
+                        </div>
+                        <button
+                            type="button"
+                            class="change-photo-btn"
+                            id="changePhotoBtn"
+                        >
+                            Change Photo
+                        </button>
+                    </div>
+
+                    <div class="profile-info">
+                        <div class="info-group">
+                            <label>Full Name</label>
+                            <div class="display-value" id="nameDisplay">
+                                John Doe
+                            </div>
+                            <input
+                                type="text"
+                                id="nameInput"
+                                value="John Doe"
+                            />
+                        </div>
+                        <div class="info-group readonly">
+                            <label for="employeeID">Employee ID</label>
+                            <div class="display-value" id="employeeIdDisplay">
+                                090789
+                            </div>
+                        </div>
+
+                        <div class="info-group">
+                            <label>Date of Birth</label>
+                            <div class="display-value" id="dobDisplay">
+                                09/28/1994
+                            </div>
+                            <input
+                                type="date"
+                                id="dobInput"
+                                value="1994-09-28"
+                            />
+                        </div>
+
+                        <div class="info-group">
+                            <label>Email</label>
+                            <div class="display-value" id="emailDisplay">
+                                admin@gmail.com
+                            </div>
+                            <input
+                                type="email"
+                                id="emailInput"
+                                value="admin@gmail.com"
+                            />
+                        </div>
+
+                        <div class="info-group">
+                            <label>Phone</label>
+                            <div class="display-value" id="phoneDisplay">
+                                909-876-0983
+                            </div>
+                            <input
+                                type="tel"
+                                id="phoneInput"
+                                value="909-876-0983"
+                            />
+                        </div>
+
+                        <div class="info-group">
+                            <label>Address</label>
+                            <div class="display-value" id="addressDisplay">
+                                123 Main St, Worcester, MA 01605
+                            </div>
+                            <textarea id="addressInput">
+123 Main St, Worcester, MA 01605</textarea
+                            >
+                        </div>
+                    </div>
+
+                    <div class="btns">
+                        <button type="button" id="edit-btn">
+                            Edit Profile
+                        </button>
+                        <button type="button" id="save-btn">
+                            Save Changes
+                        </button>
+                        <button type="button" id="cancel-btn">Cancel</button>
+                        <button type="button" id="logout-btn">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <script src="assets/js/admin.js"></script>
+        <script src="assets/js/sidebar.js"></script>
+    </body>
+</html>

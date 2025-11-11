@@ -1,0 +1,112 @@
+html,
+body {
+    padding: 0;
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* ===============================
+   Table layout and formatting
+   =============================== */
+
+/* Full-width table with collapsed borders and top margin */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0;
+}
+
+/* Sticky header section */
+thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+/* Header cells: centered text with light gray background */
+thead th {
+    text-align: center;
+    background-color: #f0f0f0;
+    color: #333;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* All table cells: padding, border, left-aligned text, and no wrapping */
+th,
+td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+    white-space: nowrap;
+}
+
+/* First column (radio buttons): center-aligned and fixed width */
+td:first-child,
+th:first-child {
+    text-align: center;
+    width: 60px;
+}
+
+/* ===============================
+   Confirm button styling
+   =============================== */
+
+/* Container aligns button to bottom-right of table */
+.confirm-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+/* Confirm button: green background, white text, rounded corners */
+.confirm-button {
+    padding: 10px 20px;
+    background-color: #28a745; /* success green */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* Confirm button hover: darker green for feedback */
+.confirm-button:hover {
+    background-color: #218838;
+}
+
+/* Registered Students Table Styling */
+.table-list {
+    max-height: 75vh;
+    overflow-y: auto;
+    overflow-x: auto;
+    margin-top: 50px;
+    padding-top: 0;
+    border: 0.5px solid rgb(179, 171, 171);
+    border-top: 5px solid rgb(179, 171, 171);
+    border-radius: 5px;
+}
+
+/* Wrapper to add padding without affecting scroll clipping */
+.table-list table {
+    margin: 0 1rem 1rem 1rem;
+    width: calc(100% - 2rem);
+}
+
+.table-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.table-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.table-list::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.table-list::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
