@@ -3,6 +3,7 @@ body {
     padding: 0;
     height: 100%;
     margin: 0;
+    box-sizing: border-box;
     font-family: Arial, sans-serif;
 }
 
@@ -39,10 +40,6 @@ body {
     padding: 15px 0px 0px 0px;
     overflow-y: auto;
     max-height: 100vh;
-}
-
-.right-column {
-    margin-top: 65px;
 }
 
 .totals .card {
@@ -260,7 +257,7 @@ body {
     background-color: #53ca6d;
     border-radius: 8px;
     padding: 5px;
-    margin-bottom: 20px;
+    margin-bottom: 23px;
     text-align: center;
     box-shadow: 10px 5px 5px rgba(136, 240, 167, 0.846);
 }
@@ -327,4 +324,41 @@ body {
     color: #6c757d;
     padding: 20px;
     font-style: italic;
+}
+
+/* Search */
+.search-card {
+    display: flex;
+    justify-content: right;
+    gap: 5rem;
+    flex-direction: row;
+    margin: 10px;
+}
+
+#search-input {
+    height: 40px;
+    width: 28rem;
+    border-radius: 12px;
+    padding: 0 15px;
+    border: 2px solid #ccc;
+    outline: none;
+    font-size: 16px;
+}
+
+#search-input:focus {
+    border: 2px solid #42a5f5;
+    box-shadow: 0 0 5px rgba(66, 165, 245, 0.3);
+}
+
+.search-card button {
+    margin: 5px;
+    padding: 9px 20px;
+    background-color: #42a5f5;
+    border-radius: 12px;
+    border: none;
+}
+
+.search-card button:hover {
+    cursor: pointer;
+    background-color: #065ba1;
 }

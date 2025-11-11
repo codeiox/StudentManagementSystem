@@ -9,11 +9,10 @@
         />
         <link rel="stylesheet" href="assets/css/sidebar.css" />
         <link rel="stylesheet" href="assets/css/dashboard.css" />
-        <!-- Add Chart.js CDN -->
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-        <!-- FullCalendar v6 CDN -->
-        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        />
     </head>
     <body>
         <!-- Sidebar Container -->
@@ -77,6 +76,23 @@
                 </div>
 
                 <div class="right-column">
+                    <div class="search-card">
+                        <!-- ONLY for demo for now -->
+                        <form action="https://httpbin.org/get" method="get">
+                            <input
+                                type="search"
+                                id="search-input"
+                                name="q"
+                                width="200px"
+                                placeholder=" Search...."
+                            />
+                            <button type="submit">
+                                <i
+                                    class="fa-solid fa-magnifying-glass fa-lg"
+                                ></i>
+                            </button>
+                        </form>
+                    </div>
                     <div class="card notification-panel mb-4 p-3">
                         <h3>⚠️ Students at Risk</h3>
                         <div id="probation-list">
@@ -100,5 +116,10 @@
         <script src="assets/js/probation.js"></script>
         <script src="assets/js/total.js"></script>
         <script src="assets/js/recentActivities.js"></script>
+        <!-- Add Chart.js CDN -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+        <!-- FullCalendar v6 CDN -->
+        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
     </body>
 </html>
