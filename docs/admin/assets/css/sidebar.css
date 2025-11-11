@@ -23,7 +23,8 @@ body {
 /* Sidebar title */
 .sidebar h2 {
     font-size: 1.5rem;
-    margin-bottom: 30px;
+    margin-top: 17px;
+    margin-bottom: 40px;
     text-align: center;
 }
 
@@ -53,8 +54,8 @@ body {
 }
 
 .profile-img {
-    margin-top: auto;
-    margin-left: 20px;
+    display: flex;
+    flex-direction: row;
 }
 
 .profile-img img {
