@@ -2,11 +2,11 @@
 
 /* Center the form in the main content */
 .main form {
-    max-width: 500px;       /* form width */
-    margin: 0 auto;         /* center horizontally */
+    max-width: 500px; /* form width */
+    margin: 0 auto; /* center horizontally */
     display: flex;
     flex-direction: column;
-    gap: 15px;              /* space between fields/buttons */
+    gap: 15px; /* space between fields/buttons */
 }
 
 /* Input field styling */
@@ -22,11 +22,15 @@
     padding: 12px 20px;
     font-size: 1.1rem;
     cursor: pointer;
-    align-self: center;     /* center button */
+    align-self: center; /* center button */
 }
 
 /* Scrollable main if needed */
 .main {
     overflow-y: auto;
     max-height: calc(100vh - 40px); /* account for padding */
+}
+
+.main h1 {
+    text-align: left;
 }
