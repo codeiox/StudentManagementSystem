@@ -49,6 +49,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (tabId === "courses") {
       const c = data.courses || {};
       el.innerHTML = `
+        <div class="class-registration">
+          <a href="../admin/register.html">
+            Course Registration
+          </a>
+        </div>
         <h2>Courses & Major</h2>
         <p><strong>Major:</strong> ${c.major || "N/A"}</p>
         ${c.minor ? `<p><strong>Minor:</strong> ${c.minor}</p>` : ""}
