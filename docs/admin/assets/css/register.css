@@ -9,7 +9,7 @@ body,
 html {
     font-family: Arial, Helvetica, sans-serif;
     margin-top: 5rem;
-    height: 100vh;
+    margin-bottom: 5rem;
 }
 
 main {
@@ -21,8 +21,8 @@ main {
 }
 
 .container {
-    max-width: calc(100% - 240px);
-    margin: 20px auto;
+    max-width: calc(100% - 220px);
+    margin: 0 auto;
     background: white;
     padding: 20px;
     border-radius: 16px;
