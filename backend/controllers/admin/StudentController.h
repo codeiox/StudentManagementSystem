@@ -27,8 +27,12 @@ public:
    ADD_METHOD_TO(StudentController::deleteStudent, "/api/admin/students/{studentId}", drogon::Delete);
    // Route: PUT /api/admin/students/{studentId}/status → calls updateEnrollmentStatus
    ADD_METHOD_TO(StudentController::updateEnrollmentStatus, "/api/admin/students/{studentId}/status", drogon::Put);
+ADD_METHOD_TO(StudentController::getStudentCourses, "/api/admin/students/{studentId}/courses", drogon::Get);
+    ADD_METHOD_TO(StudentController::enrollStudentInCourse, "/api/admin/students/{studentId}/enrollments", drogon::Post);
+    ADD_METHOD_TO(StudentController::getStudentGrades, "/api/admin/students/{studentId}/grades", drogon::Get);
 
-   METHOD_LIST_END
+  
+METHOD_LIST_END
 
    // Handler
    void createStudent(const drogon::HttpRequestPtr &req,
@@ -51,7 +55,17 @@ public:
                    std::function<void(const drogon::HttpResponsePtr &)> &&callback,
                    std::string studentId); // match .cpp
 
+void getStudentCourses(const drogon::HttpRequestPtr &req,
+                           std::function<void(const drogon::HttpResponsePtr &)> &&callback,
+                           std::string studentId);
 
+    void enrollStudentInCourse(const drogon::HttpRequestPtr &req,
+                               std::function<void(const drogon::HttpResponsePtr &)> &&callback,
+                               std::string studentId);
+
+    void getStudentGrades(const drogon::HttpRequestPtr &req,
+                          std::function<void(const drogon::HttpResponsePtr &)> &&callback,
+                          std::string studentId);
 
    // TODO: In the next story - We may need to add another function that checks for data duplicates before inserting data into DB.
 
