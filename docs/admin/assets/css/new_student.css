@@ -1,3 +1,76 @@
-.form-container {
-    max-width: 500px;
-  }
+/* ---------- Base layout ---------- */
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Main content, full height, uniform background */
+.main {
+  flex-grow: 1;
+  padding: 40px;
+  margin-left: 220px; /* offset for sidebar */
+  background-color: #f8f9fa; /* uniform background */
+}
+
+/* ---------- Form wrapper ---------- */
+.form-wrapper {
+  max-width: 900px;
+  margin: auto;
+  padding: 30px;
+  background-color: #f8f9fa; /* same as main */
+  border-radius: 8px;
+}
+
+/* ---------- Form fields ---------- */
+form label {
+  display: block;
+  margin-top: 15px;
+  font-weight: 600;
+}
+
+form input,
+form select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+/* Rows with multiple columns */
+.row {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.row .col {
+  flex: 1;
+}
+
+/* ---------- Submit button ---------- */
+.submit-btn {
+  width: 100%;
+  padding: 12px;
+  margin-top: 20px;
+  background-color: #28a745;
+  color: #fff;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  background-color: #218838;
+}
+
+/* ---------- Status message ---------- */
+.status {
+  text-align: center;
+  margin-top: 15px;
+  font-weight: 600;
+}
