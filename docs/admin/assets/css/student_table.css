@@ -110,3 +110,11 @@ th:first-child {
 .table-list::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
+
+tr.clickable-row:hover {
+    background-color: #e2e0e0;
+}
+
+tr.selected {
+    background-color: #e2e0e0;
+}
