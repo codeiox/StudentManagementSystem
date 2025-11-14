@@ -28,9 +28,9 @@ if (!studentId) {
       const photo = document.getElementById("studentPhoto");
       if (student.gender) {
         const gender = student.gender.toLowerCase();
-        if (gender === "female") photo.src = "/admin/assets/img/female-avatar.png";
-        else if (gender === "male") photo.src = "/admin/assets/img/male-avatar.png";
-        else photo.src = "/admin/assets/img/other-avatar.png";
+        if (gender === "female") photo.src = "https://api.dicebear.com/9.x/adventurer/svg?seed=Jude";
+        else if (gender === "male") photo.src = "https://api.dicebear.com/9.x/adventurer/svg?seed=Luis";
+        else photo.src = "https://api.dicebear.com/9.x/adventurer/svg?seed=other";
       } else {
         photo.src = "/admin/assets/img/default-avatar.png";
       }
