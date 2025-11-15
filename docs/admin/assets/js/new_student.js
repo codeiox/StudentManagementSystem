@@ -1,6 +1,9 @@
+
 document.addEventListener("DOMContentLoaded", () => {
   const stateSelect = document.getElementById("state");
   const cityInput = document.querySelector("input[name='city']");
+  const zipInput = document.querySelector("input[name='zip']");
+
 
   // Full list of US states
   const states = [
@@ -29,8 +32,8 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
 
     // Validate address fields
-    if (!form.street.value || !stateSelect.value || !cityInput.value) {
-      status.textContent = "❌ Please fill in street, city, and state!";
+    if (!form.street.value || !stateSelect.value || !cityInput.value || !zipInput.value) {
+      status.textContent = "❌ Please fill in street, city, state, and zip code!";
       status.style.color = "red";
       return;
     }
@@ -78,7 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
       studentId: form.studentId.value,
       username: form.username.value,
       password: form.password.value,
-      address: `${form.street.value}, ${cityInput.value}, ${stateSelect.value}`
+      address: `${form.street.value}, ${cityInput.value}, ${stateSelect.value} ${zipInput.value}`
     };
 
     try {
