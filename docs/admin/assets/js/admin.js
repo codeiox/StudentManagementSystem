@@ -14,7 +14,7 @@ editBtn.addEventListener("click", () => {
     // Store original values before editing
     originalValues = {
         name: document.getElementById("nameInput").value,
-        dob: document.getElementById("dobInput").value,
+        //dob: document.getElementById("dobInput").value,
         email: document.getElementById("emailInput").value,
         phone: document.getElementById("phoneInput").value,
         address: document.getElementById("addressInput").value,
@@ -28,7 +28,7 @@ editBtn.addEventListener("click", () => {
 cancelBtn.addEventListener("click", () => {
     // Restore original values
     document.getElementById("nameInput").value = originalValues.name;
-    document.getElementById("dobInput").value = originalValues.dob;
+    //document.getElementById("dobInput").value = originalValues.dob;
     document.getElementById("emailInput").value = originalValues.email;
     document.getElementById("phoneInput").value = originalValues.phone;
     document.getElementById("addressInput").value = originalValues.address;
@@ -41,7 +41,7 @@ cancelBtn.addEventListener("click", () => {
 saveBtn.addEventListener("click", () => {
     // Get values from inputs
     const name = document.getElementById("nameInput").value;
-    const dob = document.getElementById("dobInput").value;
+    //const dob = document.getElementById("dobInput").value;
     const email = document.getElementById("emailInput").value;
     const phone = document.getElementById("phoneInput").value;
     const address = document.getElementById("addressInput").value;
@@ -51,7 +51,7 @@ saveBtn.addEventListener("click", () => {
 
     // Update display values
     document.getElementById("nameDisplay").textContent = name;
-    document.getElementById("dobDisplay").textContent = dobFormatted;
+   // document.getElementById("dobDisplay").textContent = dobFormatted;
     document.getElementById("emailDisplay").textContent = email;
     document.getElementById("phoneDisplay").textContent = phone;
     document.getElementById("addressDisplay").textContent = address;

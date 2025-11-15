@@ -64,7 +64,7 @@
                         </div>
                     </div>
 
-                    <section class="recent-activities">
+                    <section class="recent-activities" loading="lazy">
                         <h3>Recent Activies</h3>
                         <div id="recentActivities">
                             <p class="loading">Loading activities...</p>
@@ -103,23 +103,26 @@
                     </div>
 
                     <!-- Calendar Section -->
-                    <div class="card calendar-section p-3">
+                    <div class="card calendar-section p-3" loading="lazy">
                         <h3>Calendar</h3>
                         <div id="calendar-section"></div>
                     </div>
                 </div>
             </div>
         </section>
-        <script src="assets/js/sidebar.js"></script>
-        <script src="assets/js/chart.js"></script>
-        <script src="assets/js/calendar.js"></script>
-        <script src="assets/js/probation.js"></script>
-        <script src="assets/js/total.js"></script>
-        <script src="assets/js/recentActivities.js"></script>
+        <script defer src="assets/js/sidebar.js"></script>
+        <script defer src="assets/js/chart.js"></script>
+        <script defer src="assets/js/calendar.js"></script>
+        <script defer src="assets/js/probation.js"></script>
+        <script defer src="assets/js/total.js"></script>
+        <script defer src="assets/js/recentActivities.js"></script>
         <!-- Add Chart.js CDN -->
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
         <!-- FullCalendar v6 CDN -->
-        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"
+        ></script>
     </body>
 </html>
