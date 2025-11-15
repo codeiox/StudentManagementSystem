@@ -13,13 +13,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function fetchStudentData(studentId) {
-        const [coursesRes, gradesRes, studentRes, majorsRes, documentsRes] = await Promise.all([
-            fetch(`/api/admin/students/${studentId}/courses`).then(r => r.ok ? r.json() : []),
-            fetch(`/api/admin/students/${studentId}/grades`).then(r => r.ok ? r.json() : []),
-            fetch(`/api/admin/students/${studentId}`).then(r => r.ok ? r.json() : {}),
-            fetch(`/api/admin/majors`).then(r => r.ok ? r.json() : []),
-            fetch(`/api/admin/students/${studentId}/documents`).then(r => r.ok ? r.json() : []),
-        ]);
+        const [coursesRes, gradesRes, studentRes, majorsRes, documentsRes] =
+            await Promise.all([
+                fetch(`/api/admin/students/${studentId}/courses`).then((r) =>
+                    r.ok ? r.json() : []
+                ),
+                fetch(`/api/admin/students/${studentId}/grades`).then((r) =>
+                    r.ok ? r.json() : []
+                ),
+                fetch(`/api/admin/students/${studentId}`).then((r) =>
+                    r.ok ? r.json() : {}
+                ),
+                fetch(`/api/admin/majors`).then((r) => (r.ok ? r.json() : [])),
+                fetch(`/api/admin/students/${studentId}/documents`).then((r) =>
+                    r.ok ? r.json() : []
+                ),
+            ]);
 
         return {
             courses: {
@@ -28,24 +37,28 @@ document.addEventListener("DOMContentLoaded", () => {
                 // major: majorsRes.find(m => m.major_id === studentRes.major_id)?.name || "Undeclared",
                 // minor: majorsRes.find(m => m.major_id === studentRes.minor_id)?.name || "",
                 currentCourses: coursesRes
-                    .filter(c => c.status?.toLowerCase() === "current")
-                    .map(c => ({
+                    .filter((c) => c.status?.toLowerCase() === "current")
+                    .map((c) => ({
                         course_name: c.course_name,
                         credits: c.credits,
-                        term: formatTerm(c.term)
+                        term: formatTerm(c.term),
                     })),
                 previousCourses: coursesRes
-                    .filter(c => c.status?.toLowerCase() === "completed")
-                    .map(c => ({
+                    .filter((c) => c.status?.toLowerCase() === "completed")
+                    .map((c) => ({
                         course_name: c.course_name,
                         credits: c.credits,
-                        term: formatTerm(c.term)
+                        term: formatTerm(c.term),
                     })),
             },
 
             grades: {
-                current: gradesRes.filter(g => g.status?.toLowerCase() === "current"),
-                previous: gradesRes.filter(g => g.status?.toLowerCase() === "completed"),
+                current: gradesRes.filter(
+                    (g) => g.status?.toLowerCase() === "current"
+                ),
+                previous: gradesRes.filter(
+                    (g) => g.status?.toLowerCase() === "completed"
+                ),
             },
             enrollment: {
                 startDate: "August 21, 2022",
@@ -54,8 +67,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 history: [
                     "Transferred from Springfield Community College (Fall 2021)",
                     "Leave of Absence: Spring 2023",
-                    "Re‑enrolled: Fall 2023"
-                ]
+                    "Re‑enrolled: Fall 2023",
+                ],
             },
             // enrollment: {
             //     startDate: studentRes.startDate || "",
@@ -63,14 +76,15 @@ document.addEventListener("DOMContentLoaded", () => {
             //     graduation: studentRes.graduation || "",
             //     history: studentRes.history || []
             // },
-            documents: documentsRes || []
+            documents: documentsRes || [],
         };
     }
 
     function formatTerm(term) {
         if (!term) return "";
         const [season, year] = term.split(" ");
-        const capitalized = season.charAt(0).toUpperCase() + season.slice(1).toLowerCase();
+        const capitalized =
+            season.charAt(0).toUpperCase() + season.slice(1).toLowerCase();
         return `${capitalized} ${year}`;
     }
 
@@ -90,11 +104,25 @@ document.addEventListener("DOMContentLoaded", () => {
                 ${c.minor ? `<p><strong>Minor:</strong> ${c.minor}</p>` : ""}
                 <h3>Current Courses</h3>
                 <ul>
-                    ${(c.currentCourses || []).map(x => `<li>${x.course_name} (${x.credits} credits) — ${x.term || ""}</li>`).join("")}
+                    ${(c.currentCourses || [])
+                        .map(
+                            (x) =>
+                                `<li>${x.course_name} (${
+                                    x.credits
+                                } credits) — ${x.term || ""}</li>`
+                        )
+                        .join("")}
                 </ul>
                 <h3>Previous Courses</h3>
                 <ul>
-                    ${(c.previousCourses || []).map(x => `<li>${x.course_name} (${x.credits} credits) — ${x.term || ""}</li>`).join("")}
+                    ${(c.previousCourses || [])
+                        .map(
+                            (x) =>
+                                `<li>${x.course_name} (${
+                                    x.credits
+                                } credits) — ${x.term || ""}</li>`
+                        )
+                        .join("")}
                 </ul>`;
             return;
         }
@@ -104,17 +132,35 @@ document.addEventListener("DOMContentLoaded", () => {
             el.innerHTML = `
                 <h2>Grades</h2>
                 <h3>Current Courses</h3>
-                ${g.current && g.current.length ? `
+                ${
+                    g.current && g.current.length
+                        ? `
                     <table>
                         <thead><tr><th>Course</th><th>Grade</th></tr></thead>
-                        <tbody>${g.current.map(r => `<tr><td>${r.course_name}</td><td>${r.grade}</td></tr>`).join("")}</tbody>
-                    </table>` : "<p>No current grades</p>"}
+                        <tbody>${g.current
+                            .map(
+                                (r) =>
+                                    `<tr><td>${r.course_name}</td><td>${r.grade}</td></tr>`
+                            )
+                            .join("")}</tbody>
+                    </table>`
+                        : "<p>No current grades</p>"
+                }
                 <h3>Previous Courses</h3>
-                ${g.previous && g.previous.length ? `
+                ${
+                    g.previous && g.previous.length
+                        ? `
                     <table>
                         <thead><tr><th>Course</th><th>Grade</th></tr></thead>
-                        <tbody>${g.previous.map(r => `<tr><td>${r.course_name}</td><td>${r.grade}</td></tr>`).join("")}</tbody>
-                    </table>` : "<p>No previous grades</p>"}`;
+                        <tbody>${g.previous
+                            .map(
+                                (r) =>
+                                    `<tr><td>${r.course_name}</td><td>${r.grade}</td></tr>`
+                            )
+                            .join("")}</tbody>
+                    </table>`
+                        : "<p>No previous grades</p>"
+                }`;
             return;
         }
 
@@ -126,14 +172,24 @@ document.addEventListener("DOMContentLoaded", () => {
                 <p><strong>Status:</strong> ${e.status}</p>
                 <p><strong>Expected Graduation:</strong> ${e.graduation}</p>
                 <h3>Enrollment History</h3>
-                <ul>${(e.history || []).map(item => `<li>${item}</li>`).join("")}</ul>`;
+                <ul>${(e.history || [])
+                    .map((item) => `<li>${item}</li>`)
+                    .join("")}</ul>`;
             return;
         }
 
         if (tabId === "documents") {
             const d = data.documents || [];
-            el.innerHTML = `<h2>Documents</h2>${d.length ? `<ul>${d.map(doc => `<li><a href="${doc.url}" target="_blank">${doc.name}</a></li>`).join("")}</ul>` : "<p>No documents available</p>"
-                }`;
+            el.innerHTML = `<h2>Documents</h2>${
+                d.length
+                    ? `<ul>${d
+                          .map(
+                              (doc) =>
+                                  `<li><a href="${doc.url}" target="_blank">${doc.name}</a></li>`
+                          )
+                          .join("")}</ul>`
+                    : "<p>No documents available</p>"
+            }`;
             return;
         }
     }
@@ -144,8 +200,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!target) return;
         ev.preventDefault();
 
-        tabButtons.forEach(b => b.classList.remove("active"));
-        tabContents.forEach(c => c.classList.remove("active"));
+        tabButtons.forEach((b) => b.classList.remove("active"));
+        tabContents.forEach((c) => c.classList.remove("active"));
 
         target.classList.add("active");
         const id = target.dataset.tab;
@@ -159,7 +215,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Load first tab automatically
-    const initial = tabContainer.querySelector(".tab-link.active") || tabContainer.querySelector(".tab-link");
+    const initial =
+        tabContainer.querySelector(".tab-link.active") ||
+        tabContainer.querySelector(".tab-link");
     if (initial) initial.click();
 
     // -----------------------------
@@ -186,7 +244,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         // Attach delete button events
-        document.querySelectorAll(".delete-note-btn").forEach(btn => {
+        document.querySelectorAll(".delete-note-btn").forEach((btn) => {
             btn.addEventListener("click", () => {
                 const index = btn.dataset.index;
                 deleteNote(index);
@@ -217,7 +275,7 @@ document.addEventListener("DOMContentLoaded", () => {
             year: "numeric",
             hour: "numeric",
             minute: "2-digit",
-            hour12: true
+            hour12: true,
         });
 
         const note = { text, date: formattedDate };
