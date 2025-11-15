@@ -1,4 +1,4 @@
-CREATE DATABASE IF NOT EXISTS studentmanagementsystem;
+-- CREATE DATABASE IF NOT EXISTS studentmanagementsystem;
 
 USE studentmanagementsystem;
 

@@ -1,164 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <title>Register</title>
-        <link rel="stylesheet" href="assets/css/register.css" />
-        <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-            rel="stylesheet"
-        />
-        <link rel="stylesheet" href="assets/css/sidebar.css" />
-    </head>
+<head>
+    <meta charset="UTF-8" />
+    <title>Register</title>
+    <link rel="stylesheet" href="assets/css/register.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/sidebar.css" />
+</head>
+<body>
+    <main>
+        <!-- Sidebar Container -->
+        <div id="sidebar-container"></div>
 
-    <body>
-        <main>
-            <!-- Sidebar Container -->
-            <div id="sidebar-container"></div>
-            <!-- Main Content -->
-            <div class="container">
-                <div class="margin-adding">
-                    <h1>Course Registration</h1>
-                    <p class="subtitle">
-                        Select your program, session, and courses for the
-                        upcoming term.
-                    </p>
+        <!-- Main Content -->
+        <div class="container">
+            <div class="margin-adding">
+                <h1>Course Registration</h1>
+                <p class="subtitle">
+                    Select your program, session, and courses for the upcoming term.
+                </p>
 
-                    <form action="https://httpbin.org/post" method="post">
-                        <!-- Basic Information Section -->
-                        <div class="form-section">
-                            <h2 class="section-title">Basic Information</h2>
+                <form id="registrationForm">
+                    <!-- Basic Information Section -->
+                    <div class="form-section">
+                        <h2 class="section-title">Basic Information</h2>
 
-                            <div class="form-group">
-                                <label for="program">Program</label>
-                                <select id="program" name="program">
-                                    <option value="undergraduate">
-                                        Undergraduate Program
-                                    </option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="session"
-                                    >Session
-                                    <span class="required">*</span></label
-                                >
-                                <select id="session" name="session" required>
-                                    <option value="">Select a session</option>
-                                    <option value="spring">Spring</option>
-                                    <option value="summer">Summer</option>
-                                    <option value="fall">Fall</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="year"
-                                    >Year <span class="required">*</span></label
-                                >
-                                <input
-                                    type="number"
-                                    id="year"
-                                    name="year"
-                                    min="2024"
-                                    max="2030"
-                                    placeholder="e.g., 2025"
-                                    required
-                                />
-                            </div>
+                        <div class="form-group">
+                            <label for="program">Program</label>
+                            <select id="program" name="program">
+                                <option value="undergraduate">Undergraduate Program</option>
+                            </select>
                         </div>
 
-                        <!-- Academic Information Section -->
-                        <div class="form-section">
-                            <h2 class="section-title">Academic Information</h2>
-
-                            <!-- Sample for now:  -->
-                            <div class="form-group">
-                                <label for="courses"
-                                    >Select the course you want to enroll in.
-                                    <span class="required">*</span></label
-                                >
-                                <select id="courses" name="courses" required>
-                                    <option value="">Select a course</option>
-                                    <optgroup label="Computer Science">
-                                        <option value="csc108">
-                                            CSC 108 - Introduction to
-                                            Programming (4 credits)
-                                        </option>
-                                        <option value="csc109">
-                                            CSC 109 - Intermidate C++ (4
-                                            credits)
-                                        </option>
-                                        <option value="csc211">
-                                            CSC 211 - Data Structures (4
-                                            credits)
-                                        </option>
-                                        <option value="csc208">
-                                            CSC 208 - Assembly Language (4
-                                            credits)
-                                        </option>
-                                        <option value="csc212">
-                                            CSC 212 - Software Engineering (4
-                                            credits)
-                                        </option>
-                                    </optgroup>
-                                    <optgroup label="Mathematics">
-                                        <option value="math101">
-                                            MATH 101 - Calculus I (4 credits)
-                                        </option>
-                                        <option value="math102">
-                                            MATH 102 - Calculus II (4 credits)
-                                        </option>
-                                        <option value="math201">
-                                            MATH 201 - Probability and
-                                            Statistics (3 credits)
-                                        </option>
-                                    </optgroup>
-                                    <optgroup label="Biology">
-                                        <option value="bio101">
-                                            BIO 101 - General Biology (3
-                                            credits)
-                                        </option>
-                                    </optgroup>
-                                    <optgroup label="Art">
-                                        <option value="art101">
-                                            ART 101 - History of Art (3 credits)
-                                        </option>
-                                    </optgroup>
-                                    <optgroup label="English">
-                                        <option value="comm101">
-                                            COMM 101 - Public Communication (3
-                                            credits)
-                                        </option>
-                                        <option value="eng101">
-                                            ENG 101 - English I (3 credits)
-                                        </option>
-                                        <option value="eng102">
-                                            ENG 102 - English II (3 credits)
-                                        </option>
-                                    </optgroup>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label for="degree">
-                                    Degree type
-                                    <span class="required">*</span></label
-                                >
-                                <select name="degree" id="degree">
-                                    <option value="">Select</option>
-                                    <option value="major">Major</option>
-                                    <option value="minor">Minor</option>
-                                </select>
-                            </div>
+                        <div class="form-group">
+                            <label for="session">Session <span class="required">*</span></label>
+                            <select id="session" name="session" required>
+                                <option value="">Select a session</option>
+                                <option value="spring">Spring</option>
+                                <option value="summer">Summer</option>
+                                <option value="fall">Fall</option>
+                            </select>
                         </div>
 
-                        <div class="button-group">
-                            <button type="submit">Register Now</button>
+                        <div class="form-group">
+                            <label for="year">Year <span class="required">*</span></label>
+                            <input type="number" id="year" name="year" min="2024" max="2030" placeholder="e.g., 2025" required />
                         </div>
-                    </form>
-                </div>
+                    </div>
+
+                    <!-- Academic Information Section -->
+                    <div class="form-section">
+                        <h2 class="section-title">Academic Information</h2>
+
+                        <div class="form-group">
+                            <label for="courses">Select the course you want to enroll in <span class="required">*</span></label>
+                            <select id="courses" name="courses" required>
+                                <option value="">Select a course</option>
+                                <!-- Options will be populated dynamically from backend -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Program Information Section -->
+                    <div class="form-section">
+                        <h2 class="section-title">Program Information</h2>
+
+                        <div class="form-group">
+                            <label for="degreeType">Degree Type <span class="required">*</span></label>
+                            <select id="degreeType" name="degreeType" required>
+                                <option value="">Select a degree type</option>
+                                <option value="major">Major</option>
+                                <option value="minor">Minor</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="major">Major/Minor <span class="required">*</span></label>
+                            <select id="major" name="major" required></select>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit">Register Now</button>
+                    </div>
+                </form>
+
+                <div id="message"></div>
             </div>
-        </main>
-        <script src="assets/js/sidebar.js"></script>
-    </body>
+        </div>
+    </main>
+
+    <script src="assets/js/sidebar.js"></script>
+    <script src="assets/js/register.js"></script>
+</body>
 </html>
