@@ -429,7 +429,7 @@ void StudentController::getStudentCourses(
         "FROM Enrollments e "
         "JOIN Users u ON e.user_id = u.id "
         "JOIN Courses c ON e.course_id = c.course_id "
-        "WHERE u.student_id = ? AND e.status = 'current'",
+        "WHERE u.student_id = ?",
         [callback](const orm::Result& result) {
             Json::Value courses(Json::arrayValue);
             for (const auto& row : result)
