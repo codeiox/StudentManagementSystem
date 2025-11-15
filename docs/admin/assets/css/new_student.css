@@ -1,76 +1,23 @@
-/* ---------- Base layout ---------- */
-body {
-  margin: 0;
-  font-family: "Segoe UI", sans-serif;
-  display: flex;
-  min-height: 100vh;
+/* Remove all default spacing and force the background to cover the whole viewport */
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 100%;
+  background-color: #f8f9fa !important; /* your solid color */
 }
 
-/* Main content, full height, uniform background */
+/* Make main stretch full width */
 .main {
-  flex-grow: 1;
-  padding: 40px;
-  margin-left: 220px; /* offset for sidebar */
-  background-color: #f8f9fa; /* uniform background */
+  width: 100%;
+  min-height: 100vh; /* ensures it covers the full viewport */
+  padding: 40px 0; /* optional padding for content */
 }
 
-/* ---------- Form wrapper ---------- */
-.form-wrapper {
-  max-width: 900px;
-  margin: auto;
-  padding: 30px;
-  background-color: #f8f9fa; /* same as main */
+/* Center the card and keep it white */
+.card {
+  background-color: #ffffff;
+  margin: 0 auto;
+  max-width: 700px;
   border-radius: 8px;
-}
-
-/* ---------- Form fields ---------- */
-form label {
-  display: block;
-  margin-top: 15px;
-  font-weight: 600;
-}
-
-form input,
-form select {
-  width: 100%;
-  padding: 10px;
-  margin-top: 5px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
-}
-
-/* Rows with multiple columns */
-.row {
-  display: flex;
-  gap: 15px;
-  margin-bottom: 15px;
-}
-
-.row .col {
-  flex: 1;
-}
-
-/* ---------- Submit button ---------- */
-.submit-btn {
-  width: 100%;
-  padding: 12px;
-  margin-top: 20px;
-  background-color: #28a745;
-  color: #fff;
-  font-size: 16px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.submit-btn:hover {
-  background-color: #218838;
-}
-
-/* ---------- Status message ---------- */
-.status {
-  text-align: center;
-  margin-top: 15px;
-  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
