@@ -92,9 +92,9 @@ document.querySelector("#toggleSort").addEventListener("click", () => {
     // Update button text to show current sort direction
     const sortButton = document.querySelector("#toggleSort");
     if (currentSortOrder === "asc") {
-        sortButton.innerHTML = "Sort &uarr;"; // Up arrow for A-Z
+        sortButton.innerHTML = "FullName &uarr;"; // Up arrow for A-Z
     } else {
-        sortButton.innerHTML = "Sort &darr;"; // Down arrow for Z-A
+        sortButton.innerHTML = "FullName &darr;"; // Down arrow for Z-A
     }
 });
 
