@@ -1,4 +1,58 @@
 document.addEventListener("DOMContentLoaded", () => {
+    // --- FETCH AND DISPLAY STUDENT PROFILE INFO ---
+    const studentId = new URLSearchParams(window.location.search).get("id");
+
+    if (!studentId) {
+        alert("No student ID found in URL!");
+        return;
+    }
+
+    fetch(`/api/admin/students/${studentId}`)
+        .then((res) => res.json())
+        .then((student) => {
+            document.getElementById(
+                "fullName"
+            ).textContent = `${student.first_name} ${student.last_name}`;
+
+            document.getElementById("studentId").textContent =
+                student.student_id;
+
+            // Format DOB
+            const dob = new Date(student.dob);
+            const formattedDob =
+                `${String(dob.getMonth() + 1).padStart(2, "0")}-` +
+                `${String(dob.getDate()).padStart(2, "0")}-` +
+                dob.getFullYear();
+
+            document.getElementById("dob").textContent = formattedDob;
+            document.getElementById("gender").textContent = student.gender;
+            document.getElementById("email").textContent = student.email;
+            document.getElementById("phone").textContent = student.phone;
+            document.getElementById("address").textContent = student.address;
+            document.getElementById("status").textContent =
+                student.enrollmentStatus;
+
+            // Set profile photo
+            const photo = document.getElementById("studentPhoto");
+            const gender = student.gender?.toLowerCase();
+
+            if (gender === "female") {
+                photo.src =
+                    "https://api.dicebear.com/9.x/adventurer/svg?seed=Jude";
+            } else if (gender === "male") {
+                photo.src =
+                    "https://api.dicebear.com/9.x/adventurer/svg?seed=Luis";
+            } else {
+                photo.src =
+                    "https://api.dicebear.com/9.x/adventurer/svg?seed=other";
+            }
+        })
+        .catch((err) => {
+            console.error("Error loading profile:", err);
+            alert("Could not load student info");
+        });
+
+    // --- COURSE REGISTRATION FORM LOGIC ---
     const form = document.getElementById("registrationForm");
     const messageDiv = document.getElementById("message");
     const courseSelect = document.getElementById("courses");
@@ -104,5 +158,10 @@ document.addEventListener("DOMContentLoaded", () => {
             messageDiv.textContent = "Network error while registering course.";
             messageDiv.style.color = "red";
         }
+    });
+
+    // --Back button to student profile--
+    document.getElementById("backBtn").addEventListener("click", () => {
+        window.location.href = `/admin/student_profile.html?id=${studentId}`;
     });
 });

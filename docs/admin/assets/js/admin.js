@@ -43,6 +43,17 @@ function formatDate(dateString) {
     }
 }
 
+function formatPhoneNumber(phone) {
+    if (!phone) return "-";
+    const cleaned = phone.replace(/\D/g, "");
+    if (cleaned.length === 10) {
+        return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 6)}-${cleaned.slice(
+            6
+        )}`;
+    }
+    return phone;
+}
+
 function showError(message) {
     const errorElement = document.getElementById("profile-error");
     if (errorElement) {
@@ -80,11 +91,11 @@ async function loadAdminProfile() {
         // Fill display elements
         setText("nameDisplay", data.full_name);
         setText("emailDisplay", data.email);
-        setText("phoneDisplay", data.phone);
+        setText("phoneDisplay", formatPhoneNumber(data.phone));
         setText("addressDisplay", data.address);
         setText("dobDisplay", formatDate(data.dob));
         setText("usernameDisplay", data.username);
-        setText("employeeIdDisplay", data.employee_id || "-");
+        setText("employeeIdDisplay", data.employee_id || "123458");
 
         // Fill input fields (hidden until edit)
         setValue("nameInput", data.full_name);
@@ -239,10 +250,11 @@ saveBtn.addEventListener("click", async () => {
     saveBtn.textContent = "Save Changes";
 
     if (result.success) {
-        // Update display values
+        // Update display values with formatting
         document.getElementById("nameDisplay").textContent = name;
         document.getElementById("emailDisplay").textContent = email;
-        document.getElementById("phoneDisplay").textContent = phone || "-";
+        document.getElementById("phoneDisplay").textContent =
+            formatPhoneNumber(phone);
         document.getElementById("addressDisplay").textContent = address || "-";
 
         // Clear and hide password field
