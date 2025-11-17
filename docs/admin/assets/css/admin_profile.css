@@ -219,3 +219,71 @@ button {
 .success-message.show {
     display: block;
 }
+
+/* Hide password section by default */
+#password-change-section {
+    display: none;
+}
+
+/* Show password section when toggled */
+#password-change-section.show {
+    display: block !important;
+}
+
+/* Show toggle button only in edit mode */
+.profile-card.edit-mode #change-password-toggle {
+    display: block !important;
+}
+
+/* Hide toggle button when password section is shown */
+#password-change-section.show ~ #change-password-toggle {
+    display: none !important;
+}
+
+/* Optional: Style for secondary button */
+.secondary-btn {
+    background: transparent;
+    border: 2px solid var(--primary-color, #4caf50);
+    color: var(--primary-color, #4caf50);
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.secondary-btn:hover {
+    background: var(--primary-color, #4caf50);
+    color: white;
+}
+
+/* Container for the whole thing */
+.password-wrapper {
+    position: relative; /* anchor for absolute child */
+    display: inline-block; /* shrink-wrap to input width */
+    width: 100%; /* or match your design */
+}
+
+/* The password input itself */
+.password-wrapper input#passwordInput {
+    width: 100%;
+    padding-right: 40px; /* make room for the icon */
+    box-sizing: border-box;
+}
+
+/* The eye icon */
+.password-wrapper i#togglePassword {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #666;
+    font-size: 1.1rem;
+    user-select: none;
+}
+
+/* change icon when password is visible */
+.password-wrapper i.fa-eye-slash {
+    color: #333;
+}
