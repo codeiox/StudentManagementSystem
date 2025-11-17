@@ -42,7 +42,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         term: formatTerm(c.term)
                     })),
             },
-
             grades: {
                 current: gradesRes.filter(g => g.status?.toLowerCase() === "current"),
                 previous: gradesRes.filter(g => g.status?.toLowerCase() === "completed"),
@@ -132,8 +131,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (tabId === "documents") {
             const d = data.documents || [];
-            el.innerHTML = `<h2>Documents</h2>${d.length ? `<ul>${d.map(doc => `<li><a href="${doc.url}" target="_blank">${doc.name}</a></li>`).join("")}</ul>` : "<p>No documents available</p>"
-                }`;
+            el.innerHTML = `<h2>Documents</h2>${
+                d.length ? `<ul>${d.map(doc => `<li><a href="${doc.url}" target="_blank">${doc.name}</a></li>`).join("")}</ul>` : "<p>No documents available</p>"
+            }`;
             return;
         }
     }

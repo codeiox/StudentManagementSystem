@@ -263,7 +263,9 @@ void StudentController::deleteStudent(const HttpRequestPtr& req,
 // Handles GET request to fetch student details by ID
 void StudentController::getStudentById(
     const drogon::HttpRequestPtr& req,
-    std::function<void(const drogon::HttpResponsePtr&)>&& callback, std::string studentId) {
+    std::function<void(const drogon::HttpResponsePtr&)>&& callback,
+    std::string studentId)
+{
     // Get database client
     auto client = drogon::app().getDbClient("default");
 
@@ -306,14 +308,16 @@ void StudentController::getStudentById(
             resp->setBody("Database error: " + std::string(e.base().what()));
             callback(resp);
         },
-        studentId  // SQL parameter
+        studentId // SQL parameter
     );
 }
 
 // Handles PUT request to update a student's enrollment status
 void StudentController::updateEnrollmentStatus(
     const drogon::HttpRequestPtr& req,
-    std::function<void(const drogon::HttpResponsePtr&)>&& callback, std::string studentId) {
+    std::function<void(const drogon::HttpResponsePtr&)>&& callback,
+    std::string studentId)
+{
     // Parse JSON body
     auto json = req->getJsonObject();
     if (!json || !json->isMember("enrollmentStatus")) {
@@ -327,9 +331,7 @@ void StudentController::updateEnrollmentStatus(
 
     // Extract and validate new status
     std::string newStatus = json->get("enrollmentStatus", "").asString();
-    std::set<std::string> validStatuses = {"active", "graduated", "probation", "suspended",
-                                           "inactive"};
-
+    std::set<std::string> validStatuses = {"active", "graduated", "probation", "suspended", "inactive"};
     if (validStatuses.find(newStatus) == validStatuses.end()) {
         // Invalid value — return 400 Bad Request
         auto resp = drogon::HttpResponse::newHttpResponse();
@@ -359,16 +361,19 @@ void StudentController::updateEnrollmentStatus(
             resp->setBody("Database error: " + std::string(e.base().what()));
             callback(resp);
         },
-        newStatus, studentId  // SQL parameters
+        newStatus, studentId // SQL parameters
     );
 }
 
-void StudentController::enrollStudentInCourse(const HttpRequestPtr &req,
-                                              std::function<void(const HttpResponsePtr &)> &&callback,
-                                              std::string studentId)
+// Handles POST request to enroll a student in a course
+void StudentController::enrollStudentInCourse(
+    const HttpRequestPtr &req,
+    std::function<void(const HttpResponsePtr &)> &&callback,
+    std::string studentId)
 {
     auto json = req->getJsonObject();
-    if (!json || !json->isMember("course_id") || !json->isMember("term")) {
+    if (!json || !json->isMember("course_id") || !json->isMember("term"))
+    {
         auto resp = HttpResponse::newHttpResponse();
         resp->setStatusCode(k400BadRequest);
         resp->setBody("Missing required fields: course_id, term");
@@ -404,11 +409,12 @@ void StudentController::enrollStudentInCourse(const HttpRequestPtr &req,
         courseId, term, status, grade, studentId);
 
     // Update major/minor if provided
-    if (majorId > 0 && (degreeType == "major" || degreeType == "minor")) {
+    if (majorId > 0 && (degreeType == "major" || degreeType == "minor"))
+    {
         std::string field = (degreeType == "major") ? "major_id" : "minor_id";
         client->execSqlAsync(
             "UPDATE Users SET " + field + " = ? WHERE student_id = ?",
-            [](const orm::Result &) {},  // silent success
+            [](const orm::Result &) {}, // silent success
             [](const orm::DrogonDbException &e) {
                 LOG_ERROR << "Failed to update major/minor: " << e.base().what();
             },
@@ -497,7 +503,7 @@ void StudentController::getStudentGrades(
         studentId);
 }
 
-// GET /api/admin/students/{studentId}/program
+// Handles GET request to fetch student's program (major/minor)
 void StudentController::getStudentProgram(
     const HttpRequestPtr& req,
     std::function<void(const HttpResponsePtr&)>&& callback,
