@@ -9,9 +9,10 @@
         />
         <link rel="stylesheet" href="assets/css/sidebar.css" />
         <link rel="stylesheet" href="assets/css/dashboard.css" />
+
         <link
             rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
         />
     </head>
     <body>
@@ -64,7 +65,7 @@
                         </div>
                     </div>
 
-                    <section class="recent-activities" loading="lazy">
+                    <section class="recent-activities">
                         <h3>Recent Activies</h3>
                         <div id="recentActivities">
                             <p class="loading">Loading activities...</p>
@@ -117,7 +118,14 @@
         <script defer src="assets/js/total.js"></script>
         <script defer src="assets/js/recentActivities.js"></script>
         <!-- Add Chart.js CDN -->
-        <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <!-- OLD -- -->
+        <!-- <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
+
+        <!-- NEW -- Replaced new updated link -->
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"
+        ></script>
 
         <!-- FullCalendar v6 CDN -->
         <script
