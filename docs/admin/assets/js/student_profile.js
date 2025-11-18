@@ -51,7 +51,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         term: formatTerm(c.term),
                     })),
             },
-
             grades: {
                 current: gradesRes.filter(
                     (g) => g.status?.toLowerCase() === "current"
