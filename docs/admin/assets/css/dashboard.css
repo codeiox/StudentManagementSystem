@@ -5,6 +5,7 @@ body {
     margin: 0;
     box-sizing: border-box;
     font-family: Arial, sans-serif;
+    overflow-x: hidden;
 }
 
 body {
@@ -337,7 +338,7 @@ body {
 
 #search-input {
     height: 40px;
-    width: 35rem;
+    width: 34rem;
     border-radius: 12px;
     padding: 0 15px;
     border: 2px solid #ccc;

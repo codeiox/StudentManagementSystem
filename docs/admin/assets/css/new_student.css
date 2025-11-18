@@ -1,3 +1,23 @@
-.form-container {
-    max-width: 500px;
-  }
+/* Remove all default spacing and force the background to cover the whole viewport */
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 100%;
+  background-color: #f8f9fa !important; /* your solid color */
+}
+
+/* Make main stretch full width */
+.main {
+  width: 100%;
+  min-height: 100vh; /* ensures it covers the full viewport */
+  padding: 40px 0; /* optional padding for content */
+}
+
+/* Center the card and keep it white */
+.card {
+  background-color: #ffffff;
+  margin: 0 auto;
+  max-width: 700px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}

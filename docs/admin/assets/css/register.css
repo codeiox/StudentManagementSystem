@@ -2,31 +2,30 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: Arial, Helvetica, sans-serif;
 }
-
-body,
-html {
-    font-family: Arial, Helvetica, sans-serif;
-    margin-top: 5rem;
-    margin-bottom: 5rem;
-}
-
 main {
-    flex-grow: 1;
-    margin-left: 240px;
-}
-.margin-adding {
-    margin: 40px;
+    display: flex;
+    min-height: 100vh;
 }
 
 .container {
-    max-width: calc(100% - 220px);
-    margin: 0 auto;
+    flex: 1;
+    display: flex;
+    justify-content: left;
+    padding: 0;
+    margin: 0;
+}
+.margin-adding {
     background: white;
-    padding: 20px;
+    padding: 40px;
     border-radius: 16px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 1000px;
+    width: calc(100% - 408px);
+    overflow: visible;
+    position: relative;
+    margin: 5px 408px 5px 0;
+    width: calc(100% - 408px);
 }
 
 h1 {
@@ -55,6 +54,8 @@ h1 {
 
 .form-group {
     margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
 }
 
 label {
@@ -118,12 +119,93 @@ option {
     cursor: pointer;
 }
 
-@media (max-width: 640px) {
-    .container {
-        padding: 20px;
-    }
+/*back button */
+.back-btn {
+    margin: 1rem 0 0 1rem;
+}
 
-    h1 {
-        font-size: 24px;
-    }
+.back-btn button {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Back button styling */
+#backBtn {
+    background-color: #007bff; /* Primary blue background */
+    color: white; /* White text */
+    border: none; /* Remove default border */
+    padding: 10px 18px; /* Padding around text */
+    border-radius: 6px; /* Rounded corners */
+    font-size: 14px; /* Button font size */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.2s ease; /* Smooth hover effect */
+}
+#backBtn:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* ---------------- Right Panel Container ---------------- */
+.right-panel {
+    position: fixed; /* Keeps panel in place while scrolling */
+    top: -3px; /* Aligns panel to top of viewport */
+    right: 0px; /* Aligns panel to right edge of viewport */
+    width: 355px; /* Fixed panel width */
+    height: 100vh; /* Full viewport height */
+    background: linear-gradient(
+        135deg,
+        #efccff,
+        #e0fffa
+    ); /* pastel butter-lavender gradient */
+    color: #222; /* Default text color */
+    padding: 0px 25px 25px 25px; /* Inner spacing around content */
+    padding-top: 5.5rem;
+    border-left: 3px solid #007bff; /* Left border accent to match theme */
+    box-shadow: -2px 0 15px rgba(0, 0, 0, 0.1); /* Shadow to separate panel from main content */
+    overflow-y: auto; /* Scrollbar appears if content exceeds viewport height */
+    z-index: 100; /* Stays above main content */
+}
+
+/* ---------------- Panel Title ---------------- */
+.right-panel h2 {
+    margin-top: 0; /* Removes default top margin */
+    margin-bottom: 20px; /* Space below title */
+    color: #111; /* Dark text for readability */
+    font-weight: bold;
+    font-size: 22px; /* Slightly larger font for emphasis */
+    text-align: center; /* Center the title */
+}
+
+/* ---------------- Student Info Text ---------------- */
+.profile-info p {
+    line-height: 1.2rem;
+    margin: 10px 0; /* Vertical spacing between info rows */
+    font-size: 15px; /* Readable font size */
+    color: #333; /* Dark gray text for contrast */
+}
+
+.profile-info strong {
+    display: inline-block; /* Keeps label and value aligned */
+    width: 120px; /* Fixed width for labels */
+    color: #111; /* Label text color */
+}
+
+/* ---------------- Profile Image ---------------- */
+.profile-image {
+    display: flex; /* Flex container for centering */
+    justify-content: center; /* Center image horizontally */
+    margin-bottom: 20px; /* Space below image */
+}
+
+.profile-image img {
+    width: 128px; /* Fixed width */
+    height: 128px; /* Fixed height */
+    border-radius: 50%; /* Rounded corners */
+    object-fit: cover; /* Keep image proportions and crop if needed */
+    border: 3px solid #007bff; /* Blue border accent */
+    background-color: #e6f0ff; /* Fallback pastel background */
+}
+
+/* ---------------- Info Section Spacing ---------------- */
+.profile-info {
+    padding-top: 2rem;
+    padding-left: 1.5rem;
 }
