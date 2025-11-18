@@ -401,8 +401,9 @@ void StudentController::updateEnrollmentStatus(
 }
 
 void StudentController::enrollStudentInCourse(
-    const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback,
-    std::string studentId) {
+    const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback,
+    std::string studentId)
+{
     auto json = req->getJsonObject();
     if (!json || !json->isMember("course_id") || !json->isMember("term"))
     {
@@ -426,13 +427,15 @@ void StudentController::enrollStudentInCourse(
     client->execSqlAsync(
         "INSERT INTO Enrollments (user_id, course_id, term, status, grade) "
         "SELECT u.id, ?, ?, ?, ? FROM Users u WHERE u.student_id = ?",
-        [callback](const orm::Result &r) {
+        [callback](const orm::Result &r)
+        {
             auto resp = HttpResponse::newHttpResponse();
             resp->setStatusCode(k200OK);
             resp->setBody("Student enrolled successfully");
             callback(resp);
         },
-        [callback](const orm::DrogonDbException &e) {
+        [callback](const orm::DrogonDbException &e)
+        {
             auto resp = HttpResponse::newHttpResponse();
             resp->setStatusCode(k500InternalServerError);
             resp->setBody("Database error: " + std::string(e.base().what()));
@@ -446,8 +449,9 @@ void StudentController::enrollStudentInCourse(
         std::string field = (degreeType == "major") ? "major_id" : "minor_id";
         client->execSqlAsync(
             "UPDATE Users SET " + field + " = ? WHERE student_id = ?",
-            [](const orm::Result &) {},  // silent success
-            [](const orm::DrogonDbException &e) {
+            [](const orm::Result &) {}, // silent success
+            [](const orm::DrogonDbException &e)
+            {
                 LOG_ERROR << "Failed to update major/minor: " << e.base().what();
             },
             majorId, studentId);
@@ -456,8 +460,8 @@ void StudentController::enrollStudentInCourse(
 
 // Handles GET request to fetch current courses for a student
 void StudentController::getStudentCourses(
-    const HttpRequestPtr& req,
-    std::function<void(const HttpResponsePtr&)>&& callback,
+    const HttpRequestPtr &req,
+    std::function<void(const HttpResponsePtr &)> &&callback,
     std::string studentId)
 {
     auto client = app().getDbClient("default");
@@ -471,7 +475,7 @@ void StudentController::getStudentCourses(
         [callback](const orm::Result &result)
         {
             Json::Value courses(Json::arrayValue);
-            for (const auto& row : result)
+            for (const auto &row : result)
             {
                 Json::Value course;
                 course["course_id"] = row["course_id"].as<int>();
@@ -497,9 +501,10 @@ void StudentController::getStudentCourses(
 }
 
 // Handles GET request to fetch grades for a student
-void StudentController::getStudentGrades(const HttpRequestPtr& req,
-                                         std::function<void(const HttpResponsePtr&)>&& callback,
-                                         std::string studentId) {
+void StudentController::getStudentGrades(const HttpRequestPtr &req,
+                                         std::function<void(const HttpResponsePtr &)> &&callback,
+                                         std::string studentId)
+{
     auto client = app().getDbClient("default");
 
     client->execSqlAsync(
@@ -508,16 +513,24 @@ void StudentController::getStudentGrades(const HttpRequestPtr& req,
         "JOIN Users u ON e.user_id = u.id "
         "JOIN Courses c ON e.course_id = c.course_id "
         "WHERE u.student_id = ?",
-        [callback](const orm::Result &result) {
+        [callback](const orm::Result &result)
+        {
             Json::Value grades(Json::arrayValue);
-            for (const auto& row : result) {
+            for (const auto &row : result)
+            {
                 Json::Value g;
                 g["course_name"] = row["course_name"].as<std::string>();
                 g["term"] = row["term"].as<std::string>();
                 g["status"] = row["status"].as<std::string>();
-                g["grade"] = row["grade"].isNull()
-                                 ? ""
-                                 : row["grade"].as<std::string>();
+                std::string grade = row["grade"].isNull() ? "" : row["grade"].as<std::string>();
+                std::string status = row["status"].as<std::string>();
+
+                if (status == "current" && grade.empty()) {
+                    grade = "IP"; // Show "In Progress"
+                } else if (status == "upcoming") {
+                    grade = "Registered";
+                }
+                g["grade"] = grade;
                 grades.append(g);
             }
 
@@ -525,7 +538,8 @@ void StudentController::getStudentGrades(const HttpRequestPtr& req,
             resp->setStatusCode(k200OK);
             callback(resp);
         },
-        [callback](const orm::DrogonDbException &e) {
+        [callback](const orm::DrogonDbException &e)
+        {
             auto resp = HttpResponse::newHttpResponse();
             resp->setStatusCode(k500InternalServerError);
             resp->setBody("Database error: " + std::string(e.base().what()));
@@ -536,8 +550,8 @@ void StudentController::getStudentGrades(const HttpRequestPtr& req,
 
 // GET /api/admin/students/{studentId}/program
 void StudentController::getStudentProgram(
-    const HttpRequestPtr& req,
-    std::function<void(const HttpResponsePtr&)>&& callback,
+    const HttpRequestPtr &req,
+    std::function<void(const HttpResponsePtr &)> &&callback,
     std::string studentId)
 {
     auto client = app().getDbClient("default");
@@ -551,7 +565,8 @@ void StudentController::getStudentProgram(
         [callback](const orm::Result &result)
         {
             Json::Value program;
-            if (!result.empty()) {
+            if (!result.empty())
+            {
                 program["major"] = result[0]["major_name"].isNull()
                                        ? "Undeclared"
                                        : result[0]["major_name"].as<std::string>();
