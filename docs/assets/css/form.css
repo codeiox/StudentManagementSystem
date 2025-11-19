@@ -85,3 +85,15 @@ button {
     border-radius: 4px;
     border-left: 4px solid #d32f2f;
 }
+
+form .icons {
+    position: absolute;
+}
+
+form .icons i {
+    position: relative;
+    left: 570px;
+    top: 35px;
+    cursor: pointer;
+    color: #4f4d4d;
+}

@@ -59,3 +59,16 @@ document.addEventListener("DOMContentLoaded", () => {
         .getElementById("resetPass")
         .addEventListener("submit", resetPassword);
 });
+
+const btn = document.querySelector(".fa-eye");
+const passwordEl = document.querySelector(".my-password");
+
+btn.addEventListener("click", () => {
+    if (passwordEl.type === "password") {
+        passwordEl.type = "text";
+        btn.classList.replace("fa-eye", "fa-eye-slash");
+    } else {
+        passwordEl.type = "password";
+        btn.classList.replace("fa-eye-slash", "fa-eye");
+    }
+});

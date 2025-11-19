@@ -5,6 +5,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Login</title>
         <link rel="stylesheet" href="assets/css/login.css" />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        />
     </head>
     <body>
         <div class="main">
@@ -20,8 +24,12 @@
                     required
                 />
 
+                <div class="icons">
+                    <i class="fa fa-eye" style="cursor: pointer"></i>
+                </div>
                 <label for="password">Password:</label>
                 <input
+                    class="my-password"
                     type="password"
                     id="password"
                     name="password"
@@ -40,5 +48,20 @@
         </div>
 
         <script src="assets/js/fetchLogin.js"></script>
+
+        <script>
+            const btn = document.querySelector(".fa-eye");
+            const passwordEl = document.querySelector(".my-password");
+
+            btn.addEventListener("click", () => {
+                if (passwordEl.type === "password") {
+                    passwordEl.type = "text";
+                    btn.classList.replace("fa-eye", "fa-eye-slash");
+                } else {
+                    passwordEl.type = "password";
+                    btn.classList.replace("fa-eye-slash", "fa-eye");
+                }
+            });
+        </script>
     </body>
 </html>
