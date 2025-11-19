@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function fetchStudentData(studentId) {
-        const [coursesRes, gradesRes, studentRes, majorsRes, documentsRes] =
+        const [coursesRes, gradesRes, studentRes, programRes, documentsRes] =
             await Promise.all([
                 fetch(`/api/admin/students/${studentId}/courses`).then((r) =>
                     r.ok ? r.json() : []
@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 fetch(`/api/admin/students/${studentId}`).then((r) =>
                     r.ok ? r.json() : {}
                 ),
-                fetch(`/api/admin/majors`).then((r) => (r.ok ? r.json() : [])),
+                fetch(`/api/admin/students/${studentId}/program`).then(r => r.ok ? r.json() : { major: "Undeclared", minor: "" }),
                 fetch(`/api/admin/students/${studentId}/documents`).then((r) =>
                     r.ok ? r.json() : []
                 ),
@@ -32,10 +32,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         return {
             courses: {
-                major: "Computer Science",
-                minor: "Mathematics",
-                // major: majorsRes.find(m => m.major_id === studentRes.major_id)?.name || "Undeclared",
-                // minor: majorsRes.find(m => m.major_id === studentRes.minor_id)?.name || "",
+                major: programRes.major || "Undeclared",
+                minor: programRes.minor || "",
                 currentCourses: coursesRes
                     .filter((c) => c.status?.toLowerCase() === "current")
                     .map((c) => ({

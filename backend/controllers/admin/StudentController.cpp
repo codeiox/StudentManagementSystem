@@ -418,8 +418,11 @@ void StudentController::enrollStudentInCourse(
     std::string term = (*json)["term"].asString();
     std::string status = json->get("status", "current").asString();
     std::string grade = json->get("grade", "").asString();
+    // int majorId = json->isMember("major_id") ? (*json)["major_id"].asInt() : 0;
+    // std::string degreeType = json->get("degreeType", "").asString();
+
     int majorId = json->isMember("major_id") ? (*json)["major_id"].asInt() : 0;
-    std::string degreeType = json->get("degreeType", "").asString();
+    int minorId = json->isMember("minor_id") ? (*json)["minor_id"].asInt() : 0;
 
     auto client = app().getDbClient("default");
 
@@ -444,17 +447,28 @@ void StudentController::enrollStudentInCourse(
         courseId, term, status, grade, studentId);
 
     // Update major/minor if provided
-    if (majorId > 0 && (degreeType == "major" || degreeType == "minor"))
+    if (majorId > 0)
     {
-        std::string field = (degreeType == "major") ? "major_id" : "minor_id";
         client->execSqlAsync(
-            "UPDATE Users SET " + field + " = ? WHERE student_id = ?",
+            "UPDATE Users SET major_id = ? WHERE student_id = ?",
             [](const orm::Result &) {}, // silent success
             [](const orm::DrogonDbException &e)
             {
-                LOG_ERROR << "Failed to update major/minor: " << e.base().what();
+                LOG_ERROR << "Failed to update major: " << e.base().what();
             },
             majorId, studentId);
+    }
+
+    if (minorId > 0)
+    {
+        client->execSqlAsync(
+            "UPDATE Users SET minor_id = ? WHERE student_id = ?",
+            [](const orm::Result &) {}, // silent success
+            [](const orm::DrogonDbException &e)
+            {
+                LOG_ERROR << "Failed to update minor: " << e.base().what();
+            },
+            minorId, studentId);
     }
 }
 
@@ -527,8 +541,6 @@ void StudentController::getStudentGrades(const HttpRequestPtr &req,
 
                 if (status == "current" && grade.empty()) {
                     grade = "IP"; // Show "In Progress"
-                } else if (status == "upcoming") {
-                    grade = "Registered";
                 }
                 g["grade"] = grade;
                 grades.append(g);

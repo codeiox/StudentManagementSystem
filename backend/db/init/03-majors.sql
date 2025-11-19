@@ -75,3 +75,10 @@ INSERT INTO Majors (name, type) VALUES
 ('History', 'minor'),
 ('Art', 'minor'),
 ('Communication Studies', 'minor');
+
+-- Modify Users table to add major + minor
+ALTER TABLE Users
+ADD COLUMN major_id INT NULL AFTER student_id,
+ADD COLUMN minor_id INT NULL AFTER major_id,
+ADD FOREIGN KEY (major_id) REFERENCES Majors(major_id),
+ADD FOREIGN KEY (minor_id) REFERENCES Majors(major_id);
