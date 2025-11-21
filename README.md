@@ -1,6 +1,6 @@
 # StudentManagementSystem
 
-## Features Demo video
+## Features Demo Video
 https://github.com/user-attachments/assets/ef7dc518-ce3d-4313-b722-ea796c675018
 
 
