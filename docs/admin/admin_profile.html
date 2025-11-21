@@ -69,6 +69,19 @@
                                 value="admin@gmail.com"
                             />
                         </div>
+                        <div
+                            class="error-message"
+                            id="phonenumber-error"
+                            style="
+                                display: none;
+                                color: #d32f2f;
+                                padding: 12px;
+                                margin-bottom: 15px;
+                                background: #ffebee;
+                                border-radius: 4px;
+                                border-left: 4px solid #d32f2f;
+                            "
+                        ></div>
 
                         <div class="info-group">
                             <label>Phone</label>
@@ -79,6 +92,9 @@
                                 type="tel"
                                 id="phoneInput"
                                 value="909-876-0983"
+                                pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+                                title="Phone number must be 10 digits!"
+                                required
                             />
                         </div>
 

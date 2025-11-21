@@ -3,17 +3,31 @@
     <head>
         <meta charset="UTF-8" />
         <title>Admin Dashboard</title>
+        <!-- Bootstrap (utilities + grid only for lighter weight) -->
         <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
             rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap-utilities.min.css"
         />
-        <link rel="stylesheet" href="assets/css/sidebar.css" />
-        <link rel="stylesheet" href="assets/css/dashboard.css" />
+
+        <!-- Bootstrap Grid  -->
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap-grid.min.css"
+        />
+
+        <!-- Font Awesome SOLID only (instead of full library) -->
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/fontawesome.min.css"
+        />
 
         <link
             rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/solid.min.css"
         />
+
+        <link rel="stylesheet" href="assets/css/sidebar.css" />
+        <link rel="stylesheet" href="assets/css/dashboard.css" />
     </head>
     <body>
         <!-- Sidebar Container -->
@@ -58,7 +72,7 @@
 
                     <!-- Status Bar Graph Section -->
                     <div class="card mb-4 p-3">
-                        <h3>Status Bar Graph</h3>
+                        <h3>Students Status</h3>
                         <div id="status-graph" class="chart-placeholder">
                             <!-- Bar Chart Canvas -->
                             <canvas id="statusChart"></canvas>
@@ -112,11 +126,7 @@
             </div>
         </section>
         <script defer src="assets/js/sidebar.js"></script>
-        <script defer src="assets/js/chart.js"></script>
-        <script defer src="assets/js/calendar.js"></script>
-        <script defer src="assets/js/probation.js"></script>
-        <script defer src="assets/js/total.js"></script>
-        <script defer src="assets/js/recentActivities.js"></script>
+        <script src="assets/js/dashboard.js"></script>
         <!-- Add Chart.js CDN -->
         <!-- OLD -- -->
         <!-- <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->

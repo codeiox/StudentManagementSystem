@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Reset Password</title>
+        <link rel="stylesheet" href="assets/css/form.css" />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        />
+    </head>
+    <body>
+        <div class="main">
+            <h1>Reset your password</h1>
+
+            <form id="resetPass">
+                <label for="username">Username:</label>
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    placeholder="Enter your username"
+                    required
+                />
+                <div class="icons">
+                    <i class="fa fa-eye" style="cursor: pointer"></i>
+                </div>
+                <label for="password">New password:</label>
+                <input
+                    class="my-password"
+                    type="password"
+                    id="new-password"
+                    name="password"
+                    placeholder="Enter new password"
+                    pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])(?=.{8,}).*$"
+                    title="Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character."
+                    required
+                />
+                <div class="success-message" id="successMessage">
+                    Profile updated successfully!
+                </div>
+                <div
+                    class="error-message"
+                    id="password-error"
+                    style="
+                        display: none;
+                        color: #d32f2f;
+                        padding: 12px;
+                        margin-bottom: 15px;
+                        background: #ffebee;
+                        border-radius: 4px;
+                        border-left: 4px solid #d32f2f;
+                    "
+                ></div>
+
+                <div class="wrap">
+                    <button type="submit" id="resetPassword">Reset Now</button>
+                </div>
+            </form>
+        </div>
+        <script src="assets/js/resetPass.js"></script>
+    </body>
+</html>

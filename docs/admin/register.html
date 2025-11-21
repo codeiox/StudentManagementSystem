@@ -25,7 +25,10 @@
                         upcoming term.
                     </p>
 
-                    <form id="registrationForm">
+                    <form
+                        id="registrationForm"
+                        onsubmit="setTimeout(() => {window.location.reload();}, 2000);"
+                    >
                         <!-- Basic Information Section -->
                         <div class="form-section">
                             <h2 class="section-title">Basic Information</h2>
@@ -118,13 +121,12 @@
                                 ></select>
                             </div>
                         </div>
+                        <div id="message" style="text-align: center"></div>
 
                         <div class="button-group">
                             <button type="submit">Register Now</button>
                         </div>
                     </form>
-
-                    <div id="message"></div>
                 </div>
             </div>
 

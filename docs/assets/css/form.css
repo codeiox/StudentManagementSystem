@@ -16,7 +16,7 @@ body {
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
     padding: 10px 20px;
     transition: transform 0.2s;
-    width: 500px;
+    width: 600px;
     text-align: center;
 }
 
@@ -52,7 +52,7 @@ button {
     border: none;
     color: white;
     cursor: pointer;
-    background-color: #4CAF50;
+    background-color: #4caf50;
     width: 50%;
     font-size: 16px;
 }
@@ -61,4 +61,39 @@ button {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.success-message,
+.error-message {
+    display: none;
+}
+
+.success-message {
+    color: #2e7d32;
+    padding: 12px;
+    margin-bottom: 15px;
+    background: #e8f5e9;
+    border-radius: 4px;
+    border-left: 4px solid #2e7d32;
+}
+
+.error-message {
+    color: #d32f2f;
+    padding: 12px;
+    margin-bottom: 15px;
+    background: #ffebee;
+    border-radius: 4px;
+    border-left: 4px solid #d32f2f;
+}
+
+form .icons {
+    position: absolute;
+}
+
+form .icons i {
+    position: relative;
+    left: 570px;
+    top: 35px;
+    cursor: pointer;
+    color: #4f4d4d;
 }
