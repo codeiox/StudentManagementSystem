@@ -32,8 +32,7 @@ main {
     max-width: 800px;
     width: 100%;
     margin: 20px;
-    padding: 35px;
-    max-height: 100vh;
+    padding: 15px 45px 45px 45px;
 }
 
 h1 {
@@ -81,7 +80,7 @@ h1 {
 }
 
 .profile-info {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .info-group {

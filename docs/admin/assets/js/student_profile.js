@@ -133,11 +133,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     g.current && g.current.length
                         ? `
                     <table>
-                        <thead><tr><th>Course</th><th>Grade</th></tr></thead>
+                        <thead><tr><th>Term</th><th>Course</th><th>Grade</th></tr></thead>
                         <tbody>${g.current
                             .map(
                                 (r) =>
-                                    `<tr><td>${r.course_name}</td><td>${r.grade}</td></tr>`
+                                    `<tr><td>${formatTerm(r.term)}</td><td>${r.course_name}</td><td>${r.grade}</td></tr>`
                             )
                             .join("")}</tbody>
                     </table>`
@@ -148,11 +148,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     g.previous && g.previous.length
                         ? `
                     <table>
-                        <thead><tr><th>Course</th><th>Grade</th></tr></thead>
+                        <thead><tr><th>Term</th><th>Course</th><th>Grade</th></tr></thead>
                         <tbody>${g.previous
                             .map(
                                 (r) =>
-                                    `<tr><td>${r.course_name}</td><td>${r.grade}</td></tr>`
+                                    `<tr><td>${formatTerm(r.term)}</td><td>${r.course_name}</td><td>${r.grade}</td></tr>`
                             )
                             .join("")}</tbody>
                     </table>`

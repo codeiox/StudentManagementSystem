@@ -1,7 +1,10 @@
 # StudentManagementSystem
 
-A comprehensive student management system capStone project built with C++ and Drogon framework, featuring a MySQL backend and a HTML, CSS, JavaScript frontend.
+## Features Demo Video
+https://github.com/user-attachments/assets/ef7dc518-ce3d-4313-b722-ea796c675018
 
+
+A comprehensive student management system capStone project built with C++ and Drogon framework, featuring a MySQL backend and a HTML, CSS, JavaScript frontend.
 ## Features
 
 - User authentication and authorization

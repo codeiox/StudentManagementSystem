@@ -169,3 +169,72 @@ void GateController::serveProtectedFile(const HttpRequestPtr& req,
     auto resp = HttpResponse::newFileResponse(fullPath);
     callback(resp);
 }
+
+// Reset password at request of user
+void GateController::resetPassword(const HttpRequestPtr& req,
+                                   std::function<void(const HttpResponsePtr&)>&& callback) {
+    auto json = req->getJsonObject();
+    if (!json || !json->isMember("username") || !json->isMember("new_password")) {
+        auto resp = HttpResponse::newHttpJsonResponse(Json::Value("Missing parameters"));
+        resp->setStatusCode(k400BadRequest);
+        callback(resp);
+        return;
+    }
+    std::string username = (*json)["username"].asString();
+    std::string newPassword = (*json)["new_password"].asString();
+
+    // Basic validation
+    if (username.empty() || newPassword.empty()) {
+        Json::Value result;
+        result["message"] = "Username and new password required";
+        auto resp = HttpResponse::newHttpJsonResponse(result);
+        resp->setStatusCode(k400BadRequest);
+        callback(resp);
+        return;
+    }
+
+    try {
+        auto clientPtr = drogon::app().getDbClient();
+        if (!clientPtr) {
+            throw std::runtime_error("Database client not available");
+        }
+
+        // Hash the new password
+        Hasher hasher(HashConfig{3, 64ull * 1024 * 1024});
+        std::string hashedPassword = hasher.hash(newPassword);
+
+        std::string sql = "UPDATE Users SET hashed_password = ? WHERE username = ?";
+
+        clientPtr->execSqlAsync(
+            sql,
+            [callback, username](const Result& r) {
+                if (r.affectedRows() == 0) {
+                    Json::Value result;
+                    result["message"] = "Username not found";
+                    auto resp = HttpResponse::newHttpJsonResponse(result);
+                    resp->setStatusCode(k404NotFound);
+                    callback(resp);
+                    return;
+                }
+
+                Json::Value result;
+                result["message"] = "Password reset successful";
+                auto resp = HttpResponse::newHttpJsonResponse(result);
+                callback(resp);
+            },
+            [callback](const DrogonDbException& e) {
+                LOG_ERROR << "Database error: " << e.base().what();
+                Json::Value result;
+                result["message"] = "Database error";
+                auto resp = HttpResponse::newHttpJsonResponse(result);
+                resp->setStatusCode(k500InternalServerError);
+                callback(resp);
+            },
+            hashedPassword, username);
+    } catch (const std::exception& e) {
+        LOG_ERROR << "Exception: " << e.what();
+        auto resp = HttpResponse::newHttpJsonResponse(Json::Value("Server error"));
+        resp->setStatusCode(k500InternalServerError);
+        callback(resp);
+    }
+}

@@ -83,12 +83,11 @@ void AdminProfile::getProfile(const HttpRequestPtr& req,
         username);
 }
 
-// Update Admin Profile
+// Update admin profile
 void AdminProfile::updateProfile(const HttpRequestPtr& req,
                                  std::function<void(const HttpResponsePtr&)>&& callback) {
     std::string role = req->getCookie("user_role");
     if (role != "admin") {
-        LOG_ERROR << "Access denied for role: " << role;
         Json::Value ret;
         ret["error"] = "Admin access required";
         auto resp = HttpResponse::newHttpJsonResponse(ret);
@@ -101,17 +100,35 @@ void AdminProfile::updateProfile(const HttpRequestPtr& req,
     if (!jsonPtr) {
         Json::Value err;
         err["error"] = "Invalid JSON";
-        auto resp = HttpResponse::newHttpJsonResponse(err);
-        resp->setStatusCode(k400BadRequest);
-        callback(resp);
+        callback(HttpResponse::newHttpJsonResponse(err));
         return;
     }
+
     const Json::Value& body = *jsonPtr;
 
     // Extract fields
     std::string full_name = body.get("full_name", "").asString();
+    std::string email = body.get("email", "").asString();
+    std::string phone = body.get("phone", "").asString();
+    std::string address = body.get("address", "").asString();
+    std::string password = body.get("password", "").asString();
 
-    // Split first_name and last_name
+    // Validation
+    if (full_name.empty() || email.empty()) {
+        Json::Value err;
+        err["error"] = "Name and email are required";
+        callback(HttpResponse::newHttpJsonResponse(err));
+        return;
+    }
+
+    if (phone.empty()) {
+        Json::Value err;
+        err["error"] = "Phone number cannot be empty";
+        callback(HttpResponse::newHttpJsonResponse(err));
+        return;
+    }
+
+    // Split name
     std::string first_name, last_name;
     size_t spacePos = full_name.find(' ');
     if (spacePos != std::string::npos) {
@@ -122,109 +139,63 @@ void AdminProfile::updateProfile(const HttpRequestPtr& req,
         last_name = "";
     }
 
-    std::string email = body.get("email", "").asString();
-    std::string phone = body.get("phone", "").asString();
-    std::string address = body.get("address", "").asString();
-    std::string password = body.get("password", "").asString();
-
-    // Basic validation
-    if (full_name.empty() || email.empty()) {
-        Json::Value error;
-        error["error"] = "Name and email are required";
-        auto resp = HttpResponse::newHttpJsonResponse(error);
-        resp->setStatusCode(k400BadRequest);
-        callback(resp);
-        return;
-    }
-
-    // Get username
+    // Username from cookie/session
     std::string username = req->getCookie("username");
     if (username.empty()) {
         auto sess = req->session();
-        if (sess) {
-            username = sess->get<std::string>("username");
-        }
+        if (sess) username = sess->get<std::string>("username");
     }
 
     if (username.empty()) {
-        Json::Value error;
-        error["error"] = "User not authenticated";
-        auto resp = HttpResponse::newHttpJsonResponse(error);
-        resp->setStatusCode(k401Unauthorized);
-        callback(resp);
+        Json::Value err;
+        err["error"] = "User not authenticated";
+        callback(HttpResponse::newHttpJsonResponse(err));
         return;
     }
 
     auto client = app().getDbClient();
 
-    // Handle password update separately if provided
+    // SQL depending on password
     if (!password.empty()) {
         Hasher hasher(HashConfig{3, 64ull * 1024 * 1024});
         std::string hashed = hasher.hash(password);
-        password.clear();  // Clear password from memory
 
         std::string sql =
-            "UPDATE Users SET first_name = ?, last_name = ?, email = ?, phone = ?, address = ?, "
-            "hashed_password = ? WHERE username = ? AND role = 'admin'";
-
-        LOG_DEBUG << "SQL Query (with password): " << sql;
+            "UPDATE Users SET first_name=?, last_name=?, email=?, phone=?, address=?, "
+            "hashed_password=? "
+            "WHERE username=? AND role='admin'";
 
         client->execSqlAsync(
             sql,
-            [callback](const drogon::orm::Result& r) {
-                if (r.affectedRows() == 0) {
-                    Json::Value err;
-                    err["error"] = "Admin user not found or no changes made";
-                    auto resp = HttpResponse::newHttpJsonResponse(err);
-                    resp->setStatusCode(k404NotFound);
-                    callback(resp);
-                    return;
-                }
+            [callback](const Result& r) {
                 Json::Value ok;
-                ok["message"] = "Profile updated successfully";
-                auto resp = HttpResponse::newHttpJsonResponse(ok);
-                callback(resp);
+                ok["message"] = (r.affectedRows() == 0) ? "No changes were made"
+                                                        : "Profile updated successfully";
+                callback(HttpResponse::newHttpJsonResponse(ok));
             },
-            [callback](const drogon::orm::DrogonDbException& e) {
-                LOG_ERROR << "Update error: " << e.base().what();
+            [callback](const DrogonDbException& e) {
                 Json::Value err;
                 err["error"] = std::string("Database error: ") + e.base().what();
-                auto resp = HttpResponse::newHttpJsonResponse(err);
-                resp->setStatusCode(k500InternalServerError);
-                callback(resp);
+                callback(HttpResponse::newHttpJsonResponse(err));
             },
             first_name, last_name, email, phone, address, hashed, username);
     } else {
-        // Update without password
         std::string sql =
-            "UPDATE Users SET first_name = ?, last_name = ?, email = ?, phone = ?, address = ? "
-            "WHERE username = ? AND role = 'admin'";
-
-        LOG_DEBUG << "SQL Query (without password): " << sql;
+            "UPDATE Users SET first_name=?, last_name=?, email=?, phone=?, address=? "
+            "WHERE username=? AND role='admin'";
 
         client->execSqlAsync(
             sql,
-            [callback](const drogon::orm::Result& r) {
-                if (r.affectedRows() == 0) {
-                    Json::Value err;
-                    err["error"] = "Admin user not found or no changes made";
-                    auto resp = HttpResponse::newHttpJsonResponse(err);
-                    resp->setStatusCode(k404NotFound);
-                    callback(resp);
-                    return;
-                }
+            [callback](const Result& r) {
                 Json::Value ok;
-                ok["message"] = "Profile updated successfully";
-                auto resp = HttpResponse::newHttpJsonResponse(ok);
-                callback(resp);
+                ok["message"] = (r.affectedRows() == 0) ? "No changes were made"
+                                                        : "Profile updated successfully";
+                callback(HttpResponse::newHttpJsonResponse(ok));
             },
-            [callback](const drogon::orm::DrogonDbException& e) {
-                LOG_ERROR << "Update error: " << e.base().what();
+            [callback](const DrogonDbException& e) {
                 Json::Value err;
                 err["error"] = std::string("Database error: ") + e.base().what();
-                auto resp = HttpResponse::newHttpJsonResponse(err);
-                resp->setStatusCode(k500InternalServerError);
-                callback(resp);
+                callback(HttpResponse::newHttpJsonResponse(err));
             },
             first_name, last_name, email, phone, address, username);
     }

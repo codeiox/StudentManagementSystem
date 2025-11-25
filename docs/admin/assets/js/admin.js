@@ -61,10 +61,17 @@ function showError(message) {
         errorElement.style.display = "block";
         setTimeout(() => {
             errorElement.style.display = "none";
-        }, 5000);
+        }, 9000);
     } else {
         console.error("Error element not found:", message);
     }
+}
+
+function showPhoneError(message) {
+    const el = document.getElementById("phonenumber-error");
+    el.textContent = message;
+    el.style.display = "block";
+    setTimeout(() => (el.style.display = "none"), 9000);
 }
 
 function hideError() {
@@ -72,6 +79,16 @@ function hideError() {
     if (errorElement) {
         errorElement.style.display = "none";
     }
+    const errorElementPhone = document.getElementById("phonenumber-error");
+    if (errorElementPhone) {
+        errorElementPhone.style.display = "none";
+    }
+}
+
+// validate phonenumber
+function validatePhoneNumber(phone) {
+    if (!phone) return true;
+    return /^\d{10}$/.test(phone);
 }
 
 // Fetch and populate profile data on page load
@@ -91,7 +108,14 @@ async function loadAdminProfile() {
         // Fill display elements
         setText("nameDisplay", data.full_name);
         setText("emailDisplay", data.email);
-        setText("phoneDisplay", formatPhoneNumber(data.phone));
+        if (!validatePhoneNumber(data.phone)) {
+            showPhoneError(
+                "Invalid Phone Number. Number must be 10 digits long."
+            );
+            return;
+        } else {
+            setText("phoneDisplay", formatPhoneNumber(data.phone));
+        }
         setText("addressDisplay", data.address);
         setText("dobDisplay", formatDate(data.dob));
         setText("usernameDisplay", data.username);
@@ -212,6 +236,13 @@ saveBtn.addEventListener("click", async () => {
         showError("Please enter a valid email address");
         return;
     }
+    // Phone validation
+    if (phone && !validatePhoneNumber(phone)) {
+        showPhoneError(
+            "Phone number must be 10 digits long and contain only numbers"
+        );
+        return;
+    }
 
     // Password validation (only if password is entered)
     if (password && password.length > 0) {
@@ -253,6 +284,10 @@ saveBtn.addEventListener("click", async () => {
         // Update display values with formatting
         document.getElementById("nameDisplay").textContent = name;
         document.getElementById("emailDisplay").textContent = email;
+        if (phone == "") {
+            showPhoneError("Phone number cannot be empty.");
+            return;
+        }
         document.getElementById("phoneDisplay").textContent =
             formatPhoneNumber(phone);
         document.getElementById("addressDisplay").textContent = address || "-";
@@ -276,7 +311,7 @@ saveBtn.addEventListener("click", async () => {
         successMessage.classList.add("show");
         setTimeout(() => {
             successMessage.classList.remove("show");
-        }, 3000);
+        }, 9000);
 
         console.log("Profile updated successfully");
     } else {

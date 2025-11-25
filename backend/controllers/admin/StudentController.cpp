@@ -442,9 +442,12 @@ void StudentController::enrollStudentInCourse(
     }
 
     std::transform(season.begin(), season.end(), season.begin(), ::tolower);
-    if (season == "fall") season = "Fall";
-    else if (season == "spring") season = "Spring";
-    else if (season == "summer") season = "Summer";
+    if (season == "fall")
+        season = "Fall";
+    else if (season == "spring")
+        season = "Spring";
+    else if (season == "summer")
+        season = "Summer";
 
     if (season != "Fall" && season != "Spring" && season != "Summer")
     {
@@ -464,13 +467,19 @@ void StudentController::enrollStudentInCourse(
     int currentYear = now.tm_year + 1900;
     int month = now.tm_mon + 1;
     std::string currentSeason;
-    if (month >= 1 && month <= 4) currentSeason = "Spring";
-    else if (month >= 5 && month <= 7) currentSeason = "Summer";
-    else currentSeason = "Fall";
+    if (month >= 1 && month <= 4)
+        currentSeason = "Spring";
+    else if (month >= 5 && month <= 7)
+        currentSeason = "Summer";
+    else
+        currentSeason = "Fall";
 
-    auto seasonOrder = [](const std::string &s) -> int {
-        if (s == "Spring") return 1;
-        if (s == "Summer") return 2;
+    auto seasonOrder = [](const std::string &s) -> int
+    {
+        if (s == "Spring")
+            return 1;
+        if (s == "Summer")
+            return 2;
         return 3; // Fall
     };
 
@@ -555,8 +564,7 @@ void StudentController::enrollStudentInCourse(
             resp->setBody(msg);
             callback(resp);
         },
-        courseId, term, status, grade, studentId, courseId, term
-    );
+        courseId, term, status, grade, studentId, courseId, term);
 
     // ---------------------
     // Update major/minor if provided
@@ -566,9 +574,9 @@ void StudentController::enrollStudentInCourse(
         client->execSqlAsync(
             "UPDATE Users SET major_id = ? WHERE student_id = ?",
             [](const orm::Result &) {},
-            [](const orm::DrogonDbException &e) { LOG_ERROR << "Failed to update major: " << e.base().what(); },
-            majorId, studentId
-        );
+            [](const orm::DrogonDbException &e)
+            { LOG_ERROR << "Failed to update major: " << e.base().what(); },
+            majorId, studentId);
     }
 
     if (minorId > 0)
@@ -576,53 +584,11 @@ void StudentController::enrollStudentInCourse(
         client->execSqlAsync(
             "UPDATE Users SET minor_id = ? WHERE student_id = ?",
             [](const orm::Result &) {},
-            [](const orm::DrogonDbException &e) { LOG_ERROR << "Failed to update minor: " << e.base().what(); },
-            minorId, studentId
-        );
+            [](const orm::DrogonDbException &e)
+            { LOG_ERROR << "Failed to update minor: " << e.base().what(); },
+            minorId, studentId);
     }
 }
-
-// // Handles GET request to fetch current courses for a student
-// void StudentController::getStudentCourses(
-//     const HttpRequestPtr &req,
-//     std::function<void(const HttpResponsePtr &)> &&callback,
-//     std::string studentId)
-// {
-//     auto client = app().getDbClient("default");
-
-//     client->execSqlAsync(
-//         "SELECT c.course_id, c.course_name, c.credits, e.term, e.status "
-//         "FROM Enrollments e "
-//         "JOIN Users u ON e.user_id = u.id "
-//         "JOIN Courses c ON e.course_id = c.course_id "
-//         "WHERE u.student_id = ?",
-//         [callback](const orm::Result &result)
-//         {
-//             Json::Value courses(Json::arrayValue);
-//             for (const auto &row : result)
-//             {
-//                 Json::Value course;
-//                 course["course_id"] = row["course_id"].as<int>();
-//                 course["course_name"] = row["course_name"].as<std::string>();
-//                 course["credits"] = row["credits"].as<int>();
-//                 course["term"] = row["term"].as<std::string>();
-//                 course["status"] = row["status"].as<std::string>();
-//                 courses.append(course);
-//             }
-
-//             auto resp = HttpResponse::newHttpJsonResponse(courses);
-//             resp->setStatusCode(k200OK);
-//             callback(resp);
-//         },
-//         [callback](const orm::DrogonDbException &e)
-//         {
-//             auto resp = HttpResponse::newHttpResponse();
-//             resp->setStatusCode(k500InternalServerError);
-//             resp->setBody("Database error: " + std::string(e.base().what()));
-//             callback(resp);
-//         },
-//         studentId);
-// }
 
 // Handles GET request to fetch all courses for a student (chronologically ordered)
 void StudentController::getStudentCourses(
@@ -667,10 +633,8 @@ void StudentController::getStudentCourses(
             resp->setBody("Database error: " + std::string(e.base().what()));
             callback(resp);
         },
-        studentId
-    );
+        studentId);
 }
-
 
 // Handles GET request to fetch grades for a student
 void StudentController::getStudentGrades(const HttpRequestPtr &req,
@@ -684,7 +648,11 @@ void StudentController::getStudentGrades(const HttpRequestPtr &req,
         "FROM Enrollments e "
         "JOIN Users u ON e.user_id = u.id "
         "JOIN Courses c ON e.course_id = c.course_id "
-        "WHERE u.student_id = ?",
+        "WHERE u.student_id = ? "
+        "ORDER BY "
+        "  CAST(SUBSTRING_INDEX(e.term, ' ', -1) AS UNSIGNED), "
+        "  FIELD(SUBSTRING_INDEX(e.term, ' ', 1), 'Spring', 'Summer', 'Fall')",
+
         [callback](const orm::Result &result)
         {
             Json::Value grades(Json::arrayValue);
@@ -697,7 +665,8 @@ void StudentController::getStudentGrades(const HttpRequestPtr &req,
                 std::string grade = row["grade"].isNull() ? "" : row["grade"].as<std::string>();
                 std::string status = row["status"].as<std::string>();
 
-                if (status == "current" && grade.empty()) {
+                if (status == "current" && grade.empty())
+                {
                     grade = "IP"; // Show "In Progress"
                 }
                 g["grade"] = grade;
