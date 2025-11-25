@@ -1,5 +1,6 @@
 #include "StudentController.h"
-
+#include <sstream>
+#include <ctime>
 #include <drogon/utils/Utilities.h>
 
 using namespace drogon;
@@ -401,10 +402,15 @@ void StudentController::updateEnrollmentStatus(
 }
 
 void StudentController::enrollStudentInCourse(
-    const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback,
+    const HttpRequestPtr &req,
+    std::function<void(const HttpResponsePtr &)> &&callback,
     std::string studentId)
 {
     auto json = req->getJsonObject();
+
+    // ---------------------
+    // Validate required fields
+    // ---------------------
     if (!json || !json->isMember("course_id") || !json->isMember("term"))
     {
         auto resp = HttpResponse::newHttpResponse();
@@ -416,49 +422,175 @@ void StudentController::enrollStudentInCourse(
 
     int courseId = (*json)["course_id"].asInt();
     std::string term = (*json)["term"].asString();
-    std::string status = json->get("status", "current").asString();
+
+    // ---------------------
+    // Parse and normalize term
+    // ---------------------
+    std::string season;
+    int year = 0;
+    term.erase(0, term.find_first_not_of(" \t\n\r"));
+    term.erase(term.find_last_not_of(" \t\n\r") + 1);
+    std::istringstream iss(term);
+    iss >> season >> year;
+    if (year <= 0)
+    {
+        auto resp = HttpResponse::newHttpResponse();
+        resp->setStatusCode(k400BadRequest);
+        resp->setBody("Invalid term format. Must be: Spring|Summer|Fall 2025");
+        callback(resp);
+        return;
+    }
+
+    std::transform(season.begin(), season.end(), season.begin(), ::tolower);
+    if (season == "fall")
+        season = "Fall";
+    else if (season == "spring")
+        season = "Spring";
+    else if (season == "summer")
+        season = "Summer";
+
+    if (season != "Fall" && season != "Spring" && season != "Summer")
+    {
+        auto resp = HttpResponse::newHttpResponse();
+        resp->setStatusCode(k400BadRequest);
+        resp->setBody("Invalid term format. Must be: Spring|Summer|Fall 2025");
+        callback(resp);
+        return;
+    }
+
+    // ---------------------
+    // Determine current term
+    // ---------------------
+    time_t t = time(nullptr);
+    tm now{};
+    localtime_r(&t, &now);
+    int currentYear = now.tm_year + 1900;
+    int month = now.tm_mon + 1;
+    std::string currentSeason;
+    if (month >= 1 && month <= 4)
+        currentSeason = "Spring";
+    else if (month >= 5 && month <= 7)
+        currentSeason = "Summer";
+    else
+        currentSeason = "Fall";
+
+    auto seasonOrder = [](const std::string &s) -> int
+    {
+        if (s == "Spring")
+            return 1;
+        if (s == "Summer")
+            return 2;
+        return 3; // Fall
+    };
+
+    bool isPastTerm = false;
+    if (year < currentYear)
+        isPastTerm = true;
+    else if (year == currentYear && seasonOrder(season) < seasonOrder(currentSeason))
+        isPastTerm = true;
+
+    // ---------------------
+    // Extract grade and Postman override
+    // ---------------------
     std::string grade = json->get("grade", "").asString();
+    bool isPostmanOverride = json->get("allow_past", false).asBool();
+
+    if (!isPostmanOverride && isPastTerm)
+    {
+        auto resp = HttpResponse::newHttpResponse();
+        resp->setStatusCode(k400BadRequest);
+        resp->setBody("Cannot register a course into past terms.");
+        callback(resp);
+        return;
+    }
+
+    if (isPostmanOverride && !isPastTerm && !grade.empty())
+    {
+        auto resp = HttpResponse::newHttpResponse();
+        resp->setStatusCode(k400BadRequest);
+        resp->setBody("Cannot assign a grade for current/future courses.");
+        callback(resp);
+        return;
+    }
+
+    // ---------------------
+    // Determine status
+    // ---------------------
+    std::string status = isPastTerm ? "completed" : "current";
+    if (isPostmanOverride && isPastTerm && json->isMember("status"))
+        status = (*json)["status"].asString();
+
     int majorId = json->isMember("major_id") ? (*json)["major_id"].asInt() : 0;
-    std::string degreeType = json->get("degreeType", "").asString();
+    int minorId = json->isMember("minor_id") ? (*json)["minor_id"].asInt() : 0;
 
     auto client = app().getDbClient("default");
 
-    // Enroll student in course
+    // ---------------------
+    // Insert enrollment ONLY if it doesn't exist
+    // ---------------------
     client->execSqlAsync(
-        "INSERT INTO Enrollments (user_id, course_id, term, status, grade) "
-        "SELECT u.id, ?, ?, ?, ? FROM Users u WHERE u.student_id = ?",
+        R"(INSERT INTO Enrollments (user_id, course_id, term, status, grade)
+            SELECT u.id, ?, ?, ?, ?
+            FROM Users u
+            WHERE u.student_id = ?
+              AND NOT EXISTS (
+                  SELECT 1 FROM Enrollments e
+                  WHERE e.user_id = u.id
+                    AND e.course_id = ?
+                    AND e.term = ?
+              ))",
         [callback](const orm::Result &r)
         {
             auto resp = HttpResponse::newHttpResponse();
-            resp->setStatusCode(k200OK);
-            resp->setBody("Student enrolled successfully");
+            if (r.affectedRows() == 0)
+            {
+                resp->setStatusCode(k400BadRequest);
+                resp->setBody("Student is already enrolled in this course for this term.");
+            }
+            else
+            {
+                resp->setStatusCode(k200OK);
+                resp->setBody("Enrollment created successfully.");
+            }
             callback(resp);
         },
         [callback](const orm::DrogonDbException &e)
         {
             auto resp = HttpResponse::newHttpResponse();
-            resp->setStatusCode(k500InternalServerError);
-            resp->setBody("Database error: " + std::string(e.base().what()));
+            std::string msg = std::string(e.base().what());
+            if (msg.find("Duplicate entry") != std::string::npos)
+                msg = "Student is already enrolled in this course for this term.";
+            resp->setStatusCode(k400BadRequest);
+            resp->setBody(msg);
             callback(resp);
         },
-        courseId, term, status, grade, studentId);
+        courseId, term, status, grade, studentId, courseId, term);
 
+    // ---------------------
     // Update major/minor if provided
-    if (majorId > 0 && (degreeType == "major" || degreeType == "minor"))
+    // ---------------------
+    if (majorId > 0)
     {
-        std::string field = (degreeType == "major") ? "major_id" : "minor_id";
         client->execSqlAsync(
-            "UPDATE Users SET " + field + " = ? WHERE student_id = ?",
-            [](const orm::Result &) {}, // silent success
+            "UPDATE Users SET major_id = ? WHERE student_id = ?",
+            [](const orm::Result &) {},
             [](const orm::DrogonDbException &e)
-            {
-                LOG_ERROR << "Failed to update major/minor: " << e.base().what();
-            },
+            { LOG_ERROR << "Failed to update major: " << e.base().what(); },
             majorId, studentId);
+    }
+
+    if (minorId > 0)
+    {
+        client->execSqlAsync(
+            "UPDATE Users SET minor_id = ? WHERE student_id = ?",
+            [](const orm::Result &) {},
+            [](const orm::DrogonDbException &e)
+            { LOG_ERROR << "Failed to update minor: " << e.base().what(); },
+            minorId, studentId);
     }
 }
 
-// Handles GET request to fetch current courses for a student
+// Handles GET request to fetch all courses for a student (chronologically ordered)
 void StudentController::getStudentCourses(
     const HttpRequestPtr &req,
     std::function<void(const HttpResponsePtr &)> &&callback,
@@ -467,11 +599,15 @@ void StudentController::getStudentCourses(
     auto client = app().getDbClient("default");
 
     client->execSqlAsync(
-        "SELECT c.course_id, c.course_name, c.credits, e.term, e.status "
-        "FROM Enrollments e "
-        "JOIN Users u ON e.user_id = u.id "
-        "JOIN Courses c ON e.course_id = c.course_id "
-        "WHERE u.student_id = ?",
+        R"(SELECT c.course_id, c.course_name, c.credits, e.term, e.status
+           FROM Enrollments e
+           JOIN Users u ON e.user_id = u.id
+           JOIN Courses c ON e.course_id = c.course_id
+           WHERE u.student_id = ?
+           ORDER BY 
+               CAST(SUBSTRING_INDEX(e.term, ' ', -1) AS UNSIGNED),  -- Year
+               FIELD(SUBSTRING_INDEX(e.term, ' ', 1), 'Spring', 'Summer', 'Fall')  -- Semester
+        )",
         [callback](const orm::Result &result)
         {
             Json::Value courses(Json::arrayValue);
@@ -512,7 +648,11 @@ void StudentController::getStudentGrades(const HttpRequestPtr &req,
         "FROM Enrollments e "
         "JOIN Users u ON e.user_id = u.id "
         "JOIN Courses c ON e.course_id = c.course_id "
-        "WHERE u.student_id = ?",
+        "WHERE u.student_id = ? "
+        "ORDER BY "
+        "  CAST(SUBSTRING_INDEX(e.term, ' ', -1) AS UNSIGNED), "
+        "  FIELD(SUBSTRING_INDEX(e.term, ' ', 1), 'Spring', 'Summer', 'Fall')",
+
         [callback](const orm::Result &result)
         {
             Json::Value grades(Json::arrayValue);
@@ -525,10 +665,9 @@ void StudentController::getStudentGrades(const HttpRequestPtr &req,
                 std::string grade = row["grade"].isNull() ? "" : row["grade"].as<std::string>();
                 std::string status = row["status"].as<std::string>();
 
-                if (status == "current" && grade.empty()) {
+                if (status == "current" && grade.empty())
+                {
                     grade = "IP"; // Show "In Progress"
-                } else if (status == "upcoming") {
-                    grade = "Registered";
                 }
                 g["grade"] = grade;
                 grades.append(g);
