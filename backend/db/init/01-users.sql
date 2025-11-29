@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS Users (
     gender VARCHAR(10),
     student_id VARCHAR(50) UNIQUE,
     enrollment_status VARCHAR(20) DEFAULT 'Pending',
+    overall_gpa FLOAT DEFAULT 0,
     username VARCHAR(100) UNIQUE NOT NULL,
     hashed_password VARCHAR(100) NOT NULL,
     role ENUM('admin', 'student') NOT NULL,

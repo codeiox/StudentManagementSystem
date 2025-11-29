@@ -4,6 +4,8 @@
 
 #include "Dashboard.h"
 
+#include "CalculateGPA.h"
+
 void Dashboard::getStudentAtRisk(const drogon::HttpRequestPtr& req,
                                  std::function<void(const drogon::HttpResponsePtr&)>&& callback) {
     // do something
@@ -12,7 +14,7 @@ void Dashboard::getStudentAtRisk(const drogon::HttpRequestPtr& req,
 
     // Execute SQL query here:
     client->execSqlAsync(
-        "SELECT first_name, last_name, student_id FROM Users WHERE "
+        "SELECT first_name, last_name, student_id, overall_gpa FROM Users WHERE "
         "enrollment_status = 'probation'",
         [callback](const drogon::orm::Result& result) {
             Json::Value jsonResponse(Json::arrayValue);
@@ -22,6 +24,10 @@ void Dashboard::getStudentAtRisk(const drogon::HttpRequestPtr& req,
                 student["first_name"] = row["first_name"].as<std::string>();
                 student["last_name"] = row["last_name"].as<std::string>();
                 student["student_id"] = row["student_id"].as<std::string>();
+                student["overall_gpa"] = row["overall_gpa"].as<double>();
+
+                // TODO: Request student major from major table
+
                 jsonResponse.append(student);
             }
 
@@ -114,4 +120,131 @@ void Dashboard::getStudentStatus(const drogon::HttpRequestPtr& req,
             resp->setStatusCode(drogon::k500InternalServerError);
             callback(resp);
         });
+}
+
+void Dashboard::getStudentCurrentGrades(
+    const drogon::HttpRequestPtr& req,
+    std::function<void(const drogon::HttpResponsePtr&)>&& callback) {
+    LOG_INFO << "Requesting DB for a student grades\n";
+    auto client = drogon::app().getDbClient("default");
+    std::string studentId = req->getParameter("id");
+
+    LOG_INFO << "Student ID from request: " << studentId;
+
+    client->execSqlAsync(
+        "SELECT e.grade, e.course_credits "
+        "FROM Enrollments e "
+        "JOIN Users u ON e.user_id = u.id "
+        "WHERE e.status = 'completed' AND u.student_id = ?",
+        [callback, studentId](const drogon::orm::Result& result) {
+            LOG_INFO << "SELECT query returned " << result.size() << " rows";
+            // insert each grade and course_credits into vector as pair string and int for overall
+            // GPA calculation
+            std::vector<std::pair<std::string, int>> letter_grades;
+
+            // loop over the row
+            for (const auto& row : result) {
+                // convert into string
+                letter_grades.emplace_back(row["grade"].as<std::string>(),
+                                           row["course_credits"].as<int>());
+            }
+
+            // Avoid crashing if student has zero completed courses
+            if (letter_grades.empty()) {
+                LOG_INFO << "No completed courses found for student";
+                Json::Value resp;
+                resp["status"] = "no_completed_courses";
+                resp["gpa"] = 0.0;
+                resp["earned_credits"] = 0;
+                callback(drogon::HttpResponse::newHttpJsonResponse(resp));
+                return;
+            }
+
+            const double GPA_THRESHOLD = 1.7;
+            const int CREDIT_THRESHOLD = 12;
+
+            // call GPA calculation function with vector pair<std::string, int>
+            double overallGPA = calculateOverAllGPA(letter_grades);
+            // call Total credit function
+            int earnedCredits = calculateTotalCredits(letter_grades);
+
+            LOG_INFO << "Calculated GPA: " << overallGPA << ", Earned Credits: " << earnedCredits;
+            LOG_INFO << "GPA Threshold: " << GPA_THRESHOLD
+                     << ", Credit Threshold: " << CREDIT_THRESHOLD;
+
+            if (overallGPA < GPA_THRESHOLD && earnedCredits > CREDIT_THRESHOLD) {
+                LOG_INFO << "Student meets probation criteria - updating to probation";
+                // change the enrollment_status from Users table to "probation"
+                auto client2 = drogon::app().getDbClient("default");
+                client2->execSqlAsync(
+                    "UPDATE Users SET enrollment_status = 'probation', overall_gpa = ? WHERE "
+                    "student_id = ?",
+
+                    // SUCCESS UPDATE
+                    [callback, overallGPA, earnedCredits](const drogon::orm::Result& result) {
+                        LOG_INFO << "UPDATE successful. Rows affected: " << result.affectedRows();
+
+                        Json::Value resp;
+                        resp["status"] = "updated_to_probation";
+                        resp["gpa"] = overallGPA;
+                        resp["earned_credits"] = earnedCredits;
+                        callback(drogon::HttpResponse::newHttpJsonResponse(resp));
+                    },
+                    // FAILURE UPDATE
+                    [callback](const drogon::orm::DrogonDbException& e) {
+                        Json::Value err;
+                        err["error"] = e.base().what();
+                        auto resp = drogon::HttpResponse::newHttpJsonResponse(err);
+                        resp->setStatusCode(drogon::k500InternalServerError);
+                        callback(resp);
+                    },
+                    overallGPA,  // ?
+                    studentId    // ?
+                );
+            } else {
+                LOG_INFO << "Update Only overall GPA\n";
+                auto client3 = drogon::app().getDbClient("default");
+
+                client3->execSqlAsync(
+                    "UPDATE Users SET enrollment_status = 'pending', overall_gpa = ? WHERE "
+                    "student_id = ?",
+
+                    // SUCCESS UPDATE
+                    [callback, overallGPA](const drogon::orm::Result& result) {
+                        LOG_INFO << "UPDATE successful. Rows affected: " << result.affectedRows();
+
+                        Json::Value resp;
+                        resp["status"] = "Overall GPA updated";
+                        resp["gpa"] = overallGPA;
+                        callback(drogon::HttpResponse::newHttpJsonResponse(resp));
+                    },
+                    // FAILURE UPDATE
+                    [callback](const drogon::orm::DrogonDbException& e) {
+                        Json::Value err;
+                        err["error"] = e.base().what();
+                        auto resp = drogon::HttpResponse::newHttpJsonResponse(err);
+                        resp->setStatusCode(drogon::k500InternalServerError);
+                        callback(resp);
+                    },
+                    overallGPA,  // ?
+                    studentId    // ?
+                );
+
+                Json::Value resp;
+                resp["status"] = "ok";
+                resp["gpa"] = overallGPA;
+                resp["earned_credits"] = earnedCredits;
+                callback(drogon::HttpResponse::newHttpJsonResponse(resp));
+            }
+        },
+        // ERROR LAMBDA FOR SELECT
+        [callback](const drogon::orm::DrogonDbException& e) {
+            Json::Value err;
+            err["error"] = std::string(e.base().what());
+            auto resp = drogon::HttpResponse::newHttpJsonResponse(err);
+            resp->setStatusCode(drogon::k500InternalServerError);
+            callback(resp);
+        },
+        studentId  // ? for SELECT query
+    );
 }
