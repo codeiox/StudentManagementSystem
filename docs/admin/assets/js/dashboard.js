@@ -71,40 +71,22 @@ async function fetchProbationStudents() {
         // Placeholder data (remove later)
         const staticData = [
             {
-                gpa: 1.85,
-                course: "Computer Science",
-                semester: "Fall 2025",
-                absences: 8,
+                major: "Computer Science",
             },
             {
-                gpa: 1.95,
-                course: "Business Administration",
-                semester: "Fall 2025",
-                absences: 12,
+                major: "Business Administration",
             },
             {
-                gpa: 1.78,
-                course: "Engineering",
-                semester: "Fall 2025",
-                absences: 6,
+                major: "Engineering",
             },
             {
-                gpa: 2.05,
-                course: "Psychology",
-                semester: "Fall 2025",
-                absences: 10,
+                major: "Psychology",
             },
             {
-                gpa: 1.92,
-                course: "Mathematics",
-                semester: "Fall 2025",
-                absences: 7,
+                major: "Mathematics",
             },
             {
-                gpa: 1.88,
-                course: "Biology",
-                semester: "Fall 2025",
-                absences: 9,
+                major: "Biology",
             },
         ];
 
@@ -112,10 +94,8 @@ async function fetchProbationStudents() {
         const students = apiStudents.map((student, index) => ({
             id: student.student_id,
             name: `${student.first_name} ${student.last_name}`,
-            gpa: staticData[index % staticData.length].gpa,
-            course: staticData[index % staticData.length].course,
-            semester: staticData[index % staticData.length].semester,
-            absences: staticData[index % staticData.length].absences,
+            gpa: student.overall_gpa,
+            major: staticData[index % staticData.length].major,
         }));
 
         displayProbationStudents(students);
@@ -143,30 +123,20 @@ function displayProbationStudents(students) {
                 <div class="student-header">
                     <div>
                         <div class="student-name">${student.name}</div>
-                        <div class="student-id">${student.id}</div>
                     </div>
                     <div class="status-badge">PROBATION</div>
                 </div>
                 <div class="student-details">
+                <div class="student-id">Student ID: ${student.id}</div>
                     <div class="student-detail-row">
-                        <span class="detail-label">Course:</span>
-                        <span class="detail-value">${student.course}</span>
+                        <span class="detail-label">Major:</span>
+                        <span class="detail-value">${student.major}</span>
                     </div>
                     <div class="student-detail-row">
                         <span class="detail-label">GPA:</span>
                         <span class="detail-value ${
                             student.gpa < 2.0 ? "gpa-low" : "gpa-medium"
                         }">${student.gpa.toFixed(2)}</span>
-                    </div>
-                    <div class="student-detail-row">
-                        <span class="detail-label">Absences:</span>
-                        <span class="detail-value">${
-                            student.absences
-                        } days</span>
-                    </div>
-                    <div class="student-detail-row">
-                        <span class="detail-label">Semester:</span>
-                        <span class="detail-value">${student.semester}</span>
                     </div>
                 </div>
             </div>

@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-#include "Hasher.h"
+#include "../auth/Hasher.h"
 
 class AdminProfile : public drogon::HttpController<AdminProfile> {
    public:

@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS Enrollments (
     term VARCHAR(20),
     status ENUM('current','completed') NOT NULL,
     grade VARCHAR(5),
+    course_credits INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES Users(id),

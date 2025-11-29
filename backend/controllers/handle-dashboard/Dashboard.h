@@ -15,6 +15,7 @@
 #include <ctime>
 #include <iostream>
 #include <string>
+#include <utility>
 
 class Dashboard : public drogon::HttpController<Dashboard> {
    public:
@@ -22,6 +23,7 @@ class Dashboard : public drogon::HttpController<Dashboard> {
     ADD_METHOD_TO(Dashboard::getStudentAtRisk, "/api/students/probation", drogon::Get);
     ADD_METHOD_TO(Dashboard::getTotalStudent, "/api/students/total", drogon::Get);
     ADD_METHOD_TO(Dashboard::getStudentStatus, "/api/students/status", drogon::Get);
+    ADD_METHOD_TO(Dashboard::getStudentCurrentGrades, "/api/students/grades", drogon::Get);
     METHOD_LIST_END
 
    private:
@@ -34,6 +36,12 @@ class Dashboard : public drogon::HttpController<Dashboard> {
     // Get student status distribution from database
     void getStudentStatus(const drogon::HttpRequestPtr& req,
                           std::function<void(const drogon::HttpResponsePtr&)>&& callback);
+
+   public:
+    // Get student letter grades
+    static void getStudentCurrentGrades(
+        const drogon::HttpRequestPtr& req,
+        std::function<void(const drogon::HttpResponsePtr&)>&& callback);
 };
 
 #endif  // STUDENTMANAGEMENTSYSTEM_DASHBOARD_H
