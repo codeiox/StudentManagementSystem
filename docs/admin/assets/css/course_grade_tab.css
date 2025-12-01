@@ -1,0 +1,56 @@
+/* ---------------- Course & Grade Lists ---------------- */
+.course-list {
+  background-color: #fafafa; /* Light background for contrast */
+  border: 1px solid #ddd; /* Subtle border */
+  border-radius: 8px; /* Rounded corners */
+  padding: 12px 16px; /* Inner spacing */
+  margin-top: 10px; /* Space above */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05); /* Soft shadow */
+}
+
+/* Style for course list items */
+.course-list li {
+  margin: 6px 0; /* Vertical spacing */
+  padding: 6px 10px; /* Inner padding */
+  border-bottom: 1px solid #eee; /* Divider between items */
+}
+
+.course-list li:last-child {
+  border-bottom: none; /* Remove divider on last item */
+}
+
+.courses-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed; /* Force equal column sizing */
+}
+
+.courses-table th,
+.courses-table td {
+  padding: 6px 10px;
+  text-align: left;
+  word-wrap: break-word; /* Prevent overflow */
+}
+
+.courses-table th:nth-child(1),
+.courses-table td:nth-child(1) { width: 20%; } /* Term */
+
+.courses-table th:nth-child(2),
+.courses-table td:nth-child(2) { width: 60%; } /* Course Name */
+
+.courses-table th:nth-child(3),
+.courses-table td:nth-child(3) { width: 20%; } /* Credits/Grade */
+
+.year-separator td {
+    height: 12px;           /* space between rows */
+    background: #f9f9f9;    /* light gray to visually separate terms */
+    border: none;            /* remove borders */
+    padding: 0;     
+}
+
+.term-separator td {
+    height: 12px;        /* blank space height */
+    border: none;        /* remove border */
+    background: transparent;
+}
+

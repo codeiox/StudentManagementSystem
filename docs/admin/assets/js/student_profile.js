@@ -85,6 +85,39 @@ document.addEventListener("DOMContentLoaded", () => {
         return `${capitalized} ${year}`;
     }
 
+    function renderTableWithTermSeparators(items, columns, isGrade = false) {
+        let rows = "";
+        let lastTerm = "";
+
+        items.forEach((item) => {
+            const termFormatted = formatTerm(item.term); // Capitalized term
+
+            // Insert a blank row if term changes (but not before the first row)
+            if (termFormatted !== lastTerm && lastTerm !== "") {
+                rows += `<tr class="year-separator"><td colspan="${columns.length}"></td></tr>`;
+            }
+
+            rows += "<tr>";
+            columns.forEach((col) => {
+                if (col === "grade" && isGrade) {
+                    // Handle "IP" for in-progress
+                    let grade = item[col] || "";
+                    if (item.status?.toLowerCase() === "current" && !grade) grade = "IP";
+                    rows += `<td>${grade}</td>`;
+                } else if (col === "term") {
+                    rows += `<td>${termFormatted}</td>`; // Use formatted term
+                } else {
+                    rows += `<td>${item[col]}</td>`;
+                }
+            });
+            rows += "</tr>";
+
+            lastTerm = termFormatted;
+        });
+
+        return rows;
+    }
+
     // Render tab content dynamically based on tabId
     function renderTabContent(tabId, data) {
         const el = document.getElementById(tabId);
@@ -93,71 +126,49 @@ document.addEventListener("DOMContentLoaded", () => {
         if (tabId === "courses") {
             const c = data.courses || {};
             el.innerHTML = `
-                <div class="class-registration">
-                    <a href="../admin/register.html?id=${studentId}">Course Registration</a>
-                </div>
-                <h2>Courses & Major</h2>
-                <p><strong>Major:</strong> ${c.major || "N/A"}</p>
-                ${c.minor ? `<p><strong>Minor:</strong> ${c.minor}</p>` : ""}
-                <h3>Current Courses</h3>
-                <ul>
-                    ${(c.currentCourses || [])
-                        .map(
-                            (x) =>
-                                `<li>${x.course_name} (${
-                                    x.credits
-                                } credits) — ${x.term || ""}</li>`
-                        )
-                        .join("")}
-                </ul>
-                <h3>Previous Courses</h3>
-                <ul>
-                    ${(c.previousCourses || [])
-                        .map(
-                            (x) =>
-                                `<li>${x.course_name} (${
-                                    x.credits
-                                } credits) — ${x.term || ""}</li>`
-                        )
-                        .join("")}
-                </ul>`;
+        <div class="class-registration">
+            <a href="../admin/register.html?id=${studentId}">Course Registration</a>
+        </div>
+        <h2>Courses & Major</h2>
+        <p><strong>Major:</strong> ${c.major || "N/A"}</p>
+        ${c.minor ? `<p><strong>Minor:</strong> ${c.minor}</p>` : ""}
+        <h3>Current Courses</h3>
+        ${c.currentCourses && c.currentCourses.length
+                    ? `<table class="courses-table">
+                   <thead><tr><th>Term</th><th>Course Name</th><th>Credits</th></tr></thead>
+                   <tbody>${renderTableWithTermSeparators(c.currentCourses, ["term", "course_name", "credits"])}</tbody>
+               </table>`
+                    : "<p>No current courses</p>"}
+        <h3>Previous Courses</h3>
+        ${c.previousCourses && c.previousCourses.length
+                    ? `<table class="courses-table">
+                   <thead><tr><th>Term</th><th>Course Name</th><th>Credits</th></tr></thead>
+                   <tbody>${renderTableWithTermSeparators(c.previousCourses, ["term", "course_name", "credits"])}</tbody>
+               </table>`
+                    : "<p>No previous courses</p>"}
+    `;
             return;
         }
 
         if (tabId === "grades") {
             const g = data.grades || {};
             el.innerHTML = `
-                <h2>Grades</h2>
-                <h3>Current Courses</h3>
-                ${
-                    g.current && g.current.length
-                        ? `
-                    <table>
-                        <thead><tr><th>Term</th><th>Course</th><th>Grade</th></tr></thead>
-                        <tbody>${g.current
-                            .map(
-                                (r) =>
-                                    `<tr><td>${formatTerm(r.term)}</td><td>${r.course_name}</td><td>${r.grade}</td></tr>`
-                            )
-                            .join("")}</tbody>
-                    </table>`
-                        : "<p>No current grades</p>"
-                }
-                <h3>Previous Courses</h3>
-                ${
-                    g.previous && g.previous.length
-                        ? `
-                    <table>
-                        <thead><tr><th>Term</th><th>Course</th><th>Grade</th></tr></thead>
-                        <tbody>${g.previous
-                            .map(
-                                (r) =>
-                                    `<tr><td>${formatTerm(r.term)}</td><td>${r.course_name}</td><td>${r.grade}</td></tr>`
-                            )
-                            .join("")}</tbody>
-                    </table>`
-                        : "<p>No previous grades</p>"
-                }`;
+        <h2>Grades</h2>
+        <h3>Current Courses</h3>
+        ${g.current && g.current.length
+                    ? `<table class="courses-table">
+                   <thead><tr><th>Term</th><th>Course</th><th>Grade</th></tr></thead>
+                   <tbody>${renderTableWithTermSeparators(g.current, ["term", "course_name", "grade"], true)}</tbody>
+               </table>`
+                    : "<p>No current grades</p>"}
+        <h3>Previous Courses</h3>
+        ${g.previous && g.previous.length
+                    ? `<table class="courses-table">
+                   <thead><tr><th>Term</th><th>Course</th><th>Grade</th></tr></thead>
+                   <tbody>${renderTableWithTermSeparators(g.previous, ["term", "course_name", "grade"], true)}</tbody>
+               </table>`
+                    : "<p>No previous grades</p>"}
+    `;
             return;
         }
 
@@ -177,16 +188,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (tabId === "documents") {
             const d = data.documents || [];
-            el.innerHTML = `<h2>Documents</h2>${
-                d.length
+            el.innerHTML = `<h2>Documents</h2>${d.length
                     ? `<ul>${d
-                          .map(
-                              (doc) =>
-                                  `<li><a href="${doc.url}" target="_blank">${doc.name}</a></li>`
-                          )
-                          .join("")}</ul>`
+                        .map(
+                            (doc) =>
+                                `<li><a href="${doc.url}" target="_blank">${doc.name}</a></li>`
+                        )
+                        .join("")}</ul>`
                     : "<p>No documents available</p>"
-            }`;
+                }`;
             return;
         }
     }

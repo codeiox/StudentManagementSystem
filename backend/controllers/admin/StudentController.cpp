@@ -606,7 +606,8 @@ void StudentController::getStudentCourses(
            WHERE u.student_id = ?
            ORDER BY 
                CAST(SUBSTRING_INDEX(e.term, ' ', -1) AS UNSIGNED),  -- Year
-               FIELD(SUBSTRING_INDEX(e.term, ' ', 1), 'Spring', 'Summer', 'Fall')  -- Semester
+               FIELD(SUBSTRING_INDEX(e.term, ' ', 1), 'Spring', 'Summer', 'Fall'),  -- Semester
+               c.course_name
         )",
         [callback](const orm::Result &result)
         {
@@ -651,8 +652,8 @@ void StudentController::getStudentGrades(const HttpRequestPtr &req,
         "WHERE u.student_id = ? "
         "ORDER BY "
         "  CAST(SUBSTRING_INDEX(e.term, ' ', -1) AS UNSIGNED), "
-        "  FIELD(SUBSTRING_INDEX(e.term, ' ', 1), 'Spring', 'Summer', 'Fall')",
-
+        "  FIELD(SUBSTRING_INDEX(e.term, ' ', 1), 'Spring', 'Summer', 'Fall'), "
+        "  c.course_name",
         [callback](const orm::Result &result)
         {
             Json::Value grades(Json::arrayValue);
