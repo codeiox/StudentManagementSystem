@@ -1,17 +1,19 @@
 #include "StudentController.h"
-#include <sstream>
-#include <ctime>
+
 #include <drogon/utils/Utilities.h>
 
+#include <ctime>
+#include <sstream>
+
+#include "../handle-dashboard/CalculateGPA.h"
+#include "../handle-dashboard/Dashboard.h"
 using namespace drogon;
 
-void StudentController::createStudent(const HttpRequestPtr &req,
-                                      std::function<void(const HttpResponsePtr &)> &&callback)
-{
+void StudentController::createStudent(const HttpRequestPtr& req,
+                                      std::function<void(const HttpResponsePtr&)>&& callback) {
     // So you can send in array of students through postman
     auto json = req->getJsonObject();
-    if (!json)
-    {
+    if (!json) {
         auto resp = HttpResponse::newHttpResponse();
         resp->setStatusCode(k400BadRequest);
         resp->setBody("Invalid JSON");
@@ -20,10 +22,8 @@ void StudentController::createStudent(const HttpRequestPtr &req,
     }
 
     // --- Handle multiple students if the JSON is an array ---
-    if (json->isArray())
-    {
-        for (const auto &studentJson : *json)
-        {
+    if (json->isArray()) {
+        for (const auto& studentJson : *json) {
             // Extract fields from each student
             std::string firstName = studentJson.get("firstName", "").asString();
             std::string lastName = studentJson.get("lastName", "").asString();
@@ -45,7 +45,7 @@ void StudentController::createStudent(const HttpRequestPtr &req,
             // Store in database
             StoreCredential storeCredential(firstName, lastName, dateOfBirth, email, phone, address,
                                             gender, studentId, username, hashedPassword, role);
-            storeCredential.storeToDB(req, [](const HttpResponsePtr &) {});
+            storeCredential.storeToDB(req, [](const HttpResponsePtr&) {});
         }
 
         // Respond with a summary
@@ -63,8 +63,7 @@ void StudentController::createStudent(const HttpRequestPtr &req,
     // Validate required fields
     if (!json->isMember("firstName") || !json->isMember("lastName") || !json->isMember("email") ||
         !json->isMember("phone") || !json->isMember("dateofbirth") || !json->isMember("address") ||
-        !json->isMember("gender") || !json->isMember("password"))
-    {
+        !json->isMember("gender") || !json->isMember("password")) {
         LOG_ERROR << "Missing required fields in JSON\n";
         auto resp = HttpResponse::newHttpResponse();
         resp->setStatusCode(k400BadRequest);
@@ -89,15 +88,13 @@ void StudentController::createStudent(const HttpRequestPtr &req,
 
     // converts role to lower case using std::transform and lambda function
     std::transform(role.begin(), role.end(), role.begin(),
-                   [](unsigned char c)
-                   { return std::tolower(c); });
+                   [](unsigned char c) { return std::tolower(c); });
     LOG_INFO << "Converted role to lowercase: " << role << "\n";
 
     // Basic validation for empty fields
     if (firstName.empty() || lastName.empty() || email.empty() ||
         (role == "student" && studentId.empty()) || phone.empty() || dateOfBirth.empty() ||
-        address.empty() || gender.empty() || role.empty() || password.empty())
-    {
+        address.empty() || gender.empty() || role.empty() || password.empty()) {
         LOG_INFO << "One or more required fields are empty\n";
         auto resp = HttpResponse::newHttpResponse();
         resp->setStatusCode(k400BadRequest);
@@ -108,8 +105,7 @@ void StudentController::createStudent(const HttpRequestPtr &req,
     LOG_INFO << "All required fields are present and non-empty\n";
 
     // Validate role value
-    if (role != "student" && role != "admin")
-    {
+    if (role != "student" && role != "admin") {
         LOG_INFO << "Invalid role value: " << role << "\n";
         auto resp = HttpResponse::newHttpResponse();
         resp->setStatusCode(k400BadRequest);
@@ -119,20 +115,16 @@ void StudentController::createStudent(const HttpRequestPtr &req,
     }
     LOG_INFO << "Role value is valid: " << role << "\n";
 
-    try
-    {
+    try {
         auto start = std::chrono::steady_clock::now();
         // Hash password
         LOG_INFO << "Starting password hashing with opslimit=3, memlimit=64 bytes";
         Hasher hasher(HashConfig{3, 64ull * 1024 * 1024});
         std::string hashedPassword;
-        try
-        {
+        try {
             hashedPassword = hasher.hash(password);
-            password = ""; // Clear plaintext password from memory
-        }
-        catch (const std::exception &e)
-        {
+            password = "";  // Clear plaintext password from memory
+        } catch (const std::exception& e) {
             LOG_ERROR << "Password hashing failed: " << e.what();
             auto resp = HttpResponse::newHttpResponse();
             resp->setStatusCode(k500InternalServerError);
@@ -143,8 +135,7 @@ void StudentController::createStudent(const HttpRequestPtr &req,
         auto end = std::chrono::steady_clock::now();
         LOG_INFO << "Password hashing took: " << std::chrono::duration<double>(end - start).count()
                  << " seconds";
-        if (hashedPassword.empty())
-        {
+        if (hashedPassword.empty()) {
             LOG_ERROR << "Password hashing produced empty result";
             auto resp = HttpResponse::newHttpResponse();
             resp->setStatusCode(k500InternalServerError);
@@ -162,9 +153,7 @@ void StudentController::createStudent(const HttpRequestPtr &req,
         // Store in database
         LOG_INFO << "Calling storeToDB for user: " << email;
         storeCredential.storeToDB(req, std::move(callback));
-    }
-    catch (const std::exception &e)
-    {
+    } catch (const std::exception& e) {
         LOG_ERROR << "Exception occurred while creating student: " << e.what();
         auto resp = HttpResponse::newHttpResponse();
         resp->setStatusCode(k500InternalServerError);
@@ -174,9 +163,8 @@ void StudentController::createStudent(const HttpRequestPtr &req,
 }
 
 // Handles GET request to retrieve all student records from the database
-void StudentController::getAllStudents(const HttpRequestPtr &req,
-                                       std::function<void(const HttpResponsePtr &)> &&callback)
-{
+void StudentController::getAllStudents(const HttpRequestPtr& req,
+                                       std::function<void(const HttpResponsePtr&)>&& callback) {
     LOG_INFO << "Getting ready to Fetch students from DB..\n";
     // Get the default database client instance
     auto client = app().getDbClient("default");
@@ -187,13 +175,11 @@ void StudentController::getAllStudents(const HttpRequestPtr &req,
         "enrollment_status FROM Users WHERE role = 'student'",
 
         // Success callback: transform DB result into JSON array
-        [callback](const drogon::orm::Result &result)
-        {
+        [callback](const drogon::orm::Result& result) {
             Json::Value jsonResponse(Json::arrayValue);
 
             // Iterate through each row and build a JSON object for each student
-            for (const auto &row : result)
-            {
+            for (const auto& row : result) {
                 Json::Value student;
                 student["first_name"] = row["first_name"].as<std::string>();
                 student["last_name"] = row["last_name"].as<std::string>();
@@ -204,7 +190,7 @@ void StudentController::getAllStudents(const HttpRequestPtr &req,
                 student["gender"] = row["gender"].as<std::string>();
                 student["student_id"] = row["student_id"].as<std::string>();
                 student["enrollmentStatus"] =
-                    row["enrollment_status"].as<std::string>(); // May be null
+                    row["enrollment_status"].as<std::string>();  // May be null
                 jsonResponse.append(student);
             }
 
@@ -217,8 +203,7 @@ void StudentController::getAllStudents(const HttpRequestPtr &req,
         },
 
         // Error callback: return HTTP 500 with error message
-        [callback](const drogon::orm::DrogonDbException &e)
-        {
+        [callback](const drogon::orm::DrogonDbException& e) {
             auto resp = HttpResponse::newHttpResponse();
             resp->setStatusCode(k500InternalServerError);
             resp->setBody("Database error: " + std::string(e.base().what()));
@@ -226,10 +211,9 @@ void StudentController::getAllStudents(const HttpRequestPtr &req,
         });
 }
 
-void StudentController::deleteStudent(const HttpRequestPtr &req,
-                                      std::function<void(const HttpResponsePtr &)> &&callback,
-                                      std::string studentInput)
-{
+void StudentController::deleteStudent(const HttpRequestPtr& req,
+                                      std::function<void(const HttpResponsePtr&)>&& callback,
+                                      std::string studentInput) {
     auto client = app().getDbClient("default");
 
     // URL-decode the input in case it comes from a URL
@@ -241,35 +225,28 @@ void StudentController::deleteStudent(const HttpRequestPtr &req,
 
     // Detect if input is a full name (contains a space)
     size_t spacePos = input.find(' ');
-    if (spacePos != std::string::npos)
-    {
+    if (spacePos != std::string::npos) {
         firstName = input.substr(0, spacePos);
         lastName = input.substr(spacePos + 1);
 
         query = "DELETE FROM Users WHERE first_name = ? AND last_name = ? AND role = 'student'";
         args = {firstName, lastName};
-    }
-    else
-    {
+    } else {
         query = "DELETE FROM Users WHERE student_id = ?";
         args = {input};
     }
 
     client->execSqlAsync(
         query,
-        [callback, input, firstName, lastName](const drogon::orm::Result &r)
-        {
+        [callback, input, firstName, lastName](const drogon::orm::Result& r) {
             auto resp = HttpResponse::newHttpResponse();
-            if (r.affectedRows() == 0)
-            {
+            if (r.affectedRows() == 0) {
                 resp->setStatusCode(k404NotFound);
                 if (!firstName.empty())
                     resp->setBody("No student found with name: " + firstName + " " + lastName);
                 else
                     resp->setBody("No student found with ID: " + input);
-            }
-            else
-            {
+            } else {
                 resp->setStatusCode(k200OK);
                 if (!firstName.empty())
                     resp->setBody("Student " + firstName + " " + lastName +
@@ -279,8 +256,7 @@ void StudentController::deleteStudent(const HttpRequestPtr &req,
             }
             callback(resp);
         },
-        [callback](const drogon::orm::DrogonDbException &e)
-        {
+        [callback](const drogon::orm::DrogonDbException& e) {
             auto resp = HttpResponse::newHttpResponse();
             resp->setStatusCode(k500InternalServerError);
             resp->setBody("Database error: " + std::string(e.base().what()));
@@ -291,10 +267,8 @@ void StudentController::deleteStudent(const HttpRequestPtr &req,
 
 // Handles GET request to fetch student details by ID
 void StudentController::getStudentById(
-    const drogon::HttpRequestPtr &req,
-    std::function<void(const drogon::HttpResponsePtr &)> &&callback,
-    std::string studentId)
-{
+    const drogon::HttpRequestPtr& req,
+    std::function<void(const drogon::HttpResponsePtr&)>&& callback, std::string studentId) {
     // Get database client
     auto client = drogon::app().getDbClient("default");
 
@@ -302,11 +276,9 @@ void StudentController::getStudentById(
     client->execSqlAsync(
         "SELECT first_name, last_name, dob, email, phone, address, gender, student_id, "
         "enrollment_status FROM Users WHERE student_id = ?",
-        [callback](const drogon::orm::Result &result)
-        {
+        [callback](const drogon::orm::Result& result) {
             // If no student found, return 404
-            if (result.empty())
-            {
+            if (result.empty()) {
                 auto resp = drogon::HttpResponse::newHttpResponse();
                 resp->setStatusCode(drogon::k404NotFound);
                 resp->setContentTypeCode(drogon::CT_APPLICATION_JSON);
@@ -316,7 +288,7 @@ void StudentController::getStudentById(
             }
 
             // Convert result row to JSON
-            const auto &row = result[0];
+            const auto& row = result[0];
             Json::Value student;
             student["first_name"] = row["first_name"].as<std::string>();
             student["last_name"] = row["last_name"].as<std::string>();
@@ -333,27 +305,23 @@ void StudentController::getStudentById(
             callback(resp);
         },
         // Handle database error
-        [callback](const drogon::orm::DrogonDbException &e)
-        {
+        [callback](const drogon::orm::DrogonDbException& e) {
             auto resp = drogon::HttpResponse::newHttpResponse();
             resp->setStatusCode(drogon::k500InternalServerError);
             resp->setBody("Database error: " + std::string(e.base().what()));
             callback(resp);
         },
-        studentId // SQL parameter
+        studentId  // SQL parameter
     );
 }
 
 // Handles PUT request to update a student's enrollment status
 void StudentController::updateEnrollmentStatus(
-    const drogon::HttpRequestPtr &req,
-    std::function<void(const drogon::HttpResponsePtr &)> &&callback,
-    std::string studentId)
-{
+    const drogon::HttpRequestPtr& req,
+    std::function<void(const drogon::HttpResponsePtr&)>&& callback, std::string studentId) {
     // Parse JSON body
     auto json = req->getJsonObject();
-    if (!json || !json->isMember("enrollmentStatus"))
-    {
+    if (!json || !json->isMember("enrollmentStatus")) {
         // Missing field — return 400 Bad Request
         auto resp = drogon::HttpResponse::newHttpResponse();
         resp->setStatusCode(drogon::k400BadRequest);
@@ -364,9 +332,9 @@ void StudentController::updateEnrollmentStatus(
 
     // Extract and validate new status
     std::string newStatus = json->get("enrollmentStatus", "").asString();
-    std::set<std::string> validStatuses = {"active", "graduated", "probation", "suspended", "inactive"};
-    if (validStatuses.find(newStatus) == validStatuses.end())
-    {
+    std::set<std::string> validStatuses = {"active", "graduated", "probation", "suspended",
+                                           "inactive"};
+    if (validStatuses.find(newStatus) == validStatuses.end()) {
         // Invalid value — return 400 Bad Request
         auto resp = drogon::HttpResponse::newHttpResponse();
         resp->setStatusCode(drogon::k400BadRequest);
@@ -381,8 +349,7 @@ void StudentController::updateEnrollmentStatus(
     // Execute SQL update
     client->execSqlAsync(
         "UPDATE Users SET enrollment_status = ? WHERE student_id = ?",
-        [callback, newStatus](const drogon::orm::Result &result)
-        {
+        [callback, newStatus](const drogon::orm::Result& result) {
             // Return success response
             auto resp = drogon::HttpResponse::newHttpResponse();
             resp->setStatusCode(drogon::k200OK);
@@ -390,29 +357,25 @@ void StudentController::updateEnrollmentStatus(
             callback(resp);
         },
         // Handle database error
-        [callback](const drogon::orm::DrogonDbException &e)
-        {
+        [callback](const drogon::orm::DrogonDbException& e) {
             auto resp = drogon::HttpResponse::newHttpResponse();
             resp->setStatusCode(drogon::k500InternalServerError);
             resp->setBody("Database error: " + std::string(e.base().what()));
             callback(resp);
         },
-        newStatus, studentId // SQL parameters
+        newStatus, studentId  // SQL parameters
     );
 }
 
 void StudentController::enrollStudentInCourse(
-    const HttpRequestPtr &req,
-    std::function<void(const HttpResponsePtr &)> &&callback,
-    std::string studentId)
-{
+    const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback,
+    std::string studentId) {
     auto json = req->getJsonObject();
 
     // ---------------------
     // Validate required fields
     // ---------------------
-    if (!json || !json->isMember("course_id") || !json->isMember("term"))
-    {
+    if (!json || !json->isMember("course_id") || !json->isMember("term")) {
         auto resp = HttpResponse::newHttpResponse();
         resp->setStatusCode(k400BadRequest);
         resp->setBody("Missing required fields: course_id, term");
@@ -432,8 +395,7 @@ void StudentController::enrollStudentInCourse(
     term.erase(term.find_last_not_of(" \t\n\r") + 1);
     std::istringstream iss(term);
     iss >> season >> year;
-    if (year <= 0)
-    {
+    if (year <= 0) {
         auto resp = HttpResponse::newHttpResponse();
         resp->setStatusCode(k400BadRequest);
         resp->setBody("Invalid term format. Must be: Spring|Summer|Fall 2025");
@@ -449,8 +411,7 @@ void StudentController::enrollStudentInCourse(
     else if (season == "summer")
         season = "Summer";
 
-    if (season != "Fall" && season != "Spring" && season != "Summer")
-    {
+    if (season != "Fall" && season != "Spring" && season != "Summer") {
         auto resp = HttpResponse::newHttpResponse();
         resp->setStatusCode(k400BadRequest);
         resp->setBody("Invalid term format. Must be: Spring|Summer|Fall 2025");
@@ -474,13 +435,10 @@ void StudentController::enrollStudentInCourse(
     else
         currentSeason = "Fall";
 
-    auto seasonOrder = [](const std::string &s) -> int
-    {
-        if (s == "Spring")
-            return 1;
-        if (s == "Summer")
-            return 2;
-        return 3; // Fall
+    auto seasonOrder = [](const std::string& s) -> int {
+        if (s == "Spring") return 1;
+        if (s == "Summer") return 2;
+        return 3;  // Fall
     };
 
     bool isPastTerm = false;
@@ -495,8 +453,7 @@ void StudentController::enrollStudentInCourse(
     std::string grade = json->get("grade", "").asString();
     bool isPostmanOverride = json->get("allow_past", false).asBool();
 
-    if (!isPostmanOverride && isPastTerm)
-    {
+    if (!isPostmanOverride && isPastTerm) {
         auto resp = HttpResponse::newHttpResponse();
         resp->setStatusCode(k400BadRequest);
         resp->setBody("Cannot register a course into past terms.");
@@ -504,8 +461,7 @@ void StudentController::enrollStudentInCourse(
         return;
     }
 
-    if (isPostmanOverride && !isPastTerm && !grade.empty())
-    {
+    if (isPostmanOverride && !isPastTerm && !grade.empty()) {
         auto resp = HttpResponse::newHttpResponse();
         resp->setStatusCode(k400BadRequest);
         resp->setBody("Cannot assign a grade for current/future courses.");
@@ -523,11 +479,10 @@ void StudentController::enrollStudentInCourse(
     int majorId = json->isMember("major_id") ? (*json)["major_id"].asInt() : 0;
     int minorId = json->isMember("minor_id") ? (*json)["minor_id"].asInt() : 0;
 
-    auto client = app().getDbClient("default");
-
     // ---------------------
     // Insert enrollment ONLY if it doesn't exist
     // ---------------------
+    auto client = app().getDbClient("default");
     client->execSqlAsync(
         R"(INSERT INTO Enrollments (user_id, course_id, term, status, grade)
             SELECT u.id, ?, ?, ?, ?
@@ -539,23 +494,79 @@ void StudentController::enrollStudentInCourse(
                     AND e.course_id = ?
                     AND e.term = ?
               ))",
-        [callback](const orm::Result &r)
-        {
-            auto resp = HttpResponse::newHttpResponse();
-            if (r.affectedRows() == 0)
-            {
+        [client, callback, status, courseId, term, studentId](const orm::Result& r) {
+            if (r.affectedRows() == 0) {
+                auto resp = HttpResponse::newHttpResponse();
                 resp->setStatusCode(k400BadRequest);
                 resp->setBody("Student is already enrolled in this course for this term.");
+                callback(resp);
+                return;
             }
-            else
-            {
-                resp->setStatusCode(k200OK);
-                resp->setBody("Enrollment created successfully.");
+
+            // For completed courses, pull credits and insert into course_credits by overwriting the
+            // previous one
+            if (status == "completed") {
+                // Create a shared_ptr to hold the callback so it can be shared across multiple
+                // lambdas
+                auto callbackPtr = std::make_shared<std::function<void(const HttpResponsePtr&)>>(
+                    std::move(callback));
+
+                client->execSqlAsync(
+                    "SELECT credits FROM Courses WHERE course_id = ?",
+                    [client, callbackPtr, studentId, courseId,
+                     term](const orm::Result& creditResult) {
+                        if (creditResult.empty()) {
+                            auto resp = HttpResponse::newHttpResponse();
+                            resp->setStatusCode(k404NotFound);
+                            resp->setBody("Course not found when updating credits.");
+                            (*callbackPtr)(resp);
+                            return;
+                        }
+                        int credits = creditResult[0]["credits"].as<int>();
+                        client->execSqlAsync(
+                            R"(UPDATE Enrollments e
+               JOIN Users u ON e.user_id = u.id
+               SET e.course_credits = ?
+               WHERE u.student_id = ?
+                 AND e.course_id = ?
+                 AND e.term = ?
+                 AND e.status = 'completed')",
+                            [callbackPtr, studentId](const orm::Result&) {
+                                // Create a mock request with the student ID parameter
+                                auto mockReq = HttpRequest::newHttpRequest();
+                                mockReq->setParameter("id", studentId);
+
+                                // Call the getStudentCurrentGrades function
+                                Dashboard dashboardInstance;
+                                dashboardInstance.getStudentCurrentGrades(mockReq,
+                                                                          std::move(*callbackPtr));
+                            },
+                            [callbackPtr](const orm::DrogonDbException& e) {
+                                auto resp = HttpResponse::newHttpResponse();
+                                resp->setStatusCode(k500InternalServerError);
+                                resp->setBody("Database error while updating credits: " +
+                                              std::string(e.base().what()));
+                                (*callbackPtr)(resp);
+                            },
+                            credits, studentId, courseId, term);
+                    },
+                    [callbackPtr](const orm::DrogonDbException& e) {
+                        auto resp = HttpResponse::newHttpResponse();
+                        resp->setStatusCode(k500InternalServerError);
+                        resp->setBody("Database error while fetching credits: " +
+                                      std::string(e.base().what()));
+                        (*callbackPtr)(resp);
+                    },
+                    courseId);
+                return;
             }
+
+            auto resp = HttpResponse::newHttpResponse();
+            resp->setStatusCode(k200OK);
+            resp->setBody("Enrollment created successfully.");
             callback(resp);
         },
-        [callback](const orm::DrogonDbException &e)
-        {
+        [callback](const orm::DrogonDbException& e) {
             auto resp = HttpResponse::newHttpResponse();
             std::string msg = std::string(e.base().what());
             if (msg.find("Duplicate entry") != std::string::npos)
@@ -569,33 +580,29 @@ void StudentController::enrollStudentInCourse(
     // ---------------------
     // Update major/minor if provided
     // ---------------------
-    if (majorId > 0)
-    {
+    if (majorId > 0) {
         client->execSqlAsync(
-            "UPDATE Users SET major_id = ? WHERE student_id = ?",
-            [](const orm::Result &) {},
-            [](const orm::DrogonDbException &e)
-            { LOG_ERROR << "Failed to update major: " << e.base().what(); },
+            "UPDATE Users SET major_id = ? WHERE student_id = ?", [](const orm::Result&) {},
+            [](const orm::DrogonDbException& e) {
+                LOG_ERROR << "Failed to update major: " << e.base().what();
+            },
             majorId, studentId);
     }
 
-    if (minorId > 0)
-    {
+    if (minorId > 0) {
         client->execSqlAsync(
-            "UPDATE Users SET minor_id = ? WHERE student_id = ?",
-            [](const orm::Result &) {},
-            [](const orm::DrogonDbException &e)
-            { LOG_ERROR << "Failed to update minor: " << e.base().what(); },
+            "UPDATE Users SET minor_id = ? WHERE student_id = ?", [](const orm::Result&) {},
+            [](const orm::DrogonDbException& e) {
+                LOG_ERROR << "Failed to update minor: " << e.base().what();
+            },
             minorId, studentId);
     }
 }
 
 // Handles GET request to fetch all courses for a student (chronologically ordered)
-void StudentController::getStudentCourses(
-    const HttpRequestPtr &req,
-    std::function<void(const HttpResponsePtr &)> &&callback,
-    std::string studentId)
-{
+void StudentController::getStudentCourses(const HttpRequestPtr& req,
+                                          std::function<void(const HttpResponsePtr&)>&& callback,
+                                          std::string studentId) {
     auto client = app().getDbClient("default");
 
     client->execSqlAsync(
@@ -609,11 +616,9 @@ void StudentController::getStudentCourses(
                FIELD(SUBSTRING_INDEX(e.term, ' ', 1), 'Spring', 'Summer', 'Fall'),  -- Semester
                c.course_name
         )",
-        [callback](const orm::Result &result)
-        {
+        [callback](const orm::Result& result) {
             Json::Value courses(Json::arrayValue);
-            for (const auto &row : result)
-            {
+            for (const auto& row : result) {
                 Json::Value course;
                 course["course_id"] = row["course_id"].as<int>();
                 course["course_name"] = row["course_name"].as<std::string>();
@@ -627,8 +632,7 @@ void StudentController::getStudentCourses(
             resp->setStatusCode(k200OK);
             callback(resp);
         },
-        [callback](const orm::DrogonDbException &e)
-        {
+        [callback](const orm::DrogonDbException& e) {
             auto resp = HttpResponse::newHttpResponse();
             resp->setStatusCode(k500InternalServerError);
             resp->setBody("Database error: " + std::string(e.base().what()));
@@ -638,10 +642,9 @@ void StudentController::getStudentCourses(
 }
 
 // Handles GET request to fetch grades for a student
-void StudentController::getStudentGrades(const HttpRequestPtr &req,
-                                         std::function<void(const HttpResponsePtr &)> &&callback,
-                                         std::string studentId)
-{
+void StudentController::getStudentGrades(const HttpRequestPtr& req,
+                                         std::function<void(const HttpResponsePtr&)>&& callback,
+                                         std::string studentId) {
     auto client = app().getDbClient("default");
 
     client->execSqlAsync(
@@ -652,13 +655,11 @@ void StudentController::getStudentGrades(const HttpRequestPtr &req,
         "WHERE u.student_id = ? "
         "ORDER BY "
         "  CAST(SUBSTRING_INDEX(e.term, ' ', -1) AS UNSIGNED), "
-        "  FIELD(SUBSTRING_INDEX(e.term, ' ', 1), 'Spring', 'Summer', 'Fall'), "
-        "  c.course_name",
-        [callback](const orm::Result &result)
-        {
+        "  FIELD(SUBSTRING_INDEX(e.term, ' ', 1), 'Spring', 'Summer', 'Fall')",
+
+        [callback](const orm::Result& result) {
             Json::Value grades(Json::arrayValue);
-            for (const auto &row : result)
-            {
+            for (const auto& row : result) {
                 Json::Value g;
                 g["course_name"] = row["course_name"].as<std::string>();
                 g["term"] = row["term"].as<std::string>();
@@ -666,9 +667,8 @@ void StudentController::getStudentGrades(const HttpRequestPtr &req,
                 std::string grade = row["grade"].isNull() ? "" : row["grade"].as<std::string>();
                 std::string status = row["status"].as<std::string>();
 
-                if (status == "current" && grade.empty())
-                {
-                    grade = "IP"; // Show "In Progress"
+                if (status == "current" && grade.empty()) {
+                    grade = "IP";  // Show "In Progress"
                 }
                 g["grade"] = grade;
                 grades.append(g);
@@ -678,8 +678,7 @@ void StudentController::getStudentGrades(const HttpRequestPtr &req,
             resp->setStatusCode(k200OK);
             callback(resp);
         },
-        [callback](const orm::DrogonDbException &e)
-        {
+        [callback](const orm::DrogonDbException& e) {
             auto resp = HttpResponse::newHttpResponse();
             resp->setStatusCode(k500InternalServerError);
             resp->setBody("Database error: " + std::string(e.base().what()));
@@ -689,11 +688,9 @@ void StudentController::getStudentGrades(const HttpRequestPtr &req,
 }
 
 // GET /api/admin/students/{studentId}/program
-void StudentController::getStudentProgram(
-    const HttpRequestPtr &req,
-    std::function<void(const HttpResponsePtr &)> &&callback,
-    std::string studentId)
-{
+void StudentController::getStudentProgram(const HttpRequestPtr& req,
+                                          std::function<void(const HttpResponsePtr&)>&& callback,
+                                          std::string studentId) {
     auto client = app().getDbClient("default");
 
     client->execSqlAsync(
@@ -702,11 +699,9 @@ void StudentController::getStudentProgram(
         "LEFT JOIN Majors m1 ON u.major_id = m1.major_id "
         "LEFT JOIN Majors m2 ON u.minor_id = m2.major_id "
         "WHERE u.student_id = ?",
-        [callback](const orm::Result &result)
-        {
+        [callback](const orm::Result& result) {
             Json::Value program;
-            if (!result.empty())
-            {
+            if (!result.empty()) {
                 program["major"] = result[0]["major_name"].isNull()
                                        ? "Undeclared"
                                        : result[0]["major_name"].as<std::string>();
@@ -719,8 +714,7 @@ void StudentController::getStudentProgram(
             resp->setStatusCode(k200OK);
             callback(resp);
         },
-        [callback](const orm::DrogonDbException &e)
-        {
+        [callback](const orm::DrogonDbException& e) {
             auto resp = HttpResponse::newHttpResponse();
             resp->setStatusCode(k500InternalServerError);
             resp->setBody("Database error: " + std::string(e.base().what()));

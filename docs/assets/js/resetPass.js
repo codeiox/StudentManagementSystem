@@ -72,3 +72,8 @@ btn.addEventListener("click", () => {
         btn.classList.replace("fa-eye-slash", "fa-eye");
     }
 });
+
+const back_btn = document.querySelector(`.back-btn button`);
+back_btn.addEventListener("click", () => {
+    window.location.href = "index.html";
+});
