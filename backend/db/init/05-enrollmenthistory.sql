@@ -1,0 +1,5 @@
+ CREATE TABLE IF NOT EXISTS EnrollmentHistory (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    student_id VARCHAR(50) NOT NULL,
+    entry TEXT NOT NULL
+);
