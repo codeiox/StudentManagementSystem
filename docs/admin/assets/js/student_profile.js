@@ -252,34 +252,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Load notes from localStorage
     function loadNotes() {
-        const notes = JSON.parse(localStorage.getItem("advisingNotes") || "[]");
+        const notes = JSON.parse(localStorage.getItem(`advisingNotes_${studentId}`) || "[]");
         notesList.innerHTML = "";
+
         notes.forEach((note, index) => {
             const div = document.createElement("div");
             div.classList.add("note-item");
             div.innerHTML = `
-                <div class="note-header">
-                    <p class="note-date">${note.date}</p>
-                    <button class="delete-note-btn" data-index="${index}">🗑️</button>
-                </div>
-                <p>${note.text}</p>`;
+            <div class="note-header">
+                <p class="note-date">${note.date}</p>
+                <button class="delete-note-btn" data-index="${index}">🗑️</button>
+            </div>
+            <p>${note.text}</p>
+        `;
             notesList.appendChild(div);
         });
 
         // Attach delete button events
         document.querySelectorAll(".delete-note-btn").forEach((btn) => {
-            btn.addEventListener("click", () => {
-                const index = btn.dataset.index;
-                deleteNote(index);
-            });
+            btn.addEventListener("click", () => deleteNote(btn.dataset.index));
         });
     }
 
     // Delete a note by index
     function deleteNote(index) {
-        const notes = JSON.parse(localStorage.getItem("advisingNotes") || "[]");
+        const notes = JSON.parse(localStorage.getItem(`advisingNotes_${studentId}`) || "[]");
         notes.splice(index, 1);
-        localStorage.setItem("advisingNotes", JSON.stringify(notes));
+        localStorage.setItem(`advisingNotes_${studentId}`, JSON.stringify(notes));
         loadNotes();
     }
 
@@ -302,14 +301,13 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         const note = { text, date: formattedDate };
-        const notes = JSON.parse(localStorage.getItem("advisingNotes") || "[]");
-        notes.unshift(note); // newest note at top
-        localStorage.setItem("advisingNotes", JSON.stringify(notes));
+        const notes = JSON.parse(localStorage.getItem(`advisingNotes_${studentId}`) || "[]");
+
+        notes.push(note); // add to bottom as AC says chronological ascending
+        localStorage.setItem(`advisingNotes_${studentId}`, JSON.stringify(notes));
 
         noteInput.value = "";
         loadNotes();
     });
-
-    // Initial load of notes
     loadNotes();
 });
