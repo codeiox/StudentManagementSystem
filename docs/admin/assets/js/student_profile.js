@@ -12,8 +12,23 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
+    // Format date from "YYYY-MM-DD" to "MM-DD-YYYY" for display
+    function formatDate(dateStr) {
+        if (!dateStr) return "N/A";
+        const [year, month, day] = dateStr.split("-"); // "YYYY-MM-DD"
+        return `${month}-${day}-${year}`;
+    }
+
+    // Capitalize and format enrollment status
+    function formatStatus(status) {
+        if (!status) return "N/A";
+        status = status.toLowerCase();
+        return status.charAt(0).toUpperCase() + status.slice(1);
+    }
+
+    // Fetch all relevant student data in parallel from multiple endpoints
     async function fetchStudentData(studentId) {
-        const [coursesRes, gradesRes, studentRes, programRes, documentsRes] =
+        const [coursesRes, gradesRes, studentRes, programRes, documentsRes, enrollmentRes] =
             await Promise.all([
                 fetch(`/api/admin/students/${studentId}/courses`).then((r) =>
                     r.ok ? r.json() : []
@@ -28,8 +43,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 fetch(`/api/admin/students/${studentId}/documents`).then((r) =>
                     r.ok ? r.json() : []
                 ),
+                fetch(`/api/admin/students/${studentId}/enrollment-details`).then((r) =>
+                    r.ok ? r.json() : {}
+                ),
             ]);
 
+        // Organize and format data
         return {
             courses: {
                 major: programRes.major || "Undeclared",
@@ -58,25 +77,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 ),
             },
             enrollment: {
-                startDate: "August 21, 2022",
-                status: "Active",
-                graduation: "May 2026",
-                history: [
-                    "Transferred from Springfield Community College (Fall 2021)",
-                    "Leave of Absence: Spring 2023",
-                    "Re‑enrolled: Fall 2023",
-                ],
+                startDate: enrollmentRes.startDate || "",
+                status: enrollmentRes.status || "",
+                graduation: enrollmentRes.graduation || "",
+                history: enrollmentRes.history || []
             },
-            // enrollment: {
-            //     startDate: studentRes.startDate || "",
-            //     status: studentRes.enrollment_status || "",
-            //     graduation: studentRes.graduation || "",
-            //     history: studentRes.history || []
-            // },
             documents: documentsRes || [],
         };
     }
 
+    // Format term string, e.g., "fall 2022" → "Fall 2022"
     function formatTerm(term) {
         if (!term) return "";
         const [season, year] = term.split(" ");
@@ -85,6 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return `${capitalized} ${year}`;
     }
 
+    // Render table rows with blank separators when the term changes
     function renderTableWithTermSeparators(items, columns, isGrade = false) {
         let rows = "";
         let lastTerm = "";
@@ -176,9 +187,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const e = data.enrollment || {};
             el.innerHTML = `
                 <h2>Enrollment</h2>
-                <p><strong>Enrollment Date:</strong> ${e.startDate}</p>
-                <p><strong>Status:</strong> ${e.status}</p>
-                <p><strong>Expected Graduation:</strong> ${e.graduation}</p>
+                <p><strong>Enrollment Date:</strong> ${formatDate(e.startDate) || "N/A"}</p>
+                <p><strong>Status:</strong> ${formatStatus(e.status)}</p>
+                <p><strong>Expected Graduation:</strong> ${formatDate(e.graduation) || "N/A"}</p>
                 <h3>Enrollment History</h3>
                 <ul>${(e.history || [])
                     .map((item) => `<li>${item}</li>`)
@@ -189,13 +200,13 @@ document.addEventListener("DOMContentLoaded", () => {
         if (tabId === "documents") {
             const d = data.documents || [];
             el.innerHTML = `<h2>Documents</h2>${d.length
-                    ? `<ul>${d
-                        .map(
-                            (doc) =>
-                                `<li><a href="${doc.url}" target="_blank">${doc.name}</a></li>`
-                        )
-                        .join("")}</ul>`
-                    : "<p>No documents available</p>"
+                ? `<ul>${d
+                    .map(
+                        (doc) =>
+                            `<li><a href="${doc.url}" target="_blank">${doc.name}</a></li>`
+                    )
+                    .join("")}</ul>`
+                : "<p>No documents available</p>"
                 }`;
             return;
         }
@@ -216,14 +227,19 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!content) return;
         content.classList.add("active");
 
+        // Update URL without reload
+        const url = new URL(window.location);
+        url.searchParams.set("tab", id);
+        window.history.replaceState(null, "", url);
+
         // Render content for the selected tab
         const studentData = await fetchStudentData(studentId);
         renderTabContent(id, studentData);
     });
 
-    // Load first tab automatically
-    const initial =
-        tabContainer.querySelector(".tab-link.active") ||
+    // Load tab from URL or default to first
+    const initialTab = params.get("tab") || "courses";
+    const initial = tabContainer.querySelector(`.tab-link[data-tab="${initialTab}"]`) ||
         tabContainer.querySelector(".tab-link");
     if (initial) initial.click();
 
