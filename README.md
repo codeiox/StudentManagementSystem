@@ -5,14 +5,18 @@ https://github.com/user-attachments/assets/ef7dc518-ce3d-4313-b722-ea796c675018
 
 
 A comprehensive student management system capStone project built with C++ and Drogon framework, featuring a MySQL backend and a HTML, CSS, JavaScript frontend.
+----
+
 ## Features
 
 - User authentication and authorization
 - Role-based access control (Admin, Student)
-- Student record management
+- Student record and advising note management
 - Course enrollment and management
 - Grade tracking and reporting
+- Enrollment status monitoring
 - Responsive web interface
+----
 
 ## Technologies Used
 
@@ -28,5 +32,51 @@ A comprehensive student management system capStone project built with C++ and Dr
 - .env file for environment variable management
 - JSON for configuration files
 - RESTful API design principles
+----
 
-MORE TO COME...
+## Setup Introduction
+
+```bash 
+git clone https://github.com/yourusername/StudentManagementSystem.git 
+cd StudentManagementSystem 
+```
+
+###### Configure Environment Variables
+
+Create a .env file:
+```bash
+MYSQL_ROOT_PASSWORD=yourDB_password
+MYSQL_DATABASE=yourlocalDb_Name
+```
+
+###### Run With Docker (Recommended)
+```bash
+docker-compose up --build
+```
+
+###### Access the Website Visit: 
+
+```
+http://localhost:8080/index.html
+```
+
+###### API Testing Examples:
+
+Use Postman or cURL to test endpoints such as:
+```JSON
+GET /api/students/:id
+POST /api/login
+GET /api/students/probation
+POST /api/enroll
+```
+----
+
+## Contributions
+
+If you’d like to improve this project, feel free to open an issue or submit a pull request. Bug fixes, new features, and suggestions are all appreciated.
+
+----
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
