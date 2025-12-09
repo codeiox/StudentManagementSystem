@@ -4,7 +4,7 @@
 https://github.com/user-attachments/assets/ef7dc518-ce3d-4313-b722-ea796c675018
 
 
-A comprehensive student management system capStone project built with C++ and Drogon framework, featuring a MySQL backend and a HTML, CSS, JavaScript frontend.
+A comprehensive student management system, the CapStone project built with C++ and Drogon framework, featuring a MySQL backend and a HTML, CSS, JavaScript frontend.
 ----
 
 ## Features
@@ -63,7 +63,7 @@ http://localhost:8080/index.html
 ###### API Testing Examples:
 
 Use Postman or cURL to test endpoints such as:
-```JSON
+```bash
 GET /api/students/:id
 POST /api/login
 GET /api/students/probation
