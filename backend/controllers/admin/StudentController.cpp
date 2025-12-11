@@ -57,6 +57,7 @@ void StudentController::createStudent(const HttpRequestPtr &req,
         auto resp = HttpResponse::newHttpResponse();
         resp->setStatusCode(k200OK);
         resp->setBody("Multiple students created successfully");
+        LOG_INFO << "Multiple students created successfully" << "\n";
         callback(resp);
         return;
     }

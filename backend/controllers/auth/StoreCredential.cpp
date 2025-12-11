@@ -62,6 +62,13 @@ void StoreCredential::storeToDB(
                 LOG_INFO << "Student record stored in database\n";
                 auto resp = drogon::HttpResponse::newHttpResponse();
                 resp->setStatusCode(drogon::k200OK);
+                if (role == "admin") {
+                    LOG_INFO << "Admin created successfully" << "\n";
+                    resp->setBody("Admin created successfully");
+                    callback(resp);
+                    return;
+                }
+                LOG_INFO << "Student created successfully" << "\n";
                 resp->setBody("Student created successfully");
                 callback(resp);
             },

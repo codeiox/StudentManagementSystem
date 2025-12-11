@@ -68,34 +68,34 @@ async function fetchProbationStudents() {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        // Placeholder data (remove later)
-        const staticData = [
-            {
-                major: "Computer Science",
-            },
-            {
-                major: "Business Administration",
-            },
-            {
-                major: "Engineering",
-            },
-            {
-                major: "Psychology",
-            },
-            {
-                major: "Mathematics",
-            },
-            {
-                major: "Biology",
-            },
-        ];
+        // // Placeholder data (remove later)
+        // const staticData = [
+        //     {
+        //         major: "Computer Science",
+        //     },
+        //     {
+        //         major: "Business Administration",
+        //     },
+        //     {
+        //         major: "Engineering",
+        //     },
+        //     {
+        //         major: "Psychology",
+        //     },
+        //     {
+        //         major: "Mathematics",
+        //     },
+        //     {
+        //         major: "Biology",
+        //     },
+        // ];
 
         const apiStudents = await response.json();
         const students = apiStudents.map((student, index) => ({
             id: student.student_id,
             name: `${student.first_name} ${student.last_name}`,
             gpa: student.overall_gpa,
-            major: staticData[index % staticData.length].major,
+            major: student.major,
         }));
 
         displayProbationStudents(students);
