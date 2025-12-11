@@ -27,7 +27,7 @@ public:
    ADD_METHOD_TO(StudentController::deleteStudent, "/api/admin/students/{studentId}", drogon::Delete);
    // Route: PUT /api/admin/students/{studentId}/status → calls updateEnrollmentStatus
    ADD_METHOD_TO(StudentController::updateEnrollmentStatus, "/api/admin/students/{studentId}/status", drogon::Put);
-   //Route: GET /api/admin/students/{studentId}/courses → calls getStudentCourses
+   // Route: GET /api/admin/students/{studentId}/courses → calls getStudentCourses
    ADD_METHOD_TO(StudentController::getStudentCourses, "/api/admin/students/{studentId}/courses", drogon::Get);
    // Route: POST /api/admin/students/{studentId}/enrollments → calls enrollStudentInCourse
    ADD_METHOD_TO(StudentController::enrollStudentInCourse, "/api/admin/students/{studentId}/enrollments", drogon::Post);
@@ -39,7 +39,13 @@ public:
    ADD_METHOD_TO(StudentController::getEnrollmentDetails, "/api/admin/students/{studentId}/enrollment-details", drogon::Get);
    // Route: POST /api/admin/students/{studentId}/enrollment-details → calls createEnrollmentDetails
    ADD_METHOD_TO(StudentController::createEnrollmentDetails, "/api/admin/students/{studentId}/enrollment-details", drogon::Post);
-   
+   // Route: GET /api/admin/students/{studentId}/advising-notes → calls getAdvisingNotes
+   ADD_METHOD_TO(StudentController::getAdvisingNotes, "/api/admin/students/{studentId}/advising-notes", drogon::Get);
+   // Route: POST /api/admin/students/{studentId}/advising-notes → calls createAdvisingNotes
+   ADD_METHOD_TO(StudentController::createAdvisingNotes, "/api/admin/students/{studentId}/advising-notes", drogon::Post);
+   // Route: DELETE /api/admin/students/{studentId}/advising-notes/{noteId} → calls deleteAdvisingNote
+   ADD_METHOD_TO(StudentController::deleteAdvisingNote, "/api/admin/students/{studentId}/advising-notes/{noteId}", drogon::Delete);
+
    METHOD_LIST_END
 
    // Handler
@@ -72,7 +78,7 @@ public:
    void enrollStudentInCourse(const drogon::HttpRequestPtr &req,
                               std::function<void(const drogon::HttpResponsePtr &)> &&callback,
                               std::string studentId);
-   
+
    // Fetch grades for a student (GET)
    void getStudentGrades(const drogon::HttpRequestPtr &req,
                          std::function<void(const drogon::HttpResponsePtr &)> &&callback,
@@ -92,5 +98,20 @@ public:
    void createEnrollmentDetails(const drogon::HttpRequestPtr &req,
                                 std::function<void(const drogon::HttpResponsePtr &)> &&callback,
                                 std::string studentId);
+
+   // Fetch advising notes for a student (GET)
+   void getAdvisingNotes(const drogon::HttpRequestPtr &req,
+                         std::function<void(const drogon::HttpResponsePtr &)> &&callback,
+                         std::string studentId);
+
+   // Add an advising note for a student (POST)
+   void createAdvisingNotes(const drogon::HttpRequestPtr &req,
+                            std::function<void(const drogon::HttpResponsePtr &)> &&callback,
+                            std::string studentId);
+
+   // Delete an advising note by ID (DELETE)
+   void deleteAdvisingNote(const drogon::HttpRequestPtr &req,
+                           std::function<void(const drogon::HttpResponsePtr &)> &&callback,
+                           std::string studentId, std::string noteId);
    // TODO: In the next story - We may need to add another function that checks for data duplicates before inserting data into DB.
 };
