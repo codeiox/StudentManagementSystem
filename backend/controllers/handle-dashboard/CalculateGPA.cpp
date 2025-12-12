@@ -40,6 +40,7 @@ double calculateOverAllGPA(std::vector<std::pair<std::string, int>> list_of_grad
     return totalQualityPoints / totalCredits;
 }
 
+// This is specifically for calculating over all GPA and it's not a Accumulated Credit!
 int calculateTotalCredits(const std::vector<std::pair<std::string, int>>& list_of_grades) {
     int totalCredits = 0;
 
@@ -48,4 +49,13 @@ int calculateTotalCredits(const std::vector<std::pair<std::string, int>>& list_o
     }
 
     return totalCredits;
+}
+
+int calculateAccumulatedCredit(const std::vector<std::pair<std::string, int>>& list_of_grades) {
+    int totalAccumulatedCredit = 0;
+    for (const auto& [grade, credit] : list_of_grades) {
+        if (grade == "F") continue;  // skip one set if grade is F
+        totalAccumulatedCredit += credit;
+    }
+    return totalAccumulatedCredit;
 }

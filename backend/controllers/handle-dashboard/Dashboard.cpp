@@ -14,8 +14,12 @@ void Dashboard::getStudentAtRisk(const drogon::HttpRequestPtr& req,
 
     // Execute SQL query here:
     client->execSqlAsync(
-        "SELECT first_name, last_name, student_id, overall_gpa FROM Users WHERE "
-        "enrollment_status = 'probation'",
+        "SELECT u.first_name, u.last_name, u.student_id, u.overall_gpa, "
+        "m.name AS major_name "
+        "FROM Users u "
+        "LEFT JOIN Majors m ON u.major_id = m.major_id "
+        "WHERE u.enrollment_status = 'probation'",
+
         [callback](const drogon::orm::Result& result) {
             Json::Value jsonResponse(Json::arrayValue);
 
@@ -26,7 +30,9 @@ void Dashboard::getStudentAtRisk(const drogon::HttpRequestPtr& req,
                 student["student_id"] = row["student_id"].as<std::string>();
                 student["overall_gpa"] = row["overall_gpa"].as<double>();
 
-                // TODO: Request student major from major table
+                // Major
+                student["major"] =
+                    row["major_name"].isNull() ? "Undeclared" : row["major_name"].as<std::string>();
 
                 jsonResponse.append(student);
             }
@@ -140,17 +146,17 @@ void Dashboard::getStudentCurrentGrades(
             LOG_INFO << "SELECT query returned " << result.size() << " rows";
             // insert each grade and course_credits into vector as pair string and int for overall
             // GPA calculation
-            std::vector<std::pair<std::string, int>> letter_grades;
+            std::vector<std::pair<std::string, int>> grades_and_credits;
 
             // loop over the row
             for (const auto& row : result) {
                 // convert into string
-                letter_grades.emplace_back(row["grade"].as<std::string>(),
-                                           row["course_credits"].as<int>());
+                grades_and_credits.emplace_back(row["grade"].as<std::string>(),
+                                                row["course_credits"].as<int>());
             }
 
             // Avoid crashing if student has zero completed courses
-            if (letter_grades.empty()) {
+            if (grades_and_credits.empty()) {
                 LOG_INFO << "No completed courses found for student";
                 Json::Value resp;
                 resp["status"] = "no_completed_courses";
@@ -164,9 +170,9 @@ void Dashboard::getStudentCurrentGrades(
             const int CREDIT_THRESHOLD = 12;
 
             // call GPA calculation function with vector pair<std::string, int>
-            double overallGPA = calculateOverAllGPA(letter_grades);
+            double overallGPA = calculateOverAllGPA(grades_and_credits);
             // call Total credit function
-            int earnedCredits = calculateTotalCredits(letter_grades);
+            int earnedCredits = calculateTotalCredits(grades_and_credits);
 
             LOG_INFO << "Calculated GPA: " << overallGPA << ", Earned Credits: " << earnedCredits;
             LOG_INFO << "GPA Threshold: " << GPA_THRESHOLD
@@ -230,10 +236,48 @@ void Dashboard::getStudentCurrentGrades(
                     studentId    // ?
                 );
 
+                LOG_INFO << "Calling calculateAccumulatedCredit() function to get total "
+                            "accumulated credit\n";
+                int accumulatedCredit = calculateAccumulatedCredit(grades_and_credits);
+                int majorRequiredCredits = 0;
+                try {
+                    auto majorResult = drogon::app().getDbClient("default")->execSqlSync(
+                        "SELECT COALESCE(m.total_credits_required, 0) AS required_credits "
+                        "FROM Users u "
+                        "LEFT JOIN Majors m ON u.major_id = m.major_id "
+                        "WHERE u.student_id = ? "
+                        "LIMIT 1",
+                        studentId);
+
+                    if (!majorResult.empty() && !majorResult[0]["required_credits"].isNull()) {
+                        majorRequiredCredits = majorResult[0]["required_credits"].as<int>();
+                    }
+                } catch (const drogon::orm::DrogonDbException& e) {
+                    LOG_ERROR << "Failed to fetch major required credits: " << e.base().what();
+                }
+
+                const bool meetsGraduationRequirement =
+                    majorRequiredCredits > 0 && accumulatedCredit >= majorRequiredCredits;
+
+                if (meetsGraduationRequirement) {
+                    client3->execSqlAsync(
+                        "UPDATE Users SET enrollment_status = 'graduated' WHERE student_id = ?",
+                        [studentId](const drogon::orm::Result& result) {
+                            LOG_INFO << "Marked student " << studentId
+                                     << " as graduated. Rows affected: " << result.affectedRows();
+                        },
+                        [](const drogon::orm::DrogonDbException& e) {
+                            LOG_ERROR << "Failed to mark student as graduated: " << e.base().what();
+                        },
+                        studentId);
+                }
+
                 Json::Value resp;
-                resp["status"] = "ok";
+                resp["status"] = meetsGraduationRequirement ? "graduated" : "ok";
                 resp["gpa"] = overallGPA;
                 resp["earned_credits"] = earnedCredits;
+                resp["accumulated_credits"] = accumulatedCredit;
+                resp["major_required_credits"] = majorRequiredCredits;
                 callback(drogon::HttpResponse::newHttpJsonResponse(resp));
             }
         },
