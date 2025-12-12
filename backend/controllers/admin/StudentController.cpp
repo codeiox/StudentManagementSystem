@@ -1150,12 +1150,28 @@ void StudentController::deleteAdvisingNote(
             },
             noteIdInt, studentId);
     }
-    catch (...)
+    catch (const std::invalid_argument &e)
     {
         Json::Value result;
-        result["message"] = "Invalid note ID";
+        result["message"] = "Invalid note ID format";
         auto resp = drogon::HttpResponse::newHttpJsonResponse(result);
         resp->setStatusCode(drogon::k400BadRequest);
+        callback(resp);
+    }
+    catch (const std::out_of_range &e)
+    {
+        Json::Value result;
+        result["message"] = "Note ID out of range";
+        auto resp = drogon::HttpResponse::newHttpJsonResponse(result);
+        resp->setStatusCode(drogon::k400BadRequest);
+        callback(resp);
+    }
+    catch (const std::exception &e)
+    {
+        Json::Value result;
+        result["message"] = std::string("Unexpected server error: ") + e.what();
+        auto resp = drogon::HttpResponse::newHttpJsonResponse(result);
+        resp->setStatusCode(drogon::k500InternalServerError);
         callback(resp);
     }
 }

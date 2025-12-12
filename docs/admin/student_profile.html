@@ -70,8 +70,22 @@
                         <div id="documentsContent"></div>
                     </div>
                 </div>
+                <!-- Delete Confirmation Modal -->
+                <div id="deleteModal" class="modal">
+                    <div class="modal-content">
+                        <h3 class="modal-title">Delete Advising Note</h3>
+                        <p class="modal-text">Are you sure you want to delete this note?</p>
+                        <label for="deletePassword" class="modal-label">Enter your password to confirm:</label>
+                        <input type="password" id="deletePassword" class="modal-input" placeholder="Password" />
+                        <div class="modal-buttons">
+                            <button id="confirmDeleteBtn" class="btn btn-danger">Delete</button>
+                            <button id="cancelDeleteBtn" class="btn btn-secondary">Cancel</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+    </div>
     </div>
 
     <!-- Right Panel -->
@@ -104,18 +118,6 @@
             </p>
 
             <div id="statusMessage" class="status-message"></div>
-        </div>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div id="deleteModal" class="modal">
-        <div class="modal-content">
-            <p>Are you sure you want to delete this note? Enter your password to confirm:</p>
-            <input type="password" id="deletePassword" placeholder="Password" />
-            <div class="modal-buttons">
-                <button id="confirmDeleteBtn">Confirm</button>
-                <button id="cancelDeleteBtn">Cancel</button>
-            </div>
         </div>
     </div>
 

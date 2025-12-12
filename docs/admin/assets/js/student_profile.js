@@ -335,8 +335,8 @@ document.addEventListener("DOMContentLoaded", () => {
         confirmBtn.onclick = async () => {
             try {
                 const password = passwordInput.value.trim();
-                if (!password) return alert("Please enter your password.");
-                if (!noteToDeleteId) return alert("No note selected to delete.");
+                if (!password) return result["message"] = "Please enter your password.";
+                if (!noteToDeleteId) return result["message"] = "No note selected to delete.";
 
                 console.log("Sending DELETE for note:", noteToDeleteId, "with password:", password);
                 const res = await fetch(`/api/admin/students/${studentId}/advising-notes/${noteToDeleteId}`, {
@@ -351,7 +351,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     data = await res.json();
                 } catch (err) {
                     console.error("Failed to parse JSON:", err);
-                    alert("Server did not return valid JSON.");
+                    result["message"] = "Server did not return valid JSON.";
                     return;
                 }
 
@@ -362,13 +362,13 @@ document.addEventListener("DOMContentLoaded", () => {
                     noteToDeleteId = null;
                     passwordInput.value = "";
                     await loadNotes();
-                    alert(data.message || "Note deleted successfully!");
+                    result["message"] = data.message || "Note deleted successfully!";
                 } else {
-                    alert(data.message || "Failed to delete note.");
+                    result["message"] = data.message || "Failed to delete note.";
                 }
             } catch (err) {
                 console.error("Delete request failed:", err);
-                alert("Delete request failed. Check console for details.");
+                result["message"] = "Delete request failed. Check console for details.";
             }
         };
         loadNotes();
