@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('email').textContent = student.email;
             document.getElementById('phone').textContent = student.phone;
             document.getElementById('address').textContent = student.address;
-            document.getElementById('status').textContent = student.enrollmentStatus;
+            document.getElementById('status').textContent = formatStatus(student.enrollmentStatus);
             // Set profile photo
             const photo = document.getElementById('studentPhoto');
             const gender = student.gender?.toLowerCase();
@@ -34,6 +34,12 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error loading profile:', err);
             alert('Could not load student info');
         });
+
+    function formatStatus(status) {
+        if (!status) return "N/A";
+        status = status.toLowerCase();
+        return status.charAt(0).toUpperCase() + status.slice(1);
+    }
 
     // --- COURSE REGISTRATION FORM LOGIC ---
     const form = document.getElementById('registrationForm');

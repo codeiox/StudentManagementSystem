@@ -12,11 +12,27 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
-    // Format date from "YYYY-MM-DD" to "MM-DD-YYYY" for display
-    function formatDate(dateStr) {
+    // For enrollment tab: date only
+    function formatDateOnly(dateStr) {
         if (!dateStr) return "N/A";
         const [year, month, day] = dateStr.split("-"); // "YYYY-MM-DD"
         return `${month}-${day}-${year}`;
+    }
+
+    // Format date strings to local time with timezone
+    function formatDate(dateStr) {
+        if (!dateStr) return "N/A";
+        const date = new Date(dateStr + "Z"); // the "Z" ensures UTC
+        return date.toLocaleString("en-US", {
+            timeZone: "America/New_York",
+            month: "2-digit",
+            day: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: true
+        });
     }
 
     // Capitalize and format enrollment status
@@ -187,14 +203,27 @@ document.addEventListener("DOMContentLoaded", () => {
             const e = data.enrollment || {};
             el.innerHTML = `
                 <h2>Enrollment</h2>
-                <p><strong>Enrollment Date:</strong> ${formatDate(e.startDate) || "N/A"}</p>
+                <p><strong>Enrollment Date:</strong> ${formatDateOnly(e.startDate) || "N/A"}</p>
                 <p><strong>Status:</strong> ${formatStatus(e.status)}</p>
-                <p><strong>Expected Graduation:</strong> ${formatDate(e.graduation) || "N/A"}</p>
+                <p><strong>Expected Graduation:</strong> ${formatDateOnly(e.graduation) || "N/A"}</p>
                 <h3>Enrollment History</h3>
                 <ul>${(e.history || [])
                     .map((item) => `<li>${item}</li>`)
                     .join("")}</ul>`;
             return;
+        }
+
+        if (tabId === "advising") {
+            // Setup advising notes HTML
+            el.innerHTML = `
+                <h2>Advising Notes</h2>
+                <div id="advisingNotesList" class="notes-list"></div>
+                <div class="add-note-section">
+                    <textarea id="advisingNoteInput" placeholder="Write a new note..." rows="4"></textarea>
+                    <button id="saveNoteBtn">Save</button>
+                </div>
+            `;
+            initAdvisingNotes(studentId); // call function to handle load/save/delete
         }
 
         if (tabId === "documents") {
@@ -246,68 +275,109 @@ document.addEventListener("DOMContentLoaded", () => {
     // -----------------------------
     // Advising Notes Feature
     // -----------------------------
-    const noteInput = document.getElementById("advisingNoteInput");
-    const saveNoteBtn = document.getElementById("saveNoteBtn");
-    const notesList = document.getElementById("advisingNotesList");
+    function initAdvisingNotes(studentId) {
+        const noteInput = document.getElementById("advisingNoteInput");
+        const saveNoteBtn = document.getElementById("saveNoteBtn");
+        const notesList = document.getElementById("advisingNotesList");
+        const modal = document.getElementById("deleteModal");
+        const passwordInput = document.getElementById("deletePassword");
+        const confirmBtn = document.getElementById("confirmDeleteBtn");
+        const cancelBtn = document.getElementById("cancelDeleteBtn");
 
-    // Load notes from localStorage
-    function loadNotes() {
-        const notes = JSON.parse(localStorage.getItem(`advisingNotes_${studentId}`) || "[]");
-        notesList.innerHTML = "";
+        let noteToDeleteId = null;
 
-        notes.forEach((note, index) => {
-            const div = document.createElement("div");
-            div.classList.add("note-item");
-            div.innerHTML = `
-            <div class="note-header">
-                <p class="note-date">${note.date}</p>
-                <button class="delete-note-btn" data-index="${index}">🗑️</button>
-            </div>
-            <p>${note.text}</p>
-        `;
-            notesList.appendChild(div);
-        });
+        async function loadNotes() {
+            const notesRes = await fetch(`/api/admin/students/${studentId}/advising-notes`);
+            const notes = notesRes.ok ? await notesRes.json() : [];
 
-        // Attach delete button events
-        document.querySelectorAll(".delete-note-btn").forEach((btn) => {
-            btn.addEventListener("click", () => deleteNote(btn.dataset.index));
-        });
-    }
-
-    // Delete a note by index
-    function deleteNote(index) {
-        const notes = JSON.parse(localStorage.getItem(`advisingNotes_${studentId}`) || "[]");
-        notes.splice(index, 1);
-        localStorage.setItem(`advisingNotes_${studentId}`, JSON.stringify(notes));
-        loadNotes();
-    }
-
-    // Save new note with timestamp
-    saveNoteBtn.addEventListener("click", () => {
-        const text = noteInput.value.trim();
-        if (!text) {
-            alert("Please write a note before saving.");
-            return;
+            notesList.innerHTML = "";
+            notes.forEach(note => {
+                const div = document.createElement("div");
+                div.classList.add("note-item");
+                div.innerHTML = `
+                    <div class="note-header">
+                        <p class="note-date">${formatDate(note.date)}</p>
+                        <button class="delete-note-btn" data-id="${note.id}">🗑️</button>
+                    </div>
+                    <p>${note.text}</p>
+                `;
+                notesList.appendChild(div);
+            });
         }
 
-        const now = new Date();
-        const formattedDate = now.toLocaleString("en-US", {
-            month: "2-digit",
-            day: "2-digit",
-            year: "numeric",
-            hour: "numeric",
-            minute: "2-digit",
-            hour12: true,
+        saveNoteBtn.addEventListener("click", async () => {
+            const text = noteInput.value.trim();
+            if (!text) return alert("Please write a note before saving.");
+
+            const res = await fetch(`/api/admin/students/${studentId}/advising-notes`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ note: text })
+            });
+
+            if (res.ok) {
+                noteInput.value = "";
+                await loadNotes();
+            } else {
+                alert("Failed to save note.");
+            }
         });
 
-        const note = { text, date: formattedDate };
-        const notes = JSON.parse(localStorage.getItem(`advisingNotes_${studentId}`) || "[]");
+        notesList.addEventListener("click", (e) => {
+            console.log("🗑️ Delete button clicked");
+            const btn = e.target.closest(".delete-note-btn");
+            if (!btn) return;
+            noteToDeleteId = btn.dataset.id;
+            passwordInput.value = "";
+            modal.classList.add("show");
+        });
 
-        notes.push(note); // add to bottom as AC says chronological ascending
-        localStorage.setItem(`advisingNotes_${studentId}`, JSON.stringify(notes));
+        cancelBtn.onclick = () => {
+            modal.classList.remove("show");
+            noteToDeleteId = null;
+            passwordInput.value = "";
+        };
 
-        noteInput.value = "";
+
+        confirmBtn.onclick = async () => {
+            try {
+                const password = passwordInput.value.trim();
+                if (!password) return result["message"] = "Please enter your password.";
+                if (!noteToDeleteId) return result["message"] = "No note selected to delete.";
+
+                console.log("Sending DELETE for note:", noteToDeleteId, "with password:", password);
+                const res = await fetch(`/api/admin/students/${studentId}/advising-notes/${noteToDeleteId}`, {
+                    method: "DELETE",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ password })
+                });
+                console.log("Response status:", res.status);
+
+                let data;
+                try {
+                    data = await res.json();
+                } catch (err) {
+                    console.error("Failed to parse JSON:", err);
+                    result["message"] = "Server did not return valid JSON.";
+                    return;
+                }
+
+                console.log("Response body:", data);
+
+                if (res.ok) {
+                    modal.classList.remove("show");
+                    noteToDeleteId = null;
+                    passwordInput.value = "";
+                    await loadNotes();
+                    result["message"] = data.message || "Note deleted successfully!";
+                } else {
+                    result["message"] = data.message || "Failed to delete note.";
+                }
+            } catch (err) {
+                console.error("Delete request failed:", err);
+                result["message"] = "Delete request failed. Check console for details.";
+            }
+        };
         loadNotes();
-    });
-    loadNotes();
+    }
 });

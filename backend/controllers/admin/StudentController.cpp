@@ -900,8 +900,7 @@ void StudentController::createEnrollmentDetails(
     if (!status.empty())
     {
         std::set<std::string> validStatuses = {
-            "active", "inactive", "graduated", "probation", "suspended"
-        };
+            "active", "inactive", "graduated", "probation", "suspended"};
         if (validStatuses.find(status) == validStatuses.end())
         {
             auto resp = HttpResponse::newHttpResponse();
@@ -941,7 +940,8 @@ void StudentController::createEnrollmentDetails(
                         Json::ArrayIndex i = 0;
                         for (; i < history.size() && i < existingEntries.size(); ++i)
                         {
-                            if (!history[i].isString()) continue;
+                            if (!history[i].isString())
+                                continue;
 
                             if (history[i].asString() != existingEntries[i])
                             {
@@ -950,22 +950,21 @@ void StudentController::createEnrollmentDetails(
                                     "UPDATE EnrollmentHistory SET entry = ? WHERE id = ?",
                                     [](const orm::Result &) {},
                                     [](const orm::DrogonDbException &) {},
-                                    history[i].asString(), existingIds[i]
-                                );
+                                    history[i].asString(), existingIds[i]);
                             }
                         }
 
                         // Insert any new entries from JSON that extend past existing
                         for (; i < history.size(); ++i)
                         {
-                            if (!history[i].isString()) continue;
+                            if (!history[i].isString())
+                                continue;
 
                             client->execSqlAsync(
                                 "INSERT INTO EnrollmentHistory (student_id, entry) VALUES (?, ?)",
                                 [](const orm::Result &) {},
                                 [](const orm::DrogonDbException &) {},
-                                studentId, history[i].asString()
-                            );
+                                studentId, history[i].asString());
                         }
 
                         // Return success
@@ -981,8 +980,7 @@ void StudentController::createEnrollmentDetails(
                         resp->setBody("Database error fetching existing history: " + std::string(e.base().what()));
                         callback(resp);
                     },
-                    studentId
-                );
+                    studentId);
             };
 
             if (!status.empty())
@@ -990,7 +988,8 @@ void StudentController::createEnrollmentDetails(
                 // Update Users.enrollment_status first
                 client->execSqlAsync(
                     "UPDATE Users SET enrollment_status = ? WHERE student_id = ?",
-                    [appendHistory](const orm::Result &) mutable { appendHistory(); },
+                    [appendHistory](const orm::Result &) mutable
+                    { appendHistory(); },
                     [callback](const orm::DrogonDbException &e)
                     {
                         auto resp = HttpResponse::newHttpResponse();
@@ -998,15 +997,13 @@ void StudentController::createEnrollmentDetails(
                         resp->setBody("Database error updating student status: " + std::string(e.base().what()));
                         callback(resp);
                     },
-                    status, studentId
-                );
+                    status, studentId);
             }
             else
             {
                 // No status update; just append history
                 appendHistory();
             }
-
         },
         [callback](const orm::DrogonDbException &e)
         {
@@ -1015,6 +1012,167 @@ void StudentController::createEnrollmentDetails(
             resp->setBody("Database error saving enrollment details: " + std::string(e.base().what()));
             callback(resp);
         },
-        studentId, startDate, graduation
-    );
+        studentId, startDate, graduation);
+}
+
+// fetch all advising notes for a student
+void StudentController::getAdvisingNotes(const drogon::HttpRequestPtr &req,
+                                         std::function<void(const drogon::HttpResponsePtr &)> &&callback,
+                                         std::string studentId)
+{
+    try
+    {
+        auto client = drogon::app().getDbClient();
+        std::string sql =
+            "SELECT id, note, created_at as date FROM AdvisingNotes WHERE student_id = ? ORDER BY created_at ASC";
+        client->execSqlAsync(
+            sql,
+            [callback](const drogon::orm::Result &r)
+            {
+                Json::Value notes(Json::arrayValue);
+                for (auto row : r)
+                {
+                    Json::Value note;
+                    note["id"] = row["id"].as<int>();
+                    note["text"] = row["note"].as<std::string>();
+                    note["date"] = row["date"].as<std::string>();
+                    notes.append(note);
+                }
+                auto resp = drogon::HttpResponse::newHttpJsonResponse(notes);
+                callback(resp);
+            },
+            [callback](const drogon::orm::DrogonDbException &e)
+            {
+                auto resp =
+                    drogon::HttpResponse::newHttpJsonResponse(Json::Value("Database error"));
+                resp->setStatusCode(drogon::k500InternalServerError);
+                callback(resp);
+            },
+            studentId);
+    }
+    catch (const std::exception &e)
+    {
+        auto resp =
+            drogon::HttpResponse::newHttpJsonResponse(Json::Value("Server error"));
+        resp->setStatusCode(drogon::k500InternalServerError);
+        callback(resp);
+    }
+}
+
+// create a new advising note for a student
+void StudentController::createAdvisingNotes(const drogon::HttpRequestPtr &req,
+                                            std::function<void(const drogon::HttpResponsePtr &)> &&callback,
+                                            std::string studentId)
+{
+    auto json = req->getJsonObject();
+    if (!json || !json->isMember("note"))
+    {
+        auto resp =
+            drogon::HttpResponse::newHttpJsonResponse(Json::Value("Missing note"));
+        resp->setStatusCode(drogon::k400BadRequest);
+        callback(resp);
+        return;
+    }
+    std::string noteText = (*json)["note"].asString();
+    if (noteText.empty())
+    {
+        auto resp =
+            drogon::HttpResponse::newHttpJsonResponse(Json::Value("Note cannot be empty"));
+        resp->setStatusCode(drogon::k400BadRequest);
+        callback(resp);
+        return;
+    }
+    try
+    {
+        auto client = drogon::app().getDbClient();
+        std::string sql =
+            "INSERT INTO AdvisingNotes (student_id, note) VALUES (?, ?)";
+        client->execSqlAsync(
+            sql,
+            [callback](const drogon::orm::Result &)
+            {
+                Json::Value result;
+                result["message"] = "Note saved successfully";
+                auto resp = drogon::HttpResponse::newHttpJsonResponse(result);
+                callback(resp);
+            },
+            [callback](const drogon::orm::DrogonDbException &e)
+            {
+                Json::Value result;
+                result["message"] =
+                    "Database error: " + std::string(e.base().what());
+                auto resp = drogon::HttpResponse::newHttpJsonResponse(result);
+                resp->setStatusCode(drogon::k500InternalServerError);
+                callback(resp);
+            },
+            studentId,
+            noteText // <-- use int here
+        );
+    }
+    catch (const std::exception &e)
+    {
+        auto resp = drogon::HttpResponse::newHttpJsonResponse(
+            Json::Value("Server error: invalid student ID"));
+        resp->setStatusCode(drogon::k500InternalServerError);
+        callback(resp);
+    }
+}
+
+// delete an existing advising note for a student
+void StudentController::deleteAdvisingNote(
+    const drogon::HttpRequestPtr &req,
+    std::function<void(const drogon::HttpResponsePtr &)> &&callback,
+    std::string studentId,
+    std::string noteId)
+{
+    try
+    {
+        int noteIdInt = std::stoi(noteId);
+
+        auto client = drogon::app().getDbClient();
+        std::string sqlDelete = "DELETE FROM AdvisingNotes WHERE id = ? AND student_id = ?";
+
+        client->execSqlAsync(
+            sqlDelete,
+            [callback](const drogon::orm::Result &r)
+            {
+                Json::Value result;
+                result["message"] = "Note deleted successfully";
+                auto resp = drogon::HttpResponse::newHttpJsonResponse(result);
+                callback(resp);
+            },
+            [callback](const drogon::orm::DrogonDbException &e)
+            {
+                Json::Value result;
+                result["message"] = "Database error: " + std::string(e.base().what());
+                auto resp = drogon::HttpResponse::newHttpJsonResponse(result);
+                resp->setStatusCode(drogon::k500InternalServerError);
+                callback(resp);
+            },
+            noteIdInt, studentId);
+    }
+    catch (const std::invalid_argument &e)
+    {
+        Json::Value result;
+        result["message"] = "Invalid note ID format";
+        auto resp = drogon::HttpResponse::newHttpJsonResponse(result);
+        resp->setStatusCode(drogon::k400BadRequest);
+        callback(resp);
+    }
+    catch (const std::out_of_range &e)
+    {
+        Json::Value result;
+        result["message"] = "Note ID out of range";
+        auto resp = drogon::HttpResponse::newHttpJsonResponse(result);
+        resp->setStatusCode(drogon::k400BadRequest);
+        callback(resp);
+    }
+    catch (const std::exception &e)
+    {
+        Json::Value result;
+        result["message"] = std::string("Unexpected server error: ") + e.what();
+        auto resp = drogon::HttpResponse::newHttpJsonResponse(result);
+        resp->setStatusCode(drogon::k500InternalServerError);
+        callback(resp);
+    }
 }
