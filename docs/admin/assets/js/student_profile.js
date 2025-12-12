@@ -12,7 +12,14 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
-    // Format date from "YYYY-MM-DD" to "MM-DD-YYYY" for display
+    // For enrollment tab: date only
+    function formatDateOnly(dateStr) {
+        if (!dateStr) return "N/A";
+        const [year, month, day] = dateStr.split("-"); // "YYYY-MM-DD"
+        return `${month}-${day}-${year}`;
+    }
+
+    // Format date strings to local time with timezone
     function formatDate(dateStr) {
         if (!dateStr) return "N/A";
         const date = new Date(dateStr + "Z"); // the "Z" ensures UTC
@@ -196,9 +203,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const e = data.enrollment || {};
             el.innerHTML = `
                 <h2>Enrollment</h2>
-                <p><strong>Enrollment Date:</strong> ${formatDate(e.startDate) || "N/A"}</p>
+                <p><strong>Enrollment Date:</strong> ${formatDateOnly(e.startDate) || "N/A"}</p>
                 <p><strong>Status:</strong> ${formatStatus(e.status)}</p>
-                <p><strong>Expected Graduation:</strong> ${formatDate(e.graduation) || "N/A"}</p>
+                <p><strong>Expected Graduation:</strong> ${formatDateOnly(e.graduation) || "N/A"}</p>
                 <h3>Enrollment History</h3>
                 <ul>${(e.history || [])
                     .map((item) => `<li>${item}</li>`)
